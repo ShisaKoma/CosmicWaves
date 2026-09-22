@@ -4,7 +4,7 @@ const A = require('./structures-engine.js');
 let checked = 0;
 function check(name, fn) { fn(); checked++; console.log('✓ ' + name); }
 function empty(n = 32) {
-  const c = A.defaults(n);
+  const c = A.defaults(n); c.emergence.mode='local-complete';
   c.initial.density = 0; c.life.enabled = false; c.motion.diffusion = 0;
   c.structures.bondProbability = 1; c.structures.loopProbability = 1;
   c.collisions.subtraction = 'never';
@@ -152,9 +152,9 @@ check('Historique : apparitions, changements de règles et état aléatoire expo
   e.config.gravity.strength=9;assert.equal(w.config.gravity.strength,3);
   w.reset();assert.equal(w.history.length,1);assert.equal(w.totalEmergences,0);assert.equal(w.ruleHistory.length,1);
 });
-check('Migration de règles v2 et validation stricte v4', () => {
+check('Migration de règles v2 et validation stricte v5', () => {
   const old=require('../audit-alignement/version2/regles-automate.json'),c=A.validate(old);
-  assert.equal(c.version,4);assert.equal(c.emergence.mode,'palette');assert.equal(c.condensation.persistent,true);assert.equal(c.radial.enabled,false);assert.equal(c.display.condensateStyle,'envelope');
+  assert.equal(c.version,5);assert.equal(c.emergence.mode,'palette');assert.equal(c.condensation.persistent,true);assert.equal(c.radial.enabled,false);assert.equal(c.display.condensateStyle,'envelope');
   const bad=A.defaults();bad.emergence.mode='inventé';assert.throws(()=>A.validate(bad));
   const zero=A.defaults();zero.radial.rate=0;assert.throws(()=>A.validate(zero));
   const w=empty(),before=JSON.stringify(w.config),grid=JSON.parse(before);grid.grid.size=9;assert.throws(()=>w.configure(grid));assert.equal(JSON.stringify(w.config),before);

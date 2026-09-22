@@ -1,6 +1,8 @@
 # Surfaces ondulantes — version 2
 
-Ouvrir **ondes-3d.html** dans un navigateur. Le HTML est autonome, sans installation ni réseau. Le sélecteur propose **10, 11, 26 ou 32 surfaces**. Chaque surface a une couleur distincte et un numéro ; le filtre d'affichage permet de l'isoler visuellement sans modifier la dynamique.
+**Extension géométrique :** branes centrales, dissymétrie, domaines multiples, seuils d’émergence et stabilité sur une fenêtre finie. Voir [le guide et le protocole](GEOMETRIE-MULTIDOMAINE.md). Le mode collectif est actif par défaut ; les descriptions du critère individuel ci-dessous restent celles de la branche précédente.
+
+Ouvrir **ondes-3d.html** dans un navigateur. Le HTML est autonome, sans installation ni réseau. Le champ numérique **Positions / surfaces** accepte un entier de **2 à 32**, avec des raccourcis 10, 11, 26 et 32. Ces positions identifient les couleurs et surfaces ; elles ne sont pas des axes spatiaux supplémentaires. Chaque surface a une couleur distincte et un numéro ; le filtre d'affichage permet de l'isoler visuellement sans modifier la dynamique.
 
 ## Choix de l'auteur et traduction retenue
 
@@ -135,4 +137,16 @@ Trois questions sont à séparer : une inégalité de contact déforme-t-elle un
 
 La proposition « plusieurs domaines déformés durent moins longtemps qu'un domaine unique » est le résultat recherché, pas une règle à coder. Programmer une rupture plus rapide dès que l'asymétrie augmente ne permettrait pas de tester cette proposition.
 
-**État du code.** La v2 sait déjà suivre plusieurs domaines, mais elle impose des captures égales et affiche chacun par une sphère. Elle ne possède pas encore le diagnostic de contact, le diagnostic de forme ni cette comparaison contrôlée. Cette section ajoute une hypothèse et son protocole aux notes ; elle ne modifie pas les équations ni les résultats v2.
+**État lors de cette note initiale.** Les diagnostics manquaient alors. L’extension décrite dans [GEOMETRIE-MULTIDOMAINE.md](GEOMETRIE-MULTIDOMAINE.md) ajoute ensuite les mesures de forme, de symétrie centrale, de persistance et la comparaison sur plusieurs graines. Elle conserve la capture égale ; elle ne mesure pas directement une force de contact.
+
+## Séquence forcée : sphère, agrégation et expansion
+
+Après le premier pas, le bouton **Forcer la sphère → Big Bang** apparaît. Il suspend le monde d'ondes à son état courant et lance une séquence illustrative de douze secondes : deux secondes de fermeture sphérique prescrite, trois secondes de contraction vers un agrégat, puis sept secondes d'expansion isotrope prescrite. Les couleurs sont conservées. La caméra recule pendant l'expansion.
+
+La séquence prélève visuellement le contenu encore transférable des portions locales, dans la limite du partage configuré ; elle ne retire rien du monde source. Son partage local est comptabilisé séparément. **Pause**, **Un pas d'animation**, **Rejouer** et **Retour aux ondes** permettent de l'examiner. Le retour retrouve le calcul suspendu. **Recommencer** réinitialise l'expérience et efface les séquences en mémoire.
+
+L'export inclut `illustrativeSequences` et un événement `forced-illustration`, distinct des naissances détectées. Aucune fermeture parfaite ou expansion de cette animation ne constitue un résultat spontané du solveur. Le module est vérifié par six contrôles (`node sources/check-waves-illustration.cjs`) : non-modification du monde source, phases et rayons, partage local, palettes, export et déformation limitée aux patches. Le chargement initial de la page a été observé ; la vérification interactive complète a été interrompue par une limite d'utilisation de l'outil de navigateur.
+
+## Champ numérique des positions
+
+L'auteur précise que sa demande de « dimensions supplémentaires » désigne ici l'ancien champ des positions de couleur. Le menu à quatre nombres est donc remplacé par une entrée numérique de 2 à 32. Les raccourcis renseignent le champ sans relancer le calcul ; **Appliquer et recommencer** valide et utilise le nombre saisi. L'essai préparé utilise également ce nombre. Aucune dimension spatiale supplémentaire n'est ajoutée au moteur.

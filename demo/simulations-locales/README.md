@@ -5,9 +5,11 @@ Ouvrez `index.html` par un double-clic ou avec la commande « Ouvrir un fichier 
 Pour ouvrir la **nouvelle simulation de cordes en 3D**, utilisez `automate-3d.html`. Le cycle 3D précédent reste disponible dans `cycle-3d.html`.
 
 - **ondes-3d.html** : version 2, 10/11/26/32 surfaces, domaine central, capture locale 50/50, rupture et horloge intérieure conventionnelle. [Équations, résultats et limites](ONDES.md).
+- **GEOMETRIE-MULTIDOMAINE.md** : règles de dissymétrie, branes centrales et stabilité observée ; protocole de comparaison.
+- **etude-geometrie.json** : balayage de 30 essais avec historiques et seuils observés.
 - **comparaison-ondes-v2.json** : huit trajectoires, départs aléatoires et témoins préparés pour les quatre palettes.
 - **comparaison-ondes.json** : dix anciennes trajectoires de la v1, conservées avec son moteur dans `audit-alignement/ondes-version1/`.
-- **automate-3d.html** : automate 3D **points → demi-cordes → cordes → boucles → configuration X**, avec 10/11/26/32 états de couleur, attraction locale, ruptures et émissions réglables.
+- **automate-3d.html** : automate local 3D : fermeture des branes, domaines et capture 50/50 ; 2–32 couleurs et anciens assemblages disponibles.
 - **REGLES-AUTOMATE.md** : description complète des règles, formules, limites du modèle et paramètres.
 - **regles-automate.json** : réglages initiaux importables dans l'automate.
 
@@ -18,27 +20,17 @@ Pour ouvrir la **nouvelle simulation de cordes en 3D**, utilisez `automate-3d.ht
 
 Les pages proposent des liens pour passer d’un modèle à l’autre. Chaque fichier HTML contient son propre code et son apparence : il peut être copié et ouvert séparément. Gardez les fichiers ensemble pour conserver les liens de navigation et de documentation.
 
-## Automate de cordes — version 4
+## Automate local des branes — version 5
 
-La progression points → demi-cordes → cordes → boucles reste active sans gravité. Une configuration locale X peut ensuite activer l’attraction au pas suivant.
+La fermeture géométrique remplace la quantité de boucles comme critère par défaut. Positions 2–32 (défaut 10), seuils E/S, durée de fermeture et fenêtre de stabilité sont configurables. Le même détecteur géométrique que dans les ondes sert à reconnaître les cavités et leur symétrie.
 
-Par défaut, X exige au moins quatre boucles dans une cellule et aucune boucle restante dans ses 6/26 voisins immédiats. Le mode par nombre de boucles et la recette historique par couverture des couleurs sont disponibles. Il s’agit de conditions exploratoires réglables, pas d’un mécanisme physique établi.
+**Forcer une fermeture / émergence** prépare une coque avec 0 à 3 cloisons centrales. Les injections sont tracées ; l’intérieur déplacé reste dans une réserve. La capture de frontière partage son contenu 50/50, avec arrondi conservateur pour les points indivisibles. **Ouvrir une brèche** permet d’observer la perte de fermeture. **Illustrer l’expansion** suspend le moteur et joue une animation distincte.
 
-Les compteurs distinguent X, les condensats, les foyers dont l’attraction est activée et les déplacements gravitationnels du dernier pas. À intensité zéro, les assemblages restent possibles et aucun foyer n’est actif. La mémoire et la protection des condensats sont désactivées par défaut et réglables dans l’interface.
+La stabilité est un diagnostic géométrique sur une fenêtre ; les portions préparées sont ancrées et leur déformation mécanique n’est pas calculée. L’espace reste une grille préexistante en 3D. [Règles, formules, bilan et limites](REGLES-AUTOMATE.md).
 
-Le nuage initial occupe le volume de la grille et les condensats affichent leurs constituants, sans sphère imposée à l'image. L'ancienne région sphérique et l'enveloppe restent sélectionnables. La géométrie intra-cellulaire demeure illustrative. Le rayon d’enveloppe suit progressivement le contenu des boucles et décroît après perte du condensat, sans effet mécanique sur les collisions.
+Les modes et JSON historiques v2/v3/v4 restent disponibles. La v4 est archivée dans `audit-alignement/version4/`. Reconstruction : `python3 sources/build-automate.py`. Vérification : `check-structures.cjs` (37), `check-local-branes.cjs` (14), `check-interface.cjs` (9). Vérification interactive locale du forçage, de la capture et de l’expansion effectuée.
 
-Une rupture manuelle permet de défaire une structure sélectionnée sans perte de constituants. Une probabilité de rupture par structure est également réglable, nulle par défaut. L'émission peut transférer un point ou un composant entier (corde ou boucle comprise) ; elle est aussi inactive par défaut. Ces règles sont exploratoires et ne simulent pas des bosons.
-
-Le bilan indique séparément les constituants créés, disparus, annulés et plafonnés ; le moteur vérifie qu'ils expliquent toute variation. Les durées des épisodes X sont suivies par site, avec une interruption explicite des mesures lors des changements de règles ou interventions. Les détails et limites figurent dans [REGLES-AUTOMATE.md](REGLES-AUTOMATE.md).
-
-**Appliquer les réglages** conserve la population ; la ligne « Appliqué » rappelle les valeurs actives. **Nouvelle population avec ces réglages** prend en compte une nouvelle graine ou région initiale. Importer ou appliquer un JSON recommence. Les anciens JSON v2/v3 complets sont migrés en conservant leurs options. **Exporter l’expérience et son historique** conserve les compteurs, les changements de règles, les interventions, les épisodes X et l’état final ; cet export documentaire est distinct des règles importables.
-
-Reconstruction : `python3 sources/build-automate.py`. Vérification : `node sources/check-structures.cjs` (37 scénarios), puis `node sources/check-interface.cjs` (8 contrôles). Les sources utilisées sont `structures-engine.js`, `automate-app.js` et `automate.html`. Les versions précédentes sont conservées dans `audit-alignement/version2/` et `version3/`. La version 4 a été ouverte et manipulée dans le navigateur local.
-
-Comparaison reproductible : `node sources/compare-seeds.cjs regles-automate.json 728931,2,3 40`. Le résultat conserve également les graines sans apparition de X. Ni ce compteur ni les durées ne sont des probabilités physiques d'émergence d'univers.
-
-Les dimensions supplémentaires, champs bosoniques, effets sur la lumière et évolution thermique cosmologique restent explicitement indiqués comme mécanismes à construire.
+`node sources/compare-seeds.cjs regles-automate.json 728931,2,3 40` compare les générations sans intervention forcée. Les résultats doivent conserver les trajectoires sans domaine. Il n’en résulte pas une probabilité cosmologique.
 
 ## Version 3D
 

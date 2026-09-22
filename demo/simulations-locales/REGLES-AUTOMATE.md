@@ -1,229 +1,98 @@
-# Automate chromatique 3D — règles, version 4
+# Automate local des branes — version 5
 
-Ouvrir `automate-3d.html` directement dans un navigateur, sans installation ni réseau. La page commence en pause. **Une génération** permet d'observer chaque transition ; **Démarrer** fait évoluer la population. Glisser pour tourner, utiliser la molette pour zoomer, cliquer sur une cellule pour consulter sa composition. Les curseurs d'orientation offrent une alternative au glissement.
+Ouvrir **automate-3d.html**, puis **Forcer une fermeture / émergence** pour examiner une préparation contrôlée. Le bouton applique les réglages saisis et démarre les générations. **Une génération** met en pause et avance d’un pas. **Recommencer** retrouve la population aléatoire de la graine. Le zoom va de 0,5× à 10×.
 
-## Le modèle retenu
+Cette version relie le jeu de règles locales au critère géométrique utilisé dans les ondes. Elle demeure un automate 3D à constituants discrets ; ce n’est pas une simulation de gravité quantique.
 
-Une grille cubique contient des points associés à **10, 11, 26 ou 32 positions de palette**. Une position est un identifiant de couleur, pas une direction spatiale. Les cellules ont séparément 6 ou 26 voisins selon le réglage. Deux positions peuvent être réglées sur le même code couleur tout en restant deux identifiants distincts.
+## Changements de référence
 
-La population initiale contient uniquement des points dans le volume cubique de la grille. Par défaut, la génération initiale inclut des paires de points voisins de même couleur, sans liaison préexistante. Une région sphérique reste sélectionnable. Le rendu affiche désormais les constituants des condensats ; l'enveloppe sphérique est une option illustrative. Cela ne constitue pas encore une simulation de formes mécaniques libres.
+- **Positions** : entier de 2 à 32, défaut 10 ; identifiants de couleur et non dimensions spatiales.
+- **Émergence** : défaut `geometry`, une cavité réellement fermée dans la grille. Les conditions historiques `local-complete`, `loop-count` et `palette` restent disponibles.
+- **Vie et collisions** : naissances/disparitions et collisions soustractives désactivées par défaut, afin de pouvoir suivre une redistribution conservatrice. Elles restent activables. Les assemblages points → demi-cordes → cordes → boucles continuent.
+- **Attraction** : les domaines géométriques n’exigent aucune correspondance RGB. Les paramètres de recette chromatique concernent les modes historiques.
+- **Captures, domaines et horloges** : registres distincts des anciennes configurations X par site.
 
-1. Deux points proches de même couleur peuvent se rejoindre et former une **demi-corde**.
-2. Deux demi-cordes, éventuellement de couleurs différentes, forment une **corde**.
-3. Deux cordes forment une **boucle**.
-4. La condition **X** est satisfaite, par défaut, quand au moins quatre boucles sont réunies dans une cellule et qu’aucune boucle ne reste chez ses voisins immédiats. La condition est recalculée à chaque génération.
-5. Une configuration X rend la cellule admissible comme source ; son attraction est active seulement si elle est activée et d’intensité non nulle. Elle agit sur le pas suivant. Les assemblages locaux restent possibles sans gravité.
+Les JSON complets v2/v3/v4 sont migrés en conservant leur ancien mode et leurs valeurs. La [version 4 et ses règles détaillées](audit-alignement/version4/REGLES-AUTOMATE.md) sont archivées avec leur moteur et leur HTML. Le JSON fourni avec la v5 contient tous les nouveaux défauts.
 
-Un composant ne monte que d'un niveau par génération. Les seuils, probabilités et poids se modifient. Les points libres et les cordes ouvertes ne comptent pas comme boucles et ne bloquent pas le regroupement local. La couverture de la palette reste une variante historique explicite. Plusieurs configurations X peuvent émerger indépendamment. L'option de rupture et l'intervention manuelle permettent de tester leur devenir, sans boucle de retour au brouillard imposée.
+## Définition d’une fermeture
 
-Ce modèle représente l'enchevêtrement par la réunion locale des boucles. Il ne calcule pas les nœuds topologiques, la tension ni la collision mécanique de filaments continus. L'ondulation et l'enveloppe sphérique sont des représentations visuelles ; la dynamique utilise les trois coordonnées de la grille. Les nombres de positions sont un choix du modèle, sans identification à une théorie physique.
+Chaque cellule contenant au moins un constituant est une portion occupée de la grille, interprétée comme un fragment de surface. Les identifiants des constituants donnent les couleurs de cette portion. Le détecteur partagé avec les ondes recherche les composantes **vides** qui ne peuvent rejoindre le bord par aucun des 26 voisins, y compris diagonaux. Ce voisinage de fermeture reste 26 même si celui des règles de vie vaut 6.
 
-## Pourquoi proposer 10 et 11 ?
+La fermeture exige des frontières `closed` ; le mode géométrique refuse une grille périodique `wrap`. Un volume minimal filtre les petites cavités. Toutes les couleurs doivent être présentes sur chaque frontière, ou sur leur union si `collective` est activé. Le domaine local étudié est l’ensemble de la boîte ; des ensembles parents indépendants ne sont pas identifiés.
 
-Les supercordes sont formulées en 10 dimensions d'espace-temps ; la théorie M est associée à 11 dimensions, avec la supergravité à 11 dimensions comme limite de basse énergie. Voir [M. J. Duff, *M-Theory (the Theory Formerly Known as Strings)*, 1996](https://arxiv.org/abs/hep-th/9608117).
+Le score D est celui de [GEOMETRIE-MULTIDOMAINE.md](GEOMETRIE-MULTIDOMAINE.md) : maximum du défaut de symétrie centrale des voxels et du défaut de correspondance entre positions/volumes opposés. Il ne mesure ni toutes les symétries possibles ni une énergie.
 
-Dans cet automate, `positions` compte des états de couleur, et non des dimensions d'espace-temps. Les choix 10, 11, 26 et 32 sont des tailles de palette à comparer avec les mêmes règles locales. Changer ce nombre ne transforme pas le modèle en simulation de supercordes ou de théorie M. Le calcul spatial reste en 3D ; la valeur initiale reste 32.
+| Paramètre `branes` | Défaut | Rôle |
+|---|---:|---|
+| `collective` | true | Couleurs réunies sur l’union des frontières |
+| `centralBranes` | 1 | 0 à 3 cloisons dans la préparation forcée |
+| `asymmetry` | 0 | Décalage A des cloisons préparées, entre 0 et 1 |
+| `emergenceTolerance` | 0,8 | Admission si D ≤ E |
+| `holdSteps` | 3 | Fermeture admise pendant autant de générations avant naissance |
+| `minRegionVoxels` | 4 | Volume minimal de chaque cavité |
+| `stabilityTolerance` | 0,2 | Critère D ≤ S, avec S ≤ E |
+| `stabilitySteps` | 12 | Nombre consécutif d’observations après naissance satisfaisant S |
+| `captureFraction` | 0,5 | Part capturable par site et couleur, entre 0 et 0,5 |
+| `minimumRadius` | 0,35 | Rayon illustratif initial, en cellules |
+| `shrinkRate` | 0,2 | Rappel du rayon par génération |
 
-Le nombre de couleurs dans la palette, les limites de la recette chromatique et la couverture de condensation suivent le choix. Lors d'une réduction, les dernières couleurs et les exigences de recette hors plage sont retirées. Lors d'une augmentation, des couleurs sont ajoutées ; les couleurs conservées gardent leur valeur. Si la condensation exigeait toutes les positions, elle exige toutes les nouvelles positions. Un seuil partiel est conservé, ou ramené au nouveau maximum.
+Les trois durées/volumes entiers sont compris entre 1 et 100. Le rayon est entre 0,01 et 2, le rappel entre 0,001 et 1. Les paramètres non exposés directement restent modifiables dans le JSON.
 
-## Modifier et conserver les règles
+Une région garde son identité si le recouvrement avec une région précédente est d’au moins la moitié de la plus petite région et si cette correspondance est unique dans les deux sens. Une scission/fusion ambiguë ouvre de nouvelles identités. Une modification du mode ou des paramètres `branes` termine les épisodes actifs. Aucune stabilité n’est prolongée artificiellement au-delà de cette modification.
 
-- **Règles courantes** et la palette : modifier puis cliquer sur **Appliquer les réglages**. La population actuelle est conservée et ses propriétés recalculées.
-- Changer **le nombre de positions** recommence la population. La couverture requise pour une sphère suit ce changement lorsqu'elle demandait toutes les positions.
-- **Toutes les règles — JSON modifiable** donne accès à chaque paramètre du moteur. Appliquer ce JSON ou importer un fichier recommence en pause avec la graine indiquée.
-- **Exporter les règles appliquées** sauvegarde les paramètres validés, sans les modifications encore non appliquées. Le fichier `regles-automate.json` fournit la configuration initiale.
-- Les configurations invalides sont refusées sans remplacer les règles actives. Le fichier doit être complet, de version 4 (ou version 2/3 complète migrée automatiquement), sans champ inconnu, et peser au plus 200 Ko. Aucune expression du JSON n'est exécutée.
-- Le rechargement rétablit les valeurs initiales. L'export conserve les règles, pas l'état courant de la population.
+L’horloge intérieure vaut zéro à la naissance et avance ensuite d’une unité par génération. Le compteur global est un ordre algorithmique ; il n’affirme pas l’existence d’un temps physique avant le domaine. La grille préexiste au calcul : l’espace-temps n’émerge donc pas au sens relativiste.
 
-Les coefficients et seuils sont réglables par JSON. Pour changer les algorithmes eux-mêmes, modifier `sources/structures-engine.js`, puis reconstruire avec `python3 sources/build-automate.py`. Le fichier HTML obtenu reste autonome ; Python sert uniquement à sa fabrication.
+## Capture et bilan
 
-## Couleurs et soustraction
+Un domaine nouvellement né devient une source utilisable au pas suivant. Il capture **une seule fois**, au plus tôt au pas suivant sa naissance, si la fermeture est encore admise et si l’attraction est active (`gravity.enabled`, intensité et multiplicateur strictement positifs).
 
-Le choix initial est la **moyenne pondérée**, conformément au réglage retenu. Pour chaque composant, la couleur est la moyenne des valeurs RGB de ses points constitutifs. Pour une cellule :
+Les donneurs sont les cellules occupées touchant ses voxels intérieurs par les 26 voisins. Pour chaque site et couleur :
 
-`couleur = arrondi(somme(poids du composant × couleur du composant) / somme des poids)`
+`budget initial = floor(nombre de constituants × captureFraction)`
 
-Les poids par défaut sont 0,25 pour un point, 0,5 pour une demi-corde, 1 pour une corde, 2 pour une boucle. Avec les seuils 2 → 2 → 2, chaque point conserve ainsi le même poids relatif lors des assemblages. Changer les poids ou les seuils peut changer la couleur apparente et la masse après assemblage. Le mélange porte directement sur les canaux RGB encodés, sans conversion en lumière linéaire ni mélange de pigments.
+Le transfert réel respecte ce budget et la même limite appliquée au contenu actuellement présent. À 50 %, une quantité paire est partagée exactement ; pour une quantité impaire, le point indivisible supplémentaire reste sur la surface. Retirer un point d’une structure la défait en points libres, comme dans le moteur historique.
 
-Les alternatives `modulo` et `clamp` additionnent les canaux RGB des points, respectivement modulo 256 ou plafonnés à 255. Elles n'utilisent pas les poids pour la couleur ; la masse reste la somme des poids.
+Si plusieurs domaines partagent une frontière, ils se répartissent **un budget commun** par site/couleur, dans un ordre déterministe ; chaque domaine ne prélève pas à nouveau la moitié. Les budgets restent attachés aux sites jusqu’au redémarrage. Une reformation ou un nouveau forçage ne recharge pas un budget consommé, même si du contenu neuf arrive. C’est une convention conservatrice de cette version, pas un transport matériel avec provenance continue.
 
-Lors d'une collision soustractive, les contributions des **mêmes identifiants de position** s'annulent par paires. Exemple : A contient 3 points de position 1 et B en contient 2 ; leur rencontre soustractive laisse 1 point de cette position. Les positions non communes restent. Une structure dont on retire un point se défait en points libres ; les autres structures subsistent. Les quantités ne deviennent jamais négatives. Deux positions de même RGB peuvent former une demi-corde mais restent distinctes pour cette annulation et pour la couverture d'une sphère.
+Le bilan total additionne :
 
-## Gravité et couleur cible
+`constituants sur la grille + réserves captées de tous les domaines + réserve de préparation`
 
-Cinq déclencheurs sont disponibles : `configuration` (X actuel, défaut), `sphere` (condensat avec sa mémoire éventuelle), `color`, `both` (X et couleur), `either` (X ou couleur). La couleur cible n'est alors pas imposée au condensat : celui-ci garde son mélange.
+Les réserves d’un domaine rompu sont conservées. Les naissances/disparitions, annulations et plafonnements éventuels sont comptés séparément ; l’écart inexpliqué doit rester nul. Il s’agit de constituants, pas d’un bilan énergétique.
 
-La recette chromatique exige simultanément : assez de positions distinctes, toutes les positions explicitement requises et une couleur assez proche de la cible.
+La masse prescrite d’une source géométrique vaut `volume en cellules + constituants captés × poids du point`. La loi de déplacement conserve la forme historique : intensité × racine de la masse × multiplicateur / (distance² + adoucissement²), plafonnée à une probabilité de 1 ; le foyer admissible le plus fort est choisi. Le prélèvement de frontière est un transfert discret distinct de ce déplacement.
 
-`écart RGB = distance euclidienne entre couleurs / (255 × √3)`
+## Forçage et rupture
 
-Le résultat va de 0 à 1. La même mesure compare la couleur d'une cellule à celle d'un foyer pour décider de l'attraction. Le terme « spectre » désigne ici cette proximité RGB, sans calcul de longueurs d'onde.
+**Forcer une fermeture / émergence** prépare une coque cubique sur la grille avec des portions ancrées et 0 à 3 plans intérieurs. À A = 0, une préparation vide de taille suffisante donne 1, 2, 4 ou 8 cavités. Les seuils de volume, couleurs, E et durée s’appliquent encore. Une petite grille ou des réglages restrictifs peuvent empêcher l’admission.
 
-Pour chaque cellule mobile, on recherche le foyer admissible le plus fort dans la portée définie :
+Le décalage est arrondi en cellules entières : `round(A × max(1, rayon − 2))`, avec signes +/−/+ suivant les axes. De petits changements de A peuvent donc ne rien changer. Les cloisons sont cubiques, et non des surfaces continues ondulantes. Les choix numériques de A entre ce modèle et les ondes ne sont pas directement équivalents.
 
-`force = intensité × √masse_source × multiplicateur / (distance_spatiale² + adoucissement²)`
+Le forçage ajoute au besoin deux constituants de la couleur assignée à chaque portion. Il déplace le contenu intérieur préexistant dans une **réserve de préparation**, conservée et exportée. Les ajouts, déplacements, sites et réglages figurent dans `interventions`. Toutes les naissances ultérieures à un forçage sont signalées comme issues d’une expérience avec intervention ; elles ne sont pas comptées comme spontanées.
 
-`probabilité de déplacement = min(1, force)`
+**Ouvrir une brèche** retire une portion préparée vers la réserve de préparation. Le pas suivant recalcule les fermetures et leurs sources. La perte d’une cavité peut changer la symétrie de l’ensemble et disqualifier d’autres régions suivant E. Le condensat illustratif se contracte ; aucun retour au brouillard n’est imposé.
 
-Le multiplicateur vaut 1 pour un foyer chromatique et `condensation.gravityMultiplier` pour une sphère. En cas de déplacement, chaque coordonnée avance de −1, 0 ou +1 vers le foyer, avec des diagonales possibles. La masse est la somme des poids des composants du foyer. À force égale, l'origine d'indice le plus petit gagne. On ne somme pas les forces de plusieurs foyers. Les foyers et les condensats sont ancrés ; l'attraction concerne les autres cellules. Une liaison locale réservée est prioritaire sur l'attraction. En l'absence de déplacement gravitationnel, la diffusion peut encore agir.
+Les portions préparées sont ancrées : elles ne se déplacent ni par diffusion ni par liaison locale. Les règles de vie, si activées, peuvent néanmoins les supprimer. Leur ancrage permet une référence durable mais **ne démontre pas une stabilité mécanique**. La déformation de grille, la tension des branes et leur rupture mécanique ne sont pas calculées.
 
-## Naissance, survie et ordre d'une génération
+## Expansion et affichage
 
-L'automate s'inspire du jeu de la vie avec des règles modifiables en 3D. Il n'utilise pas par défaut la règle classique 2D B3/S23. Une cellule compte pour un voisin, quel que soit son nombre de composants.
+Le petit rayon du domaine suit un rappel exponentiel vers `minimumRadius + 0,12 × racine cubique(contenu capté)` tant que le domaine reste admis, puis vers zéro après rupture. C’est une enveloppe illustrative ; la frontière exacte est la cavité détectée et peut être non sphérique.
 
-Par défaut, une cellule vide naît avec 3 ou 4 voisins ; toute cellule occupée survit. Cette survie étendue laisse aux assemblages le temps de se former. Une naissance crée un point choisi parmi les couleurs d'un voisin aléatoire. Les autres modes copient le premier voisin, réunissent les positions ou additionnent leurs points. Une naissance à zéro voisin choisit une couleur aléatoire de palette.
+**Illustrer l’expansion** choisit le premier domaine actif, suspend le moteur et anime pendant dix secondes une enveloppe multicolore croissante. **Retour au calcul** retrouve le même état numérique, en pause. La séquence et sa génération de départ sont exportées dans `illustrativeSequences` ; elle ne modifie ni les constituants, ni les compteurs, ni les durées calculées.
 
-Chaque génération exécute :
+Aucune thermodynamique primordiale, création de quarks/gluons, propagation lumineuse, métrique relativiste ou nouvelle dimension spatiale n’est calculée. Il n’y a pas de loi imposant « davantage de domaines = moins de stabilité ».
 
-1. Lecture de l'état précédent pour les voisins et les foyers.
-2. Survie et naissance ; une cellule disparue ne renaît pas au même pas.
-3. Réservation des liaisons entre voisins. Deux cellules se lient si elles possèdent des points libres de même RGB, ou si chacune possède déjà une structure. Une seule liaison par cellule et par génération ; deux foyers/condensats ne se lient pas. La destination reste immobile.
-4. Émission facultative par les condensats préexistants : transfert d'un point vers un voisin.
-5. Déplacements : liaison réservée ; sinon sortie d'émission ; sinon attraction ; sinon diffusion.
-6. Résolution des arrivées par origine d'indice croissant, puis des émissions. La soustraction peut s'appliquer selon la règle choisie. Des directions sont dites opposées si leur produit scalaire est négatif. L'arrivée déjà fusionnée perd sa direction pour les collisions suivantes de ce pas.
-7. Assemblage d'un seul niveau, puis ruptures facultatives en points libres.
-8. Recalcul du mélange, de X, des condensats et des foyers ; leur attraction agit à partir du pas suivant.
-9. Évolution du rayon d’enveloppe, contrôle du bilan de constituants et suivi des épisodes X, des apparitions/disparitions ainsi que des déplacements gravitationnels.
-
-L'indice d'origine est `x + taille × (y + taille × z)`. Cet ordre déterministe peut introduire un biais spatial ; la graine permet de reproduire une expérience, pas de supprimer ce biais.
-
-Les additions et assemblages conservent les points, sauf dépassement du plafond par position. Naissances, disparitions, annulations et plafonnements changent leur quantité. La conservation totale n'est donc pas une règle de cet automate.
-
-## Émission et rythme
-
-L'émission est facultative et désactivée au départ. Un condensat transfère au plus un point ou un composant entier par génération vers un voisin aléatoire, selon `emission.mode`. La réserve optionnelle garde au moins un point de chaque position : en mode structure, seuls les composants dont le transfert respecte cette réserve sont admissibles. Si un point est extrait d'une structure, celle-ci se défait ; un composant entier conserve son stade et sa composition. Le composant émis poursuit sa direction pendant `freeSteps` générations, puis redevient soumis aux règles ordinaires ; une collision ou sa nouvelle classification comme condensat peut interrompre ce trajet. Il n'y a pas d'identification bosonique. La persistance du condensat et sa protection contre les disparitions sont désactivées par défaut. Ces deux options sont visibles. Le déclencheur `configuration` dépend de X actuel, même si la mémoire est activée ; seul le déclencheur `sphere` peut utiliser un condensat mémorisé.
-
-Il s'agit ici d'une émission discrète, différente de l'expansion continue du modèle précédent, qui reste accessible dans `cycle-3d.html`. Réduire **Générations / seconde** ralentit la dynamique complète. Le rythme demandé est un maximum : le calcul peut être plus lent sur une grande population. La page en arrière-plan suspend l'évolution.
-
-## Référence complète des paramètres
-
-Les valeurs ci-dessous sont celles du fichier fourni en 32 positions. Les probabilités vont de 0 à 1.
-
-| Champ JSON | Défaut | Valeurs et effet |
-|---|---|---|
-| `version` | 4 | Les anciens JSON v2/v3 complets sont migrés |
-| `positions` | 32 | 10, 11, 26 ou 32 identifiants de palette |
-| `target` | `#8B5CF6` | Code `#RRGGBB` de la recette chromatique |
-| `seed` | 728931 | Entier 1 à 4294967295, graine reproductible |
-| `ticksPerSecond` | 3 | 0,1 à 12 générations par seconde au maximum |
-| `grid.size` | 18 | Entier 8 à 24, nombre de cellules par axe |
-| `grid.boundary` | `closed` | `closed` : sortie bloquée ; `wrap` : bords périodiques |
-| `grid.neighborhood` | 26 | 6 faces ou 26 voisins, pour vie, liaison, diffusion et émission |
-| `initial.density` | 0,14 | 0 à 0,5, probabilité de semis par cellule admissible ; les paires augmentent la population |
-| `initial.shape` | `cube` | Volume de la grille, ou `sphere` de rayon 0,46 × taille |
-| `initial.pairedPoints` | true | Ajouter un voisin de même couleur quand la place est libre ; le voisin peut dépasser le contour initial |
-| `palette` | 32 couleurs | Tableau de `positions` objets contenant chacun uniquement `color: "#RRGGBB"` |
-| `weights.point` | 0,25 | 0,01 à 100, poids d'un point |
-| `weights.demi-corde` | 0,5 | 0,01 à 100, poids d'une demi-corde |
-| `weights.corde` | 1 | 0,01 à 100, poids d'une corde |
-| `weights.boucle` | 2 | 0,01 à 100, poids d'une boucle |
-| `life.enabled` | true | Activer naissance et disparition |
-| `life.birth` | [3,4] | Liste d'entiers uniques entre 0 et le nombre de voisins |
-| `life.survival` | [0,…,26] | Même domaine ; tous survivent par défaut |
-| `life.inheritance` | `point` | `point`, `parent`, `union`, `addition` |
-| `life.protectCondensates` | false | Exempter les condensats de la règle de disparition |
-| `structures.pointsPerHalf` | 2 | Entier 2 à 4, points de même couleur pour une demi-corde |
-| `structures.halvesPerString` | 2 | Entier 2 à 4, demi-cordes pour une corde |
-| `structures.stringsPerLoop` | 2 | Entier 2 à 4, cordes pour une boucle |
-| `structures.halfProbability` | 1 | Probabilité de formation d'une demi-corde pour un groupe complet |
-| `structures.stringProbability` | 1 | Probabilité de formation d'une corde |
-| `structures.loopProbability` | 0,8 | Probabilité de formation d'une boucle |
-| `structures.bondProbability` | 0,75 | Probabilité d'essayer une liaison avec un voisin admissible |
-| `colors.addition` | `average` | `average`, `modulo`, `clamp` |
-| `colors.amplitudeLimit` | 64 | Entier 1 à 1000, plafond de points par position après fusion ou héritage additionné |
-| `collisions.subtraction` | `opposed` | `never`, `opposed`, `any` |
-| `collisions.probability` | 0,25 | Probabilité de soustraction si la condition est remplie |
-| `gravity.enabled` | true | Activer les foyers et l'attraction |
-| `gravity.trigger` | `configuration` | `configuration`, `sphere`, `color`, `both`, `either` |
-| `gravity.tolerance` | 0,09 | Écart RGB maximal à la cible pour la recette |
-| `gravity.minimumPositions` | 1 | Entier 1 à `positions`, diversité minimale de la recette |
-| `gravity.requiredPositions` | [] | Identifiants 1 à `positions`, sans doublons, indispensables à la recette |
-| `gravity.strength` | 3 | 0 à 30, intensité de l'attraction |
-| `gravity.radius` | 6 | 1 à `grid.size`, portée spatiale |
-| `gravity.softening` | 1 | 0,1 à 10, adoucissement de la force près du foyer |
-| `gravity.spectralTolerance` | 0,45 | Écart RGB maximal entre cellule et foyer admissible |
-| `emergence.mode` | `local-complete` | `local-complete`, `loop-count`, `palette` |
-| `radial.enabled` | true | Évolution de l’enveloppe, sans effet mécanique sur la grille |
-| `radial.rate` | 0,2 | 0,001 à 1, rappel par génération |
-| `radial.unitRadius` | 0,18 | 0,01 à 1, rayon de référence en cellules |
-| `motion.diffusion` | 0,12 | Probabilité d'un pas aléatoire si aucun pas gravitationnel n'a lieu |
-| `condensation.requiredPositions` | 32 | Entier 1 à `positions`, diversité requise seulement dans le mode `palette` |
-| `condensation.minimumLoops` | 4 | Entier 1 à 100, boucles minimales pour X |
-| `condensation.persistent` | false | Garder l'état condensé tant que la cellule contient des points |
-| `condensation.gravityMultiplier` | 2 | 0 à 20, facteur de force d'un condensat |
-| `emission.probability` | 0 | Probabilité d'émettre un composant par condensat et par génération |
-| `emission.mode` | `point` | `point` : extraction d'un point ; `structure` : transfert d'un composant entier |
-| `breakup.probability` | 0 | 0 à 1, probabilité de défaire chaque structure après l'assemblage du pas |
-| `emission.reserveEachPosition` | true | Ne pas émettre le dernier point d'une position |
-| `emission.freeSteps` | 5 | Entier 0 à 100, pas de sortie dans la direction choisie |
-| `display.waveAmplitude` | 0,2 | 0 à 1, amplitude visuelle des ondulations |
-| `display.waveFrequency` | 1,2 | 0 à 5, cycles visuels par seconde d'animation |
-| `display.condensateStyle` | `strands` | `strands` : constituants visibles ; `envelope` : enveloppe sphérique illustrative |
-
-Les composants sont représentés en perspective et triés par profondeur. Jusqu'à huit composants sont dessinés par cellule ; l'inspecteur et les compteurs incluent tous les composants. La réduction des animations du système supprime les ondulations. Une rotation de caméra ne modifie pas la dynamique.
-
-## Vérifier le moteur
-
-Avec Node.js, exécuter `node sources/check-structures.cjs`. Ce contrôle couvre les assemblages successifs, les couleurs, les conditions de sphère en 10/11/26/32 positions, plusieurs foyers, l'attraction sélective, les annulations, l'émission, les frontières, la validation et la reproductibilité.
-
-
-## Définition locale de X
-
-Le voisinage est la cellule et ses 6 ou 26 voisins immédiats, selon `grid.neighborhood`, avec les frontières choisies. En mode `local-complete`, le minimum de boucles doit être réuni dans la cellule centrale et il ne doit rester aucune boucle dans ces cellules voisines. Des boucles éloignées n’interviennent pas. Cela modélise « toutes les boucles locales réunies ici » ; ce n’est pas un calcul d’entrelacement topologique. Le minimum quatre évite qu’une seule boucle isolée soit automatiquement reconnue. Cette valeur est une convention réglable, non une prédiction.
-
-En mode `loop-count`, seul le minimum dans la cellule centrale s’applique. En mode `palette`, le minimum et la couverture des couleurs s’appliquent, comme dans l’ancienne recette. L’émergence de X n’est garantie dans aucun mode. X peut disparaître si une boucle arrive dans le voisinage ou si la composition centrale change.
-
-## Rayon d’enveloppe
-
-Pour un condensat, `R_cible = radial.unitRadius × N_boucle^(1/3)`, où N_boucle est le nombre de points constitutifs contenus dans ses boucles. Sans condensat, la cible vaut zéro. À chaque génération :
-
-`R_suivant = R_cible + (R_actuel − R_cible) × exp(−radial.rate)`.
-
-Le rayon commence à zéro et approche la cible, qui peut varier avec la composition. Après perte du condensat, l’enveloppe se contracte tant qu’une cellule subsiste ; si la cellule disparaît entièrement, son enveloppe disparaît aussi. En cas de fusion, les volumes d’enveloppe sont additionnés avant relaxation. Le dessin utilise ce rayon en unités de cellule et un minimum de visibilité de deux unités de dessin. Il peut dépasser une maille.
-
-Ce rayon décrit une enveloppe à relaxation prescrite. Il ne change ni la portée des collisions, ni les liaisons, ni la force gravitationnelle. Il ne reprend pas implicitement le potentiel du modèle Python de bulle ; il ne démontre donc pas une stabilité physique. Les ondulations restent également visuelles.
-
-## Compteurs, historique et migration
-
-- **Configurations X** : motifs satisfaisant actuellement la condition.
-- **Sources admissibles** dans l’inspecteur : cellules satisfaisant le déclencheur choisi, indépendamment de l’activation.
-- **Foyers actifs** : sources avec gravité activée, intensité positive et multiplicateur non nul quand applicable. Cela indique leur capacité d’attraction ; un voisin admissible n’est pas nécessairement présent.
-- **Pas gravitationnels** : décisions de déplacement prises par le canal attractif lors de la dernière génération, avant résolution des collisions.
-- **Condensats** : X ou, si la mémoire est activée, états condensés conservés.
-- **Apparitions cumulées** : passages de X absent à X présent par site et par génération ; les récidives sont incluses. Ce ne sont ni des identités d’objets suivies ni un taux Γ.
-
-L’export d’expérience conserve tous les résumés par génération, l’état final des cellules, l’état du générateur aléatoire et la chronologie complète des règles appliquées. Il sert à l’analyse et n’est pas importable comme fichier de règles. La reclassification immédiate après un changement de paramètres n’est pas comptée comme émergence dynamique ; le changement est enregistré séparément. Recommencer réinitialise l’historique. Le temps est en générations, sans calibration physique.
-
-L’export de règles reste distinct. L’import d’un ancien fichier v2 sélectionne le mode `palette`, conserve les options de mémoire/protection du fichier et désactive la nouvelle enveloppe. Les compteurs de foyers utilisent néanmoins la nouvelle définition « attraction activée ». Les anciens résultats d’audit et leur moteur sont conservés dans `audit-alignement/version2/` ; le script historique d’audit utilise cette copie.
-
-La validation historique v3 comportait 26 scénarios. La version 4 comporte 37 scénarios du moteur et 8 contrôles d'interface hors navigateur. Elle a aussi été ouverte et manipulée dans le navigateur local : application des paramètres, pas de simulation et perturbation d'une boucle sans perte de constituants.
-
-## Ruptures et expériences de persistance
-
-`breakup.probability`, nul par défaut, est une probabilité choisie par structure et par génération. Après assemblage, chaque demi-corde, corde ou boucle sélectionnée est défaite en ses points constitutifs. Elle ne peut pas se réassembler dans le même pas. Ce mécanisme n'est ni un taux thermique ni un calcul de tension de corde.
-
-Après avoir sélectionné une cellule, **Rompre une structure de la cellule inspectée** défait son composant de plus haut niveau (le premier en cas d'égalité). La génération et l'état aléatoire ne changent pas ; le contenu est conservé. L'intervention est enregistrée avec la composition avant rupture. Reprendre permet de mesurer la réorganisation, sans garantir un retour de X. La mémoire du condensat, si activée, conserve son rôle explicite.
-
-Le suivi des épisodes X mesure une présence continue sur un site, sans suivre l'identité d'un objet qui migre ou fusionne. Chaque épisode conserve son début, sa fin éventuelle, sa cause de clôture et ses indicateurs de censure. Toute modification de règles ou intervention clôt les épisodes observés comme censurés à droite et commence une nouvelle fenêtre pour les X encore présents. Les X déjà présents au début d'une fenêtre sont censurés à gauche. Seule une perte dans la dynamique clôt un épisode par `lost`. Une durée observée n'est pas une preuve de stabilité ni un taux de nucléation.
-
-## Bilan explicite des constituants
-
-Chaque pas vérifie exactement : `N_après − N_avant = créés − disparus − annulés − plafonnés`. Un écart non nul interrompt le calcul. Les assemblages, ruptures, émissions et déplacements conservent les points ; les flux des autres règles sont enregistrés. La quantité créée est celle effectivement injectée par la règle de naissance, après les limitations de son mode d'héritage. Ce bilan ne définit ni une énergie conservée ni une masse physique. Des poids modifiés peuvent changer la masse attractive lors d'un assemblage.
-
-## Comparer des graines
-
-Le panneau **Préparer une expérience reproductible** rend la graine et la forme initiale accessibles. Une modification exige **Nouvelle population avec ces réglages**, afin de ne pas laisser croire que la population actuelle a été produite par la nouvelle graine. **Recommencer** reprend les règles actives.
-
-Pour une comparaison sans interface, depuis ce dossier :
+## Reproduction et vérifications
 
 ```sh
-node sources/compare-seeds.cjs regles-automate.json 728931,2,3 40
+python3 sources/build-automate.py
+node sources/check-structures.cjs
+node sources/check-local-branes.cjs
+node sources/check-interface.cjs
 ```
 
-Le résultat `comparaison-graines.json` conserve toutes les graines, règles, trajectoires de compteurs, épisodes et l'empreinte du moteur. Une première apparition `null` signifie qu'aucun X n'a été observé pendant cette fenêtre, pas qu'il est impossible. Le nombre d'expériences positives n'est pas une probabilité cosmologique. Un quatrième argument permet de choisir un autre fichier de sortie.
+37 scénarios historiques, 14 scénarios géométriques et 9 contrôles d’interface isolée. La fermeture forcée, la capture et l’expansion ont aussi été manipulées dans le navigateur local. Ces contrôles vérifient le programme ; ils ne valident pas une théorie cosmologique.
 
-Les anciens JSON v2/v3 conservent leur région initiale, la représentation en enveloppe et l'émission par point ; la rupture reste inactive. Les archives des deux versions restent dans `audit-alignement/version2/` et `audit-alignement/version3/`. L'export d'expérience v4 ajoute les interventions, épisodes et limites du modèle ; ce n'est pas un fichier de reprise.
+Le moteur est réparti entre `structures-engine.js`, `local-branes.js` et le détecteur commun `waves-geometry.js`. Les sources d’interface sont `automate-app.js` et `automate.html`. Le HTML généré contient tout le code et reste autonome.
 
-## Hypothèses qui restent à construire
-
-Les dimensions spatiales émergentes, les champs bosoniques, les interactions avec les photons, la gravitation relativiste, les bilans énergétiques et la thermalisation ne sont pas simulés. Aucun effet de lentille ou de mirage n'est ajouté comme animation trompeuse. Les constituants visibles remplacent une convention sphérique ; leurs positions intra-cellulaires et leurs ondulations restent des glyphes, pas une géométrie de filaments mécaniques. Ces distinctions figurent aussi dans la page et dans les exports.
+L’export d’expérience v5 contient règles, historique, interventions, épisodes X historiques, domaines, réservoirs, budgets de capture, score et état courant. Ce fichier documentaire ne sert pas de sauvegarde à réimporter ; le JSON des règles, lui, est importable. Les domaines encore actifs n’ont pas de durée de vie finale connue.

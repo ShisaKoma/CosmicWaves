@@ -11,15 +11,15 @@ try {
   const runs=[];
   for(const seed of seeds){
     const config=JSON.parse(JSON.stringify(base));config.seed=seed;const world=new A.World(config);
-    let firstX=null,maxX=0,totalBreakups=0,totalEmittedStructures=0;
+    let firstX=null,maxX=0,firstDomain=null,maxDomains=0,totalBreakups=0,totalEmittedStructures=0;
     for(let i=0;i<generations;i++){
       const s=world.step();if(s.configurations&&firstX===null)firstX=s.generation;
-      maxX=Math.max(maxX,s.configurations);totalBreakups+=s.breakups;totalEmittedStructures+=s.emittedStructures;
+      if(s.domains&&firstDomain===null)firstDomain=s.generation;maxDomains=Math.max(maxDomains,s.domains);maxX=Math.max(maxX,s.configurations);totalBreakups+=s.breakups;totalEmittedStructures+=s.emittedStructures;
     }
-    runs.push({seed,firstX,maxX,totalBreakups,totalEmittedStructures,final:world.stats,history:world.history,episodes:world.episodes});
-    console.log(`Graine ${seed} : premier X ${firstX===null?'non observé':firstX}, maximum ${maxX}, bilan final ${world.stats.balanceError}.`);
+    runs.push({seed,firstDomain,maxDomains,branes:world.branes.export(),firstX,maxX,totalBreakups,totalEmittedStructures,final:world.stats,history:world.history,episodes:world.episodes});
+    console.log(`Graine ${seed} : premier X ${firstX===null?'non observé':firstX}, maximum X ${maxX}, premier domaine ${firstDomain??"non observé"}, maximum domaines ${maxDomains}, bilan final ${world.stats.balanceError}.`);
   }
   const destination=output||path.join(__dirname,'../comparaison-graines.json');
-  const report={format:'chromatic-seed-comparison-v1',engineSHA256:crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'structures-engine.js'))).digest('hex'),baseConfig:base,seeds,generations,runs,note:'Graines choisies pour comparaison, pas un échantillon cosmologique. null = aucun X observé pendant la fenêtre, pas impossibilité. Épisodes par site, sans identité d’objet. Temps en générations.'};
+  const report={format:'chromatic-seed-comparison-v2',sourceSHA256:Object.fromEntries(['structures-engine.js','local-branes.js','waves-geometry.js'].map(name=>[name,crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,name))).digest('hex')])),engineSHA256:crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'structures-engine.js'))).digest('hex'),baseConfig:base,seeds,generations,runs,note:'Graines choisies pour comparaison, pas un échantillon cosmologique. null = aucun X / domaine observé pendant la fenêtre, pas impossibilité. Épisodes par site, sans identité d’objet. Temps en générations.'};
   fs.writeFileSync(destination,JSON.stringify(report,null,2)+'\n');console.log('Résultat : '+destination);
 }catch(error){console.error(error.message);process.exitCode=1;}

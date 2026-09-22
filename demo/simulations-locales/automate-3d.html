@@ -1022,32 +1022,50 @@ svg.lucide {
 }
 
 html>body{padding:0}</style>
-<style>html>body{max-width:960px;margin:0 auto!important;padding:24px!important;box-sizing:border-box}header{margin-bottom:24px}header p{max-width:76ch}header nav{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:18px}@media(max-width:480px){html>body{padding:16px!important}}</style></head><body><header><nav><a href="ondes-3d.html">Surfaces ondulantes</a><a href="cycle-3d.html">Cycle 3D précédent</a><a href="index.html">Version 2D</a><a href="REGLES-AUTOMATE.md">Guide des règles</a></nav><h1>Assemblages locaux — émergence et devenir</h1><p>Points, cordes et boucles peuvent former une configuration X puis activer une attraction. Comparez les assemblages, leurs ruptures et les composants émis ; suivez les constituants et les durées. Automate exploratoire 3D, version 4.</p></header><main id="vie-chromatique">
+<style>html>body{max-width:960px;margin:0 auto!important;padding:24px!important;box-sizing:border-box}header{margin-bottom:24px}header p{max-width:76ch}header nav{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:18px}@media(max-width:480px){html>body{padding:16px!important}}</style></head><body><header><nav><a href="ondes-3d.html">Surfaces ondulantes</a><a href="cycle-3d.html">Cycle 3D précédent</a><a href="index.html">Version 2D</a><a href="REGLES-AUTOMATE.md">Guide des règles</a></nav><h1>Assemblages locaux — émergence et devenir</h1><p>Des portions de branes ferment une géométrie, puis un domaine peut activer l’attraction et une capture locale 50/50. Comparez domaines uniques ou multiples, dissymétrie et durée ; les anciennes règles d’assemblage restent disponibles. Automate exploratoire 3D, version 5.</p></header><main id="vie-chromatique">
   <div class="viz-controls">
-    <label class="form-label" for="v-positions">Positions de couleur<select class="form-select" id="v-positions"><option>10</option><option>11</option><option>26</option><option selected>32</option></select></label>
+    <label class="form-label" for="v-positions">Positions de couleur<input class="form-control" id="v-positions" type="number" min="2" max="32" step="1" value="10"></label>
     <label class="form-label" for="v-target">Couleur cible (recette optionnelle)<input class="form-control" id="v-target" value="#8B5CF6" maxlength="7" spellcheck="false"></label>
   </div>
-  <p class="text-small text-muted">10, 11, 26 ou 32 états de couleur. Ce choix règle la diversité à réunir ; l’espace simulé reste en 3D.</p>
+  <p class="text-small text-muted">De 2 à 32 positions de couleur, comme dans les ondes. Ce choix règle la diversité à réunir ; l’espace simulé reste en 3D.</p>
   <details><summary>Préparer une expérience reproductible</summary><div class="viz-controls"><label class="form-label" for="v-seed">Graine<input class="form-control" id="v-seed" type="number" min="1" max="4294967295" step="1"></label><label class="form-label" for="v-initial-shape">Région du nuage initial<select class="form-select" id="v-initial-shape"><option value="cube">Volume de la grille</option><option value="sphere">Région sphérique</option></select></label><button class="btn" type="button" id="v-new-population">Nouvelle population avec ces réglages</button></div><p class="text-small">Même graine et mêmes règles : même trajectoire. Conservez aussi les expériences sans émergence. Cette commande recommence en pause avec tous les réglages saisis.</p></details>
+  <details open><summary>Scénario local des branes</summary>
+  <p class="text-small">Chaque site occupé représente une portion de surface dans cette projection 3D. Une cavité doit être fermée même suivant les diagonales ; toutes les couleurs doivent participer à sa frontière, ou à l’ensemble des frontières si la couverture est collective. Les boucles seules ne suffisent plus dans ce mode.</p>
+  <div class="viz-controls">
+  <label class="form-label">Branes centrales préparées<input class="form-control" id="v-b-centralBranes" type="number" min="0" max="3" step="1"></label>
+  <label class="form-label">Décalage initial A (0–1)<input class="form-control" id="v-b-asymmetry" type="number" min="0" max="1" step="0.05"></label>
+  <label class="form-label">Seuil d’émergence E<input class="form-control" id="v-b-emergenceTolerance" type="number" min="0" max="1" step="0.05"></label>
+  <label class="form-label">Seuil de stabilité S ≤ E<input class="form-control" id="v-b-stabilityTolerance" type="number" min="0" max="1" step="0.05"></label>
+  <label class="form-label">Fenêtre de stabilité (générations)<input class="form-control" id="v-b-stabilitySteps" type="number" min="1" max="100" step="1"></label>
+  <label class="form-label">Fermeture persistante (générations)<input class="form-control" id="v-b-holdSteps" type="number" min="1" max="100" step="1"></label>
+  <label class="form-label">Volume minimal (cellules)<input class="form-control" id="v-b-minRegionVoxels" type="number" min="1" max="100" step="1"></label>
+  <label class="form-label">Fraction locale captée (0–0,5)<input class="form-control" id="v-b-captureFraction" type="number" min="0" max="0.5" step="0.05"></label>
+  </div>
+  <label class="form-check"><input id="v-b-collective" type="checkbox">Couverture des couleurs collective</label>
+  <div class="viz-row"><button class="btn btn-primary" id="v-force" type="button">Forcer une fermeture / émergence</button><button class="btn" id="v-breach" type="button">Ouvrir une brèche</button><button class="btn" id="v-expansion" type="button">Illustrer l’expansion</button><button class="btn" id="v-return" type="button" hidden>Retour au calcul</button></div>
+  <p class="text-small">Le bouton force une coque cubique discrète, avec 0 à 3 cloisons centrales : à symétrie parfaite, 1 / 2 / 4 / 8 cavités. Les portions préparées sont ancrées ; le contenu ajouté et déplacé est enregistré. Les paramètres saisis sont appliqués par ce bouton. Le calcul démarre, puis vérifie encore les seuils : une fermeture forcée ne garantit pas son admission.</p>
+  <p class="text-small">La capture intervient une seule fois, au pas suivant la naissance, sur les portions de frontière. Par défaut, moitié captée et moitié restante ; un point indivisible reste sur la surface. Le score et la fenêtre mesurent la stabilité géométrique, sans imposer une probabilité cosmologique. « Illustrer l’expansion » suspend le calcul et joue une animation séparée.</p>
+  </details>
+  <div id="v-domains" class="text-small" role="status"></div>
   <canvas id="v-canvas" role="img" aria-label="Automate cellulaire en trois dimensions. Glisser pour tourner ; cliquer sur une cellule pour l’inspecter.">Cellules et foyers de gravité autonomes en 3D.</canvas>
-  <div class="viz-row text-small"><span>Glisser : rotation · molette : zoom · cliquer : inspecter</span><label class="form-label" for="v-zoom">Zoom<input class="form-range" id="v-zoom" type="range" min="50" max="230" value="100"></label></div>
+  <div class="viz-row text-small"><span>Glisser : rotation · molette : zoom · cliquer : inspecter</span><label class="form-label" for="v-zoom">Zoom<input class="form-range" id="v-zoom" type="range" min="50" max="1000" value="100"></label></div>
   <div class="viz-row"><button type="button" class="btn btn-primary" id="v-run">Démarrer</button><button type="button" class="btn" id="v-step">Une génération</button><button type="button" class="btn" id="v-reset">Recommencer</button><label class="form-label" for="v-rate">Générations / seconde<input class="form-control" id="v-rate" type="number" min="0.1" max="12" step="0.1" value="2"></label></div>
   <p id="v-applied" class="text-small"></p>
   <div id="v-stats" class="viz-row tabular-nums"></div>
   <div id="v-events" class="text-small text-muted"></div>
   <div id="v-balance" class="text-small"></div><div id="v-lifetime" class="text-small"></div>
   <div class="v-legend text-small"><span>• point</span><span>∿ demi-corde</span><span>∿∿ corde</span><span>○ boucle</span><span>× configuration X</span><span>◎ attraction active</span></div>
-  <p id="v-message" class="text-small" role="status" aria-live="polite">Simulation en pause. Les combinaisons locales précèdent la gravitation. La condition X est réglable.</p>
+  <p id="v-message" class="text-small" role="status" aria-live="polite">Simulation en pause. Les combinaisons locales précèdent la gravitation. La fermeture géométrique est le scénario actuel ; les anciennes conditions X restent sélectionnables.</p>
   <p id="v-error" class="text-destructive" role="alert" hidden></p>
   <details open><summary>Cellule inspectée</summary><div id="v-inspector" class="text-small">Cliquez sur une cellule : sa couleur, ses positions et sa gravité seront affichées ici.</div></details>
   <button type="button" class="btn" id="v-perturb">Rompre une structure de la cellule inspectée</button><p class="text-small">Perturbation contrôlée : la structure de plus haut niveau est rendue à ses points, sans perte. Reprendre permet d’observer la réorganisation ou la perte de X. L’intervention est enregistrée séparément.</p>
-  <details open><summary>Règles courantes</summary>
+  <details open><summary>Règles courantes</summary><p class="text-small">Les paramètres grisés concernent les anciens condensats X. Les domaines géométriques utilisent les seuils et la capture du scénario local ci-dessus. Les règles de vie sont désactivées au départ pour suivre une redistribution du contenu.</p>
     <div class="viz-controls">
       <label class="form-label" for="v-addition">Combinaison des couleurs<select class="form-select" id="v-addition"><option value="average">Moyenne pondérée</option><option value="modulo">Addition RGB modulo 256</option><option value="clamp">Addition RGB plafonnée</option></select></label>
       <label class="form-label" for="v-trigger">Déclencheur de gravité<select class="form-select" id="v-trigger"><option value="configuration">Configuration X actuelle</option><option value="sphere">Condensat, mémoire éventuelle incluse</option><option value="color">Couleur cible obtenue</option><option value="both">X ET couleur cible</option><option value="either">X OU couleur cible</option></select></label>
       <label class="form-label" for="v-tolerance">Tolérance à la couleur cible (0–1)<input class="form-control" id="v-tolerance" type="number" min="0" max="1" step="0.01"></label>
       <label class="form-label" for="v-minimum">Positions distinctes requises pour la recette de couleur<input class="form-control" id="v-minimum" type="number" min="1" max="32"></label>
-      <label class="form-label" for="v-mode">Condition locale X<select class="form-select" id="v-mode"><option value="local-complete">Toutes les boucles du voisinage réunies ici</option><option value="loop-count">Nombre de boucles réunies ici</option><option value="palette">Recette historique : couverture des couleurs</option></select></label>
+      <label class="form-label" for="v-mode">Critère d’émergence<select class="form-select" id="v-mode"><option value="geometry">Fermeture géométrique des branes (actuel)</option><option value="local-complete">Toutes les boucles du voisinage réunies ici</option><option value="loop-count">Nombre de boucles réunies ici</option><option value="palette">Recette historique : couverture des couleurs</option></select></label>
       <label class="form-label" for="v-condensation">Positions requises (recette historique seulement)<input class="form-control" id="v-condensation" type="number" min="1" max="32"></label>
       <label class="form-label" for="v-min-loops">Nombre minimal de boucles pour X<input class="form-control" id="v-min-loops" type="number" min="1" max="100"></label>
       <label class="form-label" for="v-half">Points de même couleur par demi-corde<input class="form-control" id="v-half" type="number" min="2" max="4"></label>
@@ -1067,7 +1085,7 @@ html>body{padding:0}</style>
       <label class="form-label" for="v-condensate-style">Représentation des condensats<select class="form-select" id="v-condensate-style"><option value="strands">Voir les constituants</option><option value="envelope">Enveloppe sphérique illustrative</option></select></label>
     </div>
     <div class="viz-row"><label class="form-check"><input class="form-check-input" id="v-life" type="checkbox"><span class="form-check-label">Naissances et disparitions actives</span></label><label class="form-check"><input class="form-check-input" id="v-gravity" type="checkbox"><span class="form-check-label">Gravité active</span></label></div>
-    <p class="text-small">« Local » = une cellule et ses 6 ou 26 voisins immédiats. Toutes les boucles sont réunies ici si le minimum est atteint dans la cellule et si ses voisins ne contiennent plus de boucle. Les points et cordes ouverts voisins ne bloquent pas X. C’est une convention modifiable, sans garantie d’émergence.</p>
+    <p class="text-small">Dans le mode historique local-complete, « local » = une cellule et ses 6 ou 26 voisins immédiats. Toutes les boucles sont réunies ici si le minimum est atteint dans la cellule et si ses voisins ne contiennent plus de boucle. Les points et cordes ouverts voisins ne bloquent pas X. C’est une convention modifiable, sans garantie d’émergence.</p>
     <div class="viz-row"><label class="form-check"><input class="form-check-input" id="v-persistent" type="checkbox">Mémoriser le condensat après perte de X</label><label class="form-check"><input class="form-check-input" id="v-protect" type="checkbox">Protéger les condensats des disparitions</label></div>
     <div class="viz-controls"><label class="form-check"><input class="form-check-input" id="v-radial" type="checkbox">Rayon d’enveloppe évolutif</label><label class="form-label" for="v-radial-rate">Rappel par génération<input class="form-control" id="v-radial-rate" type="number" min="0.001" max="1" step="0.01"></label><label class="form-label" for="v-radial-scale">Échelle du rayon (cellules)<input class="form-control" id="v-radial-scale" type="number" min="0.01" max="1" step="0.01"></label></div>
     <p class="text-small">Le rayon suit progressivement la quantité réunie dans les boucles et décroît lorsque le condensat disparaît. Cette enveloppe ne calcule pas un équilibre physique et ne change pas les collisions de la grille.</p>
@@ -1092,9 +1110,9 @@ html>body{padding:0}</style>
       <li><strong>Générations.</strong> Naissance et survie dépendent du nombre de voisins de la génération précédente. Par défaut, une naissance crée un seul point d’une couleur voisine. Les listes et le mode d’héritage sont modifiables. Autoriser une naissance à zéro voisin crée un point de couleur aléatoire.</li>
       <li><strong>Liaison locale.</strong> Deux cellules voisines peuvent se rejoindre si elles contiennent des points de même couleur ou si chacune possède déjà une structure. Une cellule ne participe qu’à une liaison par génération ; la destination reste immobile. La probabilité est réglée par <code>structures.bondProbability</code>. Les sources ne sont pas déplacées.</li>
       <li><strong>Assemblage progressif.</strong> Par défaut : deux points de même couleur → une demi-corde ; deux demi-cordes, éventuellement de couleurs différentes → une corde ; deux cordes → une boucle. Les trois seuils et probabilités sont modifiables. Un composant ne franchit qu’un niveau par génération. Les parties nouvellement assemblées participent au niveau suivant au pas suivant.</li>
-      <li><strong>Configuration X.</strong> La condition X examine les boucles locales suivant le mode choisi. Par défaut, le minimum est quatre et aucune boucle ne doit rester dans les cellules voisines. La couleur globale de la palette n’est pas une exigence. X est recalculé à chaque génération ; sa perte retire le statut condensé, sauf mémoire explicitement activée. La sphère est une option d’affichage.</li>
+      <li><strong>Configuration X.</strong> La condition X examine les boucles locales suivant le mode choisi. Dans l’ancien mode local-complete, le minimum est quatre et aucune boucle ne doit rester dans les cellules voisines. La couleur globale de la palette n’est pas une exigence. X est recalculé à chaque génération ; sa perte retire le statut condensé, sauf mémoire explicitement activée. La sphère est une option d’affichage.</li>
       <li><strong>Mélange pondéré.</strong> La couleur d’une structure est la moyenne RGB de ses points constitutifs. La couleur de la cellule est ensuite la moyenne de ses structures pondérée par leurs poids : point 0,25 ; demi-corde 0,5 ; corde 1 ; boucle 2 par défaut. Ces poids sont modifiables. Les modes alternatifs additionnent les codes RGB des points, modulo 256 ou plafonnés à 255.</li>
-      <li><strong>Gravité.</strong> Par défaut, X déclenche la gravité au pas suivant. Une intensité nulle ou une gravité désactivée supprime les foyers actifs et les déplacements gravitationnels, tout en laissant évoluer les combinaisons locales. La couleur cible et le condensat mémorisé sont des variantes explicites. La recette chromatique exige une distance à la cible inférieure à la tolérance, un minimum de positions et les positions cochées. Le condensat garde la couleur issue de son contenu.</li>
+      <li><strong>Gravité.</strong> Dans le scénario géométrique, les domaines fermés déclenchent l’attraction au pas suivant leur naissance. Dans les modes historiques, X la déclenche au pas suivant. Une intensité nulle ou une gravité désactivée supprime les foyers actifs et les déplacements gravitationnels, tout en laissant évoluer les combinaisons locales. La couleur cible et le condensat mémorisé sont des variantes explicites. La recette chromatique exige une distance à la cible inférieure à la tolérance, un minimum de positions et les positions cochées. Le condensat garde la couleur issue de son contenu.</li>
       <li><strong>Attraction sélective.</strong> L’écart de couleur est la distance euclidienne RGB divisée par 255√3. Une source attire dans sa portée les couleurs assez proches de son propre mélange. La probabilité d’avancer d’une cellule vaut min(1, intensité × √masse × multiplicateur de sphère / (distance spatiale² + adoucissement²)). La source admissible la plus forte est choisie. « Spectre » désigne ici cette proximité RGB.</li>
       <li><strong>Collisions.</strong> Les arrivées s’additionnent. Si la condition de soustraction et sa probabilité sont remplies, les points de mêmes positions s’annulent par paires entre les deux arrivées. Les points restants sont conservés ; une structure touchée se défait en points. Le contenu ne devient jamais négatif. Les amplitudes par position sont plafonnées par <code>colors.amplitudeLimit</code> ; un excès défait aussi les structures touchées.</li>
       <li><strong>Émission facultative.</strong> Un condensat peut transférer un point ou un composant entier vers un voisin. Extraire un point défait la structure d’où il provient. La réserve protège au moins un point de chaque position ; une structure entière n’est émise que si cette réserve peut être respectée. Le composant émis a un nombre réglable de pas de sortie avant d’être à nouveau soumis aux règles ordinaires. Cette règle est désactivée par défaut.</li>
@@ -1104,47 +1122,177 @@ html>body{padding:0}</style>
     <p class="text-small">Repère : les supercordes sont décrites en 10 dimensions d’espace-temps et la théorie M en 11. Ces dimensions ne sont pas les positions de couleur de cet automate. Choisir le même nombre permet ici une exploration numérique, sans implémenter ces théories. <a href="https://arxiv.org/abs/hep-th/9608117" target="_blank" rel="noopener noreferrer">Référence : M. J. Duff, M-Theory (1996)</a>.</p>
     <p class="text-small">Il s’agit d’un modèle exploratoire à règles explicites. Les assemblages, émissions et ruptures ont un bilan de constituants. La masse attractive reste un poids de modèle ; aucune énergie ni entropie thermodynamique n’est calculée.</p>
   </details>
-  <details><summary>Portée du modèle et hypothèses à construire</summary><p class="text-small">Calculé : assemblage local, condition X, attraction discrète, ruptures, émissions, bilan de constituants et durées par site. Le nuage et l’affichage n’imposent plus une sphère.</p><p class="text-small">À définir : géométrie mécanique des filaments, dimensions spatiales émergentes, champ bosonique et sa masse, interaction avec les photons, gravitation relativiste et évolution thermique cosmologique. Les couleurs et ondulations ne représentent pas ces propriétés. Aucune lentille gravitationnelle ni réfraction n’est simulée.</p><p class="text-small">Les épisodes X sont suivis par site, pas comme des objets identifiés lors des fusions. Une modification des règles ou une intervention interrompt la mesure de durée ; ces épisodes sont marqués comme censurés dans l’export. Un épisode encore présent à la fin n’a pas une durée de vie totale connue.</p></details>
+  <details><summary>Portée du modèle et hypothèses à construire</summary><p class="text-small">Calculé : fermeture de cavités, couverture des couleurs, dissymétrie, persistance, capture locale, assemblage local, condition X historique, attraction discrète, ruptures, émissions, bilan de constituants et durées par site. Le nuage et l’affichage n’imposent plus une sphère.</p><p class="text-small">À définir : géométrie mécanique des filaments, dimensions spatiales émergentes, champ bosonique et sa masse, interaction avec les photons, gravitation relativiste et évolution thermique cosmologique. Les couleurs et ondulations ne représentent pas ces propriétés. Aucune lentille gravitationnelle ni réfraction n’est simulée.</p><p class="text-small">Les épisodes X sont suivis par site, pas comme des objets identifiés lors des fusions. Une modification des règles ou une intervention interrompt la mesure de durée ; ces épisodes sont marqués comme censurés dans l’export. Un épisode encore présent à la fin n’a pas une durée de vie totale connue.</p></details>
   <details><summary>Orientation au clavier</summary><div class="viz-controls"><label class="form-label" for="v-yaw">Rotation horizontale<input class="form-range" id="v-yaw" type="range" min="-180" max="180" value="-25"></label><label class="form-label" for="v-pitch">Rotation verticale<input class="form-range" id="v-pitch" type="range" min="-85" max="85" value="18"></label></div></details>
 </main>
 <style>
- #vie-chromatique{display:grid;gap:14px}#vie-chromatique canvas{display:block;width:100%;aspect-ratio:16/10;cursor:grab;touch-action:none;color:var(--foreground)}#vie-chromatique canvas:active{cursor:grabbing}#vie-chromatique details>div,#vie-chromatique details>p,#vie-chromatique details>label{margin-top:14px}#vie-chromatique .v-legend{display:flex;flex-wrap:wrap;gap:8px 18px}#vie-chromatique p{margin:0}#vie-chromatique .v-rules li{margin-bottom:12px}#vie-chromatique .v-json{font-family:monospace}#vie-chromatique .v-inventory{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:8px}#vie-chromatique .v-chip{display:inline-block;width:10px;height:10px;margin-right:5px}#vie-chromatique td:nth-child(1){white-space:nowrap}
+ #vie-chromatique [hidden]{display:none!important}#vie-chromatique,#vie-chromatique *{box-sizing:border-box}#vie-chromatique input,#vie-chromatique select,#vie-chromatique details{min-width:0;max-width:100%}#vie-chromatique .btn{white-space:normal}#vie-chromatique{display:grid;gap:14px}#vie-chromatique canvas{display:block;width:100%;aspect-ratio:16/10;cursor:grab;touch-action:none;color:var(--foreground)}#vie-chromatique canvas:active{cursor:grabbing}#vie-chromatique details>div,#vie-chromatique details>p,#vie-chromatique details>label{margin-top:14px}#vie-chromatique .v-legend{display:flex;flex-wrap:wrap;gap:8px 18px}#vie-chromatique p{margin:0}#vie-chromatique .v-rules li{margin-bottom:12px}#vie-chromatique .v-json{font-family:monospace}#vie-chromatique .v-inventory{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:8px}#vie-chromatique .v-chip{display:inline-block;width:10px;height:10px;margin-right:5px}#vie-chromatique td:nth-child(1){white-space:nowrap}
 </style>
 
+<script>
+/* Diagnostics géométriques discrets, sans loi cosmologique supposée. */
+(function(global){
+ 'use strict';
+ const point=(k,N)=>[k%N,Math.floor(k/N)%N,Math.floor(k/N**2)].map(x=>-1+(x+.5)*2/N);
+ function describe(cells,N){
+   const center=[0,0,0],covariance=Array.from({length:3},()=>[0,0,0]),bounds=[[Infinity,-Infinity],[Infinity,-Infinity],[Infinity,-Infinity]];
+   for(const k of cells){const p=point(k,N);for(let d=0;d<3;d++){center[d]+=p[d]/cells.length;bounds[d][0]=Math.min(bounds[d][0],p[d]);bounds[d][1]=Math.max(bounds[d][1],p[d]);}}
+   for(const k of cells){const p=point(k,N).map((x,d)=>x-center[d]);for(let i=0;i<3;i++)for(let j=0;j<3;j++)covariance[i][j]+=p[i]*p[j]/cells.length;}
+   // Add variance within one voxel: this avoids singular one-voxel axes.
+   for(let i=0;i<3;i++)covariance[i][i]+=(2/N)**2/12;
+   const set=new Set(cells);let missed=0;
+   for(const k of cells){const p=point(k,N),q=p.map((x,d)=>Math.round(((2*center[d]-x)+1)*N/2-.5));if(q.some(x=>x<0||x>=N)||!set.has(q[0]+N*(q[1]+N*q[2])))missed++;}
+   const widths=bounds.map(([a,b])=>b-a+2/N);
+   return{center,covariance,bounds,widths,inversionMismatch:cells.length?missed/cells.length:1,volume:cells.length*(2/N)**3};
+ }
+ function analyse(occupied,N,allColors,settings){
+   const seen=new Uint8Array(occupied.length),regions=[];
+   for(let start=0;start<occupied.length;start++)if(!occupied[start]&&!seen[start]){
+     const queue=[start];seen[start]=1;let exterior=false,boundaryColors=0;
+     for(let cursor=0;cursor<queue.length;cursor++){
+       const k=queue[cursor],p=[k%N,Math.floor(k/N)%N,Math.floor(k/N**2)];if(p.some(x=>x===0||x===N-1))exterior=true;
+       for(let z=-1;z<=1;z++)for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++){
+         if(!x&&!y&&!z)continue;const q=[p[0]+x,p[1]+y,p[2]+z];if(q.some(v=>v<0||v>=N))continue;
+         const j=q[0]+N*(q[1]+N*q[2]);if(occupied[j])boundaryColors=(boundaryColors|occupied[j])>>>0;else if(!seen[j]){seen[j]=1;queue.push(j);}
+       }
+     }
+     if(!exterior&&queue.length>=settings.minRegionVoxels)regions.push({cells:queue,boundaryColors,...describe(queue,N)});
+   }
+   let union=0;for(const r of regions)union=(union|r.boundaryColors)>>>0;
+   const eligible=settings.collective?(union===allColors?regions:[]):regions.filter(r=>r.boundaryColors===allColors);
+   const cells=eligible.flatMap(r=>r.cells),ensemble=cells.length?describe(cells,N):null;
+   const sizes=eligible.map(r=>r.cells.length),volumeContrast=sizes.length>1?(Math.max(...sizes)-Math.min(...sizes))/(Math.max(...sizes)+Math.min(...sizes)):0;
+   const scale=ensemble?Math.max(...ensemble.widths)/2:1;
+   const pairingMismatch=ensemble?Math.max(...eligible.map(r=>Math.min(...eligible.map(q=>Math.max(Math.min(1,Math.hypot(...r.center.map((x,d)=>2*ensemble.center[d]-x-q.center[d]))/scale),Math.abs(r.volume-q.volume)/(r.volume+q.volume)))))):null;
+   const raw=ensemble?Math.max(ensemble.inversionMismatch,pairingMismatch):null;
+   const dissymmetry=raw!==null&&raw<1e-12?0:raw;
+   const accepted=dissymmetry!==null&&dissymmetry<=settings.emergenceTolerance;
+   const mask=new Uint8Array(occupied.length);if(accepted)for(const k of cells)mask[k]=1;
+   return{mask,regions,eligible,ensemble,volumeContrast,pairingMismatch,dissymmetry,accepted,coverageComplete:union===allColors};
+ }
+ function stability(states,tolerance,window,minDomains=2){
+   // Best required tolerance for a window with >=2 identical domain identities throughout.
+   let required=null;
+   for(let end=window-1;end<states.length;end++){
+     let ids=new Set(states[end].ids),worst=0;
+     for(let j=end-window+1;j<=end;j++){const s=states[j];ids=new Set([...ids].filter(id=>s.ids.includes(id)));if(s.score===null){ids.clear();break;}worst=Math.max(worst,s.score);}
+     if(ids.size>=minDomains)required=required===null?worst:Math.min(required,worst);
+   }
+   return{requiredTolerance:required,observed:required!==null&&required<=tolerance};
+ }
+ const api={analyse,describe,point,stability};if(typeof module!=='undefined'&&module.exports)module.exports=api;else global.WaveGeometry=api;
+})(globalThis);
+
+</script>
+<script>
+/* Projection discrète des branes : fermeture, réservoirs et horloges locales. */
+(function(global){
+ 'use strict';
+ const G=typeof module!=='undefined'&&module.exports?require('./waves-geometry.js'):global.WaveGeometry;
+ const defaults=()=>({collective:true,centralBranes:1,asymmetry:0,emergenceTolerance:.8,stabilityTolerance:.2,stabilitySteps:12,holdSteps:3,minRegionVoxels:4,captureFraction:.5,minimumRadius:.35,shrinkRate:.2});
+ class Model{
+   constructor(){this.domains=[];this.nextId=1;this.budgets=new Map();this.diagnostic=null;this.lastGeneration=-1;this.frames=[];}
+   get captured(){return this.domains.reduce((sum,d)=>sum+d.captured.reduce((a,b)=>a+b,0),0);}
+   active(){return this.domains.filter(d=>d.born!==null&&d.ended===null);}
+   sources(w){return w.config.emergence.mode==='geometry'&&w.config.gravity.enabled&&w.config.gravity.strength>0&&w.config.condensation.gravityMultiplier>0?this.active().map(d=>({p:{key:-d.id,mass:d.cells.length+d.captured.reduce((a,b)=>a+b,0)*w.config.weights.point,condensed:true,domain:true},xyz:d.center})):[];}
+   update(w,advance=false){
+     const c=w.config.branes,enabled=w.config.emergence.mode==='geometry';
+     if(!enabled){for(const d of this.domains)if(d.ended===null){d.ended=w.generation;d.status='interrompu';}this.diagnostic=null;return;}
+     const occupied=new Uint32Array(w.n**3);
+     for(const p of w.cells.values()){let mask=0;w.counts(p.parts).forEach((v,i)=>{if(v)mask=(mask|(1<<i))>>>0;});occupied[p.key]=mask;}
+     const all=w.config.positions===32?0xffffffff:(2**w.config.positions-1)>>>0;
+     const g=G.analyse(occupied,w.n,all,c);this.diagnostic={score:g.dissymmetry,closed:g.regions.length,eligible:g.eligible.length,coverage:g.coverageComplete,accepted:g.accepted};
+     if(!advance||this.lastGeneration===w.generation)return;
+     this.lastGeneration=w.generation;
+     const previous=this.domains.filter(d=>d.ended===null),regions=g.accepted?g.eligible:[];
+     // A split or merge starts new identities; only an unambiguous overlap survives.
+     const links=regions.map(r=>previous.filter(d=>{const set=new Set(d.cells);const overlap=r.cells.filter(k=>set.has(k)).length;return overlap>0&&overlap/Math.min(r.cells.length,d.cells.length)>=.5;}));
+     const used=new Set();
+     regions.forEach((r,i)=>{
+       let d=links[i].length===1&&links.filter(a=>a.includes(links[i][0])).length===1?links[i][0]:null;
+       if(!d){d={id:this.nextId++,first:w.generation,born:null,ended:null,hold:0,stableSteps:0,captured:Array(w.config.positions).fill(0),captureDone:false,radius:0,forced:w.interventions.some(e=>e.type==='force-closure'),cells:[],status:'en attente'};this.domains.push(d);}
+       used.add(d);d.cells=[...r.cells];d.center=r.center.map(x=>(x+1)*w.n/2-.5);d.widths=r.widths.map(x=>x*w.n/2);d.score=g.dissymmetry;d.hold++;
+       if(d.born===null&&d.hold>=c.holdSteps){d.born=w.generation;d.radius=c.minimumRadius;}
+       if(d.born!==null){d.stableSteps=g.dissymmetry<=c.stabilityTolerance?d.stableSteps+1:0;d.status=d.stableSteps>=c.stabilitySteps?'stable sur la fenêtre':g.dissymmetry>c.stabilityTolerance?'fragile':'stabilité en attente';}
+     });
+     for(const d of previous)if(!used.has(d)){d.ended=w.generation;d.status=d.born===null?'fermeture non persistante':'rompu';}
+     // Capture once, one generation AFTER birth, only while closure remains valid.
+     const donors=new Map(),ready=this.active().filter(d=>!d.captureDone&&d.born<w.generation&&w.config.gravity.enabled&&w.config.gravity.strength>0&&w.config.condensation.gravityMultiplier>0);
+     for(const d of ready){const boundary=new Set();for(const k of d.cells){const p=w.coordinates(k);for(let z=-1;z<=1;z++)for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++){const q=[p[0]+x,p[1]+y,p[2]+z];if(q.some(v=>v<0||v>=w.n))continue;const j=w.key(...q);if(occupied[j])boundary.add(j);}}for(const k of boundary){if(!donors.has(k))donors.set(k,[]);donors.get(k).push(d);}}
+     for(const [k,owners]of donors){const cell=w.cells.get(k),counts=w.counts(cell.parts),take=counts.map((v,i)=>{const key=k+':'+i;if(!this.budgets.has(key))this.budgets.set(key,Math.floor(v*c.captureFraction));const amount=Math.min(Math.floor(v*c.captureFraction),this.budgets.get(key));this.budgets.set(key,this.budgets.get(key)-amount);for(let n=0;n<amount;n++)owners[(n+i+k)%owners.length].captured[i]++;return amount;});cell.parts=w.remove(cell.parts,take);}
+     for(const d of ready)d.captureDone=true;
+     for(const d of this.domains){if(d.born===null)continue;const target=d.ended===null?c.minimumRadius+.12*Math.cbrt(d.captured.reduce((a,b)=>a+b,0)):0;d.radius+=(target-d.radius)*(1-Math.exp(-c.shrinkRate));}
+     this.frames.push({generation:w.generation,...this.diagnostic,ids:this.active().map(d=>d.id),captured:this.captured});
+   }
+   force(w){
+     if(w.config.emergence.mode!=='geometry')throw Error('Choisissez la fermeture géométrique avant de forcer une émergence.');
+     if(w.config.grid.boundary!=='closed')throw Error('La fermeture géométrique exige une grille à bords fermés.');
+     for(const d of this.domains)if(d.ended===null){d.ended=w.generation;d.status='nouveau forçage';}
+     const c=w.config.branes,center=Math.floor(w.n/2),r=Math.max(2,Math.floor((w.n-4)/2)),lo=center-r,hi=center+r;
+     // Local cubical shell; the interior planes create 1 / 2 / 4 / 8 cavities at A=0.
+     const shift=Math.round(c.asymmetry*Math.max(1,r-2)),planes=[center+shift,center-shift,center+shift];
+     const unitsBefore=w.summary().units,patches=[];let added=0;
+     for(let z=lo;z<=hi;z++)for(let y=lo;y<=hi;y++)for(let x=lo;x<=hi;x++){
+       const p=[x,y,z],outer=p.some(v=>v===lo||v===hi),inner=p.some((v,a)=>a<c.centralBranes&&v===planes[a]);if(!outer&&!inner)continue;
+       const key=w.key(x,y,z),cell=w.cells.get(key)||w.cell(key,[]),i=patches.length%w.config.positions,counts=w.counts(cell.parts);
+       for(let j=counts[i];j<2;j++){cell.parts.push(w.point(i));added++;}cell.brane=true;w.cells.set(key,cell);patches.push(key);
+     }
+     // Clear the interior into a documented external preparation reserve, not deletion.
+     const displaced=Array(w.config.positions).fill(0),patchSet=new Set(patches);
+     for(const [key,p]of w.cells){const xyz=w.coordinates(key);if(xyz.every(v=>v>lo&&v<hi)&&!patchSet.has(key)){w.counts(p.parts).forEach((v,i)=>displaced[i]+=v);w.cells.delete(key);}}
+     w.preparationReserve=w.preparationReserve.map((v,i)=>v+displaced[i]);
+     w.interventions.push({type:'force-closure',generation:w.generation,added,displaced,patches,centralBranes:c.centralBranes,asymmetry:c.asymmetry,unitsBefore,unitsAfter:unitsBefore+added,note:'Coque cubique discrète préparée ; constituants ajoutés et intérieur déplacé dans la réserve de préparation. Pas une émergence spontanée.'});
+     w.refresh();return w.interventions.at(-1);
+   }
+   export(){return{diagnostic:this.diagnostic,domains:this.domains,frames:this.frames,captureBudgets:[...this.budgets],note:'Rayons illustratifs. Horloges en générations depuis la naissance. Stabilité géométrique sur fenêtre, sans stabilité cosmologique.'};}
+ }
+ const api={Model,defaults};if(typeof module!=='undefined'&&module.exports)module.exports=api;else global.LocalBranes=api;
+})(globalThis);
+
+</script>
 <script>
 /* Formation locale de points, demi-cordes, cordes, boucles et condensats. */
 (function(global){
  'use strict';
+ const Branes=typeof module!=='undefined'&&module.exports?require('./local-branes.js'):global.LocalBranes;
  const TYPES=['point','demi-corde','corde','boucle'],clone=x=>JSON.parse(JSON.stringify(x)),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
  const rgb=s=>[1,3,5].map(i=>parseInt(s.slice(i,i+2),16));
  const hex=a=>'#'+a.map(v=>clamp(Math.round(v),0,255).toString(16).padStart(2,'0')).join('').toUpperCase();
  const distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]))/(255*Math.sqrt(3));
  function palette(n,target='#8B5CF6'){const result=[{color:target}];for(let i=1;i<n;i++){const h=i/n*6,k=Math.floor(h),t=Math.round(48+176*(h-k)),q=272-t;result.push({color:hex([[224,t,48],[q,224,48],[48,224,t],[48,q,224],[t,48,224],[224,48,q]][k%6])});}return result;}
- function defaults(n=32){return{version:4,positions:n,target:'#8B5CF6',seed:728931,
+ function defaults(n=10){return{version:5,positions:n,target:'#8B5CF6',seed:728931,
    grid:{size:18,boundary:'closed',neighborhood:26},initial:{density:.14,shape:'cube',pairedPoints:true},ticksPerSecond:3,
    palette:palette(n),weights:{point:.25,'demi-corde':.5,corde:1,boucle:2},
-   life:{enabled:true,birth:[3,4],survival:Array.from({length:27},(_,i)=>i),inheritance:'point',protectCondensates:false},
+   life:{enabled:false,birth:[3,4],survival:Array.from({length:27},(_,i)=>i),inheritance:'point',protectCondensates:false},
    structures:{pointsPerHalf:2,halvesPerString:2,stringsPerLoop:2,halfProbability:1,stringProbability:1,loopProbability:.8,bondProbability:.75},
-   colors:{addition:'average',amplitudeLimit:64},collisions:{subtraction:'opposed',probability:.25},
-   gravity:{enabled:true,trigger:'configuration',tolerance:.09,minimumPositions:1,requiredPositions:[],strength:3,radius:6,softening:1,spectralTolerance:.45},
-   emergence:{mode:'local-complete'},radial:{enabled:true,rate:.2,unitRadius:.18},
+   colors:{addition:'average',amplitudeLimit:64},collisions:{subtraction:'never',probability:.25},
+   gravity:{enabled:true,trigger:'configuration',tolerance:.09,minimumPositions:1,requiredPositions:[],strength:3,radius:6,softening:1,spectralTolerance:1},
+   emergence:{mode:'geometry'},branes:Branes.defaults(),radial:{enabled:true,rate:.2,unitRadius:.18},
    motion:{diffusion:.12},condensation:{requiredPositions:n,minimumLoops:4,persistent:false,gravityMultiplier:2},
    breakup:{probability:0},
    emission:{probability:0,reserveEachPosition:true,freeSteps:5,mode:'point'},display:{waveAmplitude:.2,waveFrequency:1.2,condensateStyle:'strands'}};}
  function validate(input){
-   if(!input||typeof input!=='object'||Array.isArray(input)||![10,11,26,32].includes(input.positions))throw Error('Un objet de règles avec 10, 11, 26 ou 32 positions est requis.');
+   if(!input||typeof input!=='object'||Array.isArray(input)||!Number.isInteger(input.positions)||input.positions<2||input.positions>32)throw Error('Un objet de règles avec 2 à 32 positions entières est requis.');
    const c=clone(input),base=defaults(c.positions);
    // Old complete configurations retain their assembly recipe and persistence.
    if(c.version===2){if(Object.hasOwn(c,'emergence')||Object.hasOwn(c,'radial'))throw Error('Champs version 3 dans un fichier version 2.');c.version=3;c.emergence={mode:'palette'};c.radial={enabled:false,rate:.2,unitRadius:.18};}
    if(c.version===3){if(Object.hasOwn(c,'breakup')||Object.hasOwn(c.emission||{},'mode')||Object.hasOwn(c.display||{},'condensateStyle'))throw Error('Champs version 4 dans un fichier ancien.');c.version=4;c.breakup={probability:0};if(c.emission)c.emission.mode='point';if(c.display)c.display.condensateStyle='envelope';}
+   if(c.version===4){if(Object.hasOwn(c,'branes'))throw Error('Champ branes dans un fichier version 4.');c.version=5;c.branes=Branes.defaults();}
    function keys(a,b,path){if(!a||typeof a!=='object'||Array.isArray(a))throw Error(path+' doit être un objet.');for(const k of Object.keys(a))if(!Object.hasOwn(b,k))throw Error('Règle inconnue : '+path+'.'+k);for(const k of Object.keys(b))if(!Object.hasOwn(a,k))throw Error('Règle manquante : '+path+'.'+k);}
    const num=(v,a,b,name,int=false)=>{if(typeof v!=='number'||!Number.isFinite(v)||v<a||v>b||(int&&!Number.isInteger(v)))throw Error(name+' doit être '+(int?'un entier ':'un nombre ')+'entre '+a+' et '+b+'.');};
    const choice=(v,values,name)=>{if(!values.includes(v))throw Error(name+' : choisir '+values.join(', '));};
    const bool=(v,name)=>{if(typeof v!=='boolean')throw Error(name+' doit être true ou false.');};
-   keys(c,base,'règles');choice(c.version,[4],'version');if(!/^#[0-9a-f]{6}$/i.test(c.target))throw Error('target : couleur #RRGGBB requise.');c.target=c.target.toUpperCase();num(c.seed,1,4294967295,'seed',true);num(c.ticksPerSecond,.1,12,'ticksPerSecond');
-   for(const key of ['grid','initial','weights','life','structures','colors','collisions','gravity','motion','condensation','emission','display','emergence','radial','breakup'])keys(c[key],base[key],key);
+   keys(c,base,'règles');choice(c.version,[5],'version');if(!/^#[0-9a-f]{6}$/i.test(c.target))throw Error('target : couleur #RRGGBB requise.');c.target=c.target.toUpperCase();num(c.seed,1,4294967295,'seed',true);num(c.ticksPerSecond,.1,12,'ticksPerSecond');
+   for(const key of ['grid','initial','weights','life','structures','colors','collisions','gravity','motion','condensation','emission','display','emergence','radial','breakup','branes'])keys(c[key],base[key],key);
+   bool(c.branes.collective,'branes.collective');
+   for(const k of ['asymmetry','emergenceTolerance','stabilityTolerance'])num(c.branes[k],0,1,'branes.'+k);
+   num(c.branes.centralBranes,0,3,'branes.centralBranes',true);num(c.branes.captureFraction,0,.5,'branes.captureFraction');
+   for(const k of ['stabilitySteps','holdSteps','minRegionVoxels'])num(c.branes[k],1,100,'branes.'+k,true);
+   num(c.branes.minimumRadius,.01,2,'branes.minimumRadius');num(c.branes.shrinkRate,.001,1,'branes.shrinkRate');
+   if(c.branes.stabilityTolerance>c.branes.emergenceTolerance)throw Error('Le seuil de stabilité doit être inférieur ou égal au seuil d’émergence.');
+   if(c.emergence.mode==='geometry'&&c.grid.boundary!=='closed')throw Error('Le mode géométrique exige grid.boundary = closed.');
    num(c.breakup.probability,0,1,'breakup.probability');choice(c.emission.mode,['point','structure'],'emission.mode');choice(c.display.condensateStyle,['strands','envelope'],'display.condensateStyle');
-   choice(c.emergence.mode,['local-complete','loop-count','palette'],'emergence.mode');bool(c.radial.enabled,'radial.enabled');num(c.radial.rate,.001,1,'radial.rate');num(c.radial.unitRadius,.01,1,'radial.unitRadius');
+   choice(c.emergence.mode,['geometry','local-complete','loop-count','palette'],'emergence.mode');bool(c.radial.enabled,'radial.enabled');num(c.radial.rate,.001,1,'radial.rate');num(c.radial.unitRadius,.01,1,'radial.unitRadius');
    num(c.grid.size,8,24,'grid.size',true);choice(c.grid.boundary,['closed','wrap'],'grid.boundary');choice(c.grid.neighborhood,[6,26],'grid.neighborhood');
    num(c.initial.density,0,.5,'initial.density');choice(c.initial.shape,['sphere','cube'],'initial.shape');bool(c.initial.pairedPoints,'initial.pairedPoints');
    if(!Array.isArray(c.palette)||c.palette.length!==c.positions)throw Error('Une couleur est requise par position.');
@@ -1164,7 +1312,7 @@ html>body{padding:0}</style>
  }
  class World{
    constructor(c=defaults()){this.configure(c);this.reset();}
-   configure(c){const valid=validate(c);if(this.cells&&(valid.grid.size!==this.n||valid.positions!==this.config.positions))throw Error('Changer la grille ou la palette demande une nouvelle population.');if(this.activeEpisodes){this.closeEpisodes('rules');this.pendingReclassification='rules';}this.config=valid;this.n=this.config.grid.size;this.colors=this.config.palette.map(p=>rgb(p.color));this.target=rgb(this.config.target);this.offsets=[];for(let z=-1;z<=1;z++)for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++)if((x||y||z)&&(this.config.grid.neighborhood===26||Math.abs(x)+Math.abs(y)+Math.abs(z)===1))this.offsets.push([x,y,z]);if(this.ruleHistory)this.ruleHistory.push({generation:this.generation,config:clone(this.config)});}
+   configure(c){const valid=validate(c);if(this.cells&&(valid.grid.size!==this.n||valid.positions!==this.config.positions))throw Error('Changer la grille ou la palette demande une nouvelle population.');if(this.activeEpisodes){this.closeEpisodes('rules');this.pendingReclassification='rules';}if(this.branes&&this.config&&(JSON.stringify(valid.branes)!==JSON.stringify(this.config.branes)||valid.emergence.mode!==this.config.emergence.mode)){for(const d of this.branes.domains)if(d.ended===null){d.ended=this.generation;d.status='réglages modifiés';}}this.config=valid;this.n=this.config.grid.size;this.colors=this.config.palette.map(p=>rgb(p.color));this.target=rgb(this.config.target);this.offsets=[];for(let z=-1;z<=1;z++)for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++)if((x||y||z)&&(this.config.grid.neighborhood===26||Math.abs(x)+Math.abs(y)+Math.abs(z)===1))this.offsets.push([x,y,z]);if(this.ruleHistory)this.ruleHistory.push({generation:this.generation,config:clone(this.config)});}
    random(){let s=this.seed;s^=s<<13;s^=s>>>17;s^=s<<5;this.seed=s>>>0;return this.seed/4294967296;}
    key(x,y,z){return x+this.n*(y+this.n*z);}
    coordinates(k){return[k%this.n,Math.floor(k/this.n)%this.n,Math.floor(k/this.n**2)];}
@@ -1184,17 +1332,17 @@ html>body{padding:0}</style>
      const coverage=counts.filter(Boolean).length,units=counts.reduce((a,b)=>a+b,0);
      let neighborLoops=0;
      for(const d of this.offsets){const other=this.cells?.get(this.neighbor(cell.key,d));if(other)for(const p of other.parts)if(p.stage===3)neighborLoops++;}
-     const assembled=shapeCounts[3]>=c.condensation.minimumLoops&&(c.emergence.mode==='local-complete'?neighborLoops===0:c.emergence.mode==='palette'?loopPositions.size>=c.condensation.requiredPositions:true);
+     const assembled=c.emergence.mode!=='geometry'&&shapeCounts[3]>=c.condensation.minimumLoops&&(c.emergence.mode==='local-complete'?neighborLoops===0:c.emergence.mode==='palette'?loopPositions.size>=c.condensation.requiredPositions:true);
      const condensed=assembled||(c.condensation.persistent&&cell.condensed&&units>0);
      const matches=coverage>=c.gravity.minimumPositions&&c.gravity.requiredPositions.every(i=>counts[i-1]>0)&&distance(channels,this.target)<=c.gravity.tolerance;
      const trigger=c.gravity.trigger,eligible=trigger==='configuration'?assembled:trigger==='sphere'?condensed:trigger==='color'?matches:trigger==='both'?assembled&&matches:assembled||matches;
-     const source=eligible&&c.gravity.enabled&&c.gravity.strength>0&&(!condensed||c.condensation.gravityMultiplier>0);
+     const source=c.emergence.mode!=='geometry'&&eligible&&c.gravity.enabled&&c.gravity.strength>0&&(!condensed||c.condensation.gravityMultiplier>0);
      const loopUnits=cell.parts.filter(p=>p.stage===3).reduce((sum,p)=>sum+p.counts.reduce((a,b)=>a+b,0),0);
      const targetRadius=condensed?c.radial.unitRadius*Math.cbrt(loopUnits):0;
      return{counts,rgb:channels,color:hex(channels),mass,units,coverage,loopCoverage:loopPositions.size,shapeCounts,neighborLoops,configurationX:assembled,condensed,matches,eligible,source,targetRadius};
    }
-   refresh(){for(const p of this.cells.values())Object.assign(p,this.describe(p));if(this.pendingReclassification){this.syncEpisodes(this.pendingReclassification);this.pendingReclassification=null;}this.stats=this.summary();}
-   summary(){let sources=0,eligible=0,configurations=0,spheres=0,units=0;const shapes=[0,0,0,0];for(const p of this.cells.values()){sources+=+p.source;eligible+=+p.eligible;configurations+=+p.configurationX;spheres+=+p.condensed;units+=p.units;for(let i=0;i<4;i++)shapes[i]+=p.shapeCounts[i];}const longestXAge=Math.max(0,...[...(this.activeEpisodes?.values()||[])].map(e=>this.generation-e.start));return{generation:this.generation,cells:this.cells.size,sources,eligible,configurations,spheres,units,longestXAge,totalEmergences:this.totalEmergences,points:shapes[0],halves:shapes[1],strings:shapes[2],loops:shapes[3],...this.events};}
+   refresh(){for(const p of this.cells.values())Object.assign(p,this.describe(p));if(this.pendingReclassification){this.syncEpisodes(this.pendingReclassification);this.pendingReclassification=null;}this.branes?.update(this);this.stats=this.summary();}
+   summary(){let sources=0,eligible=0,configurations=0,spheres=0,units=0;const shapes=[0,0,0,0];for(const p of this.cells.values()){sources+=+p.source;eligible+=+p.eligible;configurations+=+p.configurationX;spheres+=+p.condensed;units+=p.units;for(let i=0;i<4;i++)shapes[i]+=p.shapeCounts[i];}const longestXAge=Math.max(0,...[...(this.activeEpisodes?.values()||[])].map(e=>this.generation-e.start));const captured=this.branes?.captured||0,preparationReserve=(this.preparationReserve||[]).reduce((a,b)=>a+b,0),domains=this.branes?.active()||[];units+=captured+preparationReserve;sources+=(this.branes?.sources(this)||[]).length;return{captured,preparationReserve,domains:domains.length,stableDomains:domains.filter(d=>d.status==='stable sur la fenêtre').length,domainEmergences:(this.branes?.domains||[]).filter(d=>d.born!==null&&!d.forced).length,forcedDomains:(this.branes?.domains||[]).filter(d=>d.born!==null&&d.forced).length,generation:this.generation,cells:this.cells.size,sources,eligible,configurations,spheres,units,longestXAge,totalEmergences:this.totalEmergences,points:shapes[0],halves:shapes[1],strings:shapes[2],loops:shapes[3],...this.events};}
    clearEvents(){this.events={births:0,deaths:0,additions:0,subtractions:0,annihilations:0,emissions:0,emittedStructures:0,breakups:0,unitsBorn:0,unitsDied:0,unitsCancelled:0,unitsClipped:0,balanceError:0,newHalves:0,newStrings:0,newLoops:0,newConfigurations:0,lostConfigurations:0,gravityMoves:0};}
    closeEpisodes(reason){for(const e of this.activeEpisodes.values()){e.end=this.generation;e.duration=e.end-e.start;e.endReason=reason;e.rightCensored=reason!=='lost';}this.activeEpisodes.clear();}
    syncEpisodes(reason){
@@ -1211,8 +1359,15 @@ html>body{padding:0}</style>
      this.interventions.push({generation:this.generation,key,type:'break-one-structure',stage:part.stage,counts:[...part.counts],unitsBefore:units,unitsAfter:this.counts(cell.parts).reduce((a,b)=>a+b,0)});
      this.refresh();return this.interventions.at(-1);
    }
-   experiment(){return clone({format:'chromatic-experiment-v4',config:this.config,ruleHistory:this.ruleHistory,interventions:this.interventions,episodes:this.episodes,history:this.history,current:this.stats,rngState:this.seed,cells:[...this.cells.values()],scope:{spatialDimensions:3,bosonDynamics:false,photonPropagation:false,thermalCosmology:false},note:'Épisodes de X par site, pas identités d’objets. Épisodes ouverts censurés à droite ; réglages et interventions censurent les durées. Bilan de constituants, pas énergie. Aucun taux physique. Export documentaire, non importable comme règles.'});}
-   reset(){this.seed=this.config.seed;this.generation=0;this.totalEmergences=0;this.episodes=[];this.activeEpisodes=new Map();this.nextEpisodeId=1;this.interventions=[];this.pendingReclassification=null;this.history=[];this.ruleHistory=[{generation:0,config:clone(this.config)}];this.cells=new Map();this.clearEvents();const center=(this.n-1)/2;
+   experiment(){return clone({format:'chromatic-experiment-v5',branes:this.branes.export(),preparationReserve:this.preparationReserve,config:this.config,ruleHistory:this.ruleHistory,interventions:this.interventions,episodes:this.episodes,history:this.history,current:this.stats,rngState:this.seed,cells:[...this.cells.values()],scope:{spatialDimensions:3,bosonDynamics:false,photonPropagation:false,thermalCosmology:false},note:'Épisodes de X par site, pas identités d’objets. Épisodes ouverts censurés à droite ; réglages et interventions censurent les durées. Bilan de constituants, pas énergie. Aucun taux physique. Export documentaire, non importable comme règles.'});}
+   forceEmergence(){return this.branes.force(this);}
+   openBreach(){
+     const cell=[...this.cells.values()].find(p=>p.brane);
+     if(!cell)throw Error('Préparez d’abord une fermeture pour ouvrir une brèche.');
+     const counts=this.counts(cell.parts);this.preparationReserve=this.preparationReserve.map((v,i)=>v+counts[i]);this.cells.delete(cell.key);
+     this.interventions.push({type:'open-breach',generation:this.generation,key:cell.key,displaced:counts,note:'Portion retirée vers la réserve de préparation, sans destruction.'});this.refresh();
+   }
+   reset(){this.branes=new Branes.Model();this.preparationReserve=Array(this.config.positions).fill(0);this.seed=this.config.seed;this.generation=0;this.totalEmergences=0;this.episodes=[];this.activeEpisodes=new Map();this.nextEpisodeId=1;this.interventions=[];this.pendingReclassification=null;this.history=[];this.ruleHistory=[{generation:0,config:clone(this.config)}];this.cells=new Map();this.clearEvents();const center=(this.n-1)/2;
      for(let z=0;z<this.n;z++)for(let y=0;y<this.n;y++)for(let x=0;x<this.n;x++){
        const k=this.key(x,y,z);if(this.cells.has(k)||(this.config.initial.shape==='sphere'&&Math.hypot(x-center,y-center,z-center)>this.n*.46)||this.random()>=this.config.initial.density)continue;
        const i=Math.floor(this.random()*this.config.positions),v=this.vector();v[i]=1;this.cells.set(k,this.cell(k,v));
@@ -1243,13 +1398,13 @@ html>body{padding:0}</style>
    }
    step(){
      if(this.pendingReclassification)this.refresh();
-     const c=this.config;this.syncEpisodes('observed');this.clearEvents();const old=[...this.cells.values()].sort((a,b)=>a.key-b.key),unitsBefore=old.reduce((s,p)=>s+this.counts(p.parts).reduce((a,b)=>a+b,0),0),oldX=new Set(old.filter(p=>p.configurationX).map(p=>p.key)),sources=old.filter(p=>p.source).map(p=>({p,xyz:this.coordinates(p.key)})),neighbors=new Map();
+     const c=this.config;this.syncEpisodes('observed');this.clearEvents();const old=[...this.cells.values()].sort((a,b)=>a.key-b.key),unitsBefore=old.reduce((s,p)=>s+this.counts(p.parts).reduce((a,b)=>a+b,0),0)+this.branes.captured+this.preparationReserve.reduce((a,b)=>a+b,0),oldX=new Set(old.filter(p=>p.configurationX).map(p=>p.key)),sources=old.filter(p=>p.source).map(p=>({p,xyz:this.coordinates(p.key)})).concat(this.branes.sources(this)),neighbors=new Map();
      for(const p of old)for(const d of this.offsets){const k=this.neighbor(p.key,d);if(k===null)continue;if(!neighbors.has(k))neighbors.set(k,[]);neighbors.get(k).push(p);}
-     const candidates=[];for(const p of old){const count=(neighbors.get(p.key)||[]).length;if(!c.life.enabled||(p.condensed&&c.life.protectCondensates)||c.life.survival.includes(count))candidates.push(this.cell(p.key,p.counts,{parts:p.parts,condensed:p.condensed,envelopeRadius:p.envelopeRadius,flight:p.flight,direction:[...p.direction]}));else{this.events.deaths++;this.events.unitsDied+=this.counts(p.parts).reduce((a,b)=>a+b,0);}}
+     const candidates=[];for(const p of old){const count=(neighbors.get(p.key)||[]).length;if(!c.life.enabled||(p.condensed&&c.life.protectCondensates)||c.life.survival.includes(count))candidates.push(this.cell(p.key,p.counts,{...(p.brane?{brane:true}:{}),parts:p.parts,condensed:p.condensed,envelopeRadius:p.envelopeRadius,flight:p.flight,direction:[...p.direction]}));else{this.events.deaths++;this.events.unitsDied+=this.counts(p.parts).reduce((a,b)=>a+b,0);}}
      if(c.life.enabled){const keys=c.life.birth.includes(0)?Array.from({length:this.n**3},(_,k)=>k):[...neighbors.keys()];for(const k of keys.sort((a,b)=>a-b)){if(this.cells.has(k))continue;const parents=neighbors.get(k)||[];if(!c.life.birth.includes(parents.length))continue;const parts=this.inherit(parents);if(parts.length){candidates.push(this.cell(k,[],{parts}));this.events.births++;this.events.unitsBorn+=this.counts(parts).reduce((a,b)=>a+b,0);}}}
      const sorted=candidates.sort((a,b)=>a.key-b.key),byKey=new Map(sorted.map(p=>[p.key,p])),bonds=new Map(),held=new Set();
      // Matching neighbors bind once per generation; the destination stays in place.
-     for(const a of sorted){if(held.has(a.key)||a.flight>0||this.random()>=c.structures.bondProbability)continue;for(const d of this.offsets){const k=this.neighbor(a.key,d),b=byKey.get(k);if(!b||held.has(k)||b.flight>0||!this.canBond(a,b))continue;const ai=this.describe(a),bi=this.describe(b);if((ai.source||ai.condensed)&&(bi.source||bi.condensed))continue;const anchor=ai.source||ai.condensed?a:b,mover=anchor===a?b:a;bonds.set(mover.key,anchor.key);held.add(a.key);held.add(b.key);break;}}
+     for(const a of sorted){if((c.emergence.mode==='geometry'&&a.brane)||held.has(a.key)||a.flight>0||this.random()>=c.structures.bondProbability)continue;for(const d of this.offsets){const k=this.neighbor(a.key,d),b=byKey.get(k);if(!b||(c.emergence.mode==='geometry'&&b.brane)||held.has(k)||b.flight>0||!this.canBond(a,b))continue;const ai=this.describe(a),bi=this.describe(b);if((ai.source||ai.condensed)&&(bi.source||bi.condensed))continue;const anchor=ai.source||ai.condensed?a:b,mover=anchor===a?b:a;bonds.set(mover.key,anchor.key);held.add(a.key);held.add(b.key);break;}}
      const emitted=[];for(const p of sorted)if(p.condensed&&c.emission.probability>0&&this.random()<c.emission.probability){
        const counts=this.counts(p.parts),whole=c.emission.mode==='structure';
        const choices=whole?p.parts.map((part,i)=>!c.emission.reserveEachPosition||part.counts.every((v,j)=>!v||counts[j]-v>=1)?i:-1).filter(i=>i>=0):counts.map((v,i)=>v>(c.emission.reserveEachPosition?1:0)?i:-1).filter(i=>i>=0);
@@ -1259,20 +1414,20 @@ html>body{padding:0}</style>
      }
      const proposals=[];for(const p of sorted){if(!p.parts.length)continue;const info=this.describe(p),xyz=this.coordinates(p.key);let d=[0,0,0],destination=p.key;
        if(bonds.has(p.key)){destination=bonds.get(p.key);const q=this.coordinates(destination);d=q.map((v,i)=>Math.sign(this.delta(xyz[i],v)));}
-       else if(!held.has(p.key)&&!info.source&&!info.condensed){
+       else if(!(c.emergence.mode==='geometry'&&p.brane)&&!held.has(p.key)&&!info.source&&!info.condensed){
          if(p.flight>0){d=p.direction;p.flight--;}
-         else{let best=0,direction=null;for(const {p:source,xyz:q}of sources){if(source.key===p.key)continue;const delta=q.map((v,i)=>this.delta(xyz[i],v)),r2=delta.reduce((s,v)=>s+v*v,0);if(!r2||r2>c.gravity.radius**2||distance(info.rgb,source.rgb)>c.gravity.spectralTolerance)continue;const pull=c.gravity.strength*Math.sqrt(source.mass)*(source.condensed?c.condensation.gravityMultiplier:1)/(r2+c.gravity.softening**2);if(pull>best){best=pull;direction=delta.map(Math.sign);}}
+         else{let best=0,direction=null;for(const {p:source,xyz:q}of sources){if(source.key===p.key)continue;const delta=q.map((v,i)=>this.delta(xyz[i],v)),r2=delta.reduce((s,v)=>s+v*v,0);if(!r2||r2>c.gravity.radius**2||(!source.domain&&distance(info.rgb,source.rgb)>c.gravity.spectralTolerance))continue;const pull=c.gravity.strength*Math.sqrt(source.mass)*(source.condensed?c.condensation.gravityMultiplier:1)/(r2+c.gravity.softening**2);if(pull>best){best=pull;direction=delta.map(Math.sign);}}
            if(direction&&this.random()<Math.min(1,best)){d=direction;this.events.gravityMoves++;}else if(this.random()<c.motion.diffusion)d=this.offsets[Math.floor(this.random()*this.offsets.length)];}
          const k=this.neighbor(p.key,d);if(k!==null)destination=k;
        }proposals.push({p,d,k:destination});
      }
      for(const p of emitted)proposals.push({p,d:p.direction,k:p.key});const next=new Map();
-     for(const {p,d,k}of proposals){if(!next.has(k)){next.set(k,this.cell(k,[],{parts:p.parts,condensed:p.condensed,envelopeRadius:p.envelopeRadius,flight:p.flight,direction:[...d]}));continue;}const a=next.get(k),opposed=a.direction.reduce((s,v,i)=>s+v*d[i],0)<0;const subtract=(c.collisions.subtraction==='any'||(c.collisions.subtraction==='opposed'&&opposed))&&this.random()<c.collisions.probability;a.parts=this.mergeParts(a.parts,p.parts,subtract);a.condensed=a.condensed||p.condensed;a.envelopeRadius=Math.cbrt(a.envelopeRadius**3+p.envelopeRadius**3);a.flight=0;a.direction=[0,0,0];this.events[subtract?'subtractions':'additions']++;if(!a.parts.length){next.delete(k);this.events.annihilations++;}}
+     for(const {p,d,k}of proposals){if(!next.has(k)){next.set(k,this.cell(k,[],{...(p.brane?{brane:true}:{}),parts:p.parts,condensed:p.condensed,envelopeRadius:p.envelopeRadius,flight:p.flight,direction:[...d]}));continue;}const a=next.get(k);if(p.brane)a.brane=true;const opposed=a.direction.reduce((s,v,i)=>s+v*d[i],0)<0;const subtract=(c.collisions.subtraction==='any'||(c.collisions.subtraction==='opposed'&&opposed))&&this.random()<c.collisions.probability;a.parts=this.mergeParts(a.parts,p.parts,subtract);a.condensed=a.condensed||p.condensed;a.envelopeRadius=Math.cbrt(a.envelopeRadius**3+p.envelopeRadius**3);a.flight=0;a.direction=[0,0,0];this.events[subtract?'subtractions':'additions']++;if(!a.parts.length){next.delete(k);this.events.annihilations++;}}
      for(const p of next.values()){
        p.parts=this.assemble(p.parts);
        if(c.breakup.probability>0)p.parts=p.parts.flatMap(part=>{if(part.stage>0&&this.random()<c.breakup.probability){this.events.breakups++;return this.points(part.counts);}return[part];});
      }
-     this.cells=next;this.generation++;this.refresh();
+     this.cells=next;this.generation++;this.branes.update(this,true);this.refresh();
      for(const p of this.cells.values()){
        if(p.configurationX&&!oldX.has(p.key))this.events.newConfigurations++;
        if(c.radial.enabled)p.envelopeRadius+=(p.targetRadius-p.envelopeRadius)*(1-Math.exp(-c.radial.rate));
@@ -1280,7 +1435,7 @@ html>body{padding:0}</style>
      }
      for(const k of oldX)if(!this.cells.get(k)?.configurationX)this.events.lostConfigurations++;
      this.totalEmergences+=this.events.newConfigurations;this.syncEpisodes('dynamics');
-     const unitsAfter=[...this.cells.values()].reduce((s,p)=>s+p.units,0);
+     const unitsAfter=this.summary().units;
      this.events.balanceError=unitsAfter-unitsBefore-this.events.unitsBorn+this.events.unitsDied+this.events.unitsCancelled+this.events.unitsClipped;
      if(this.events.balanceError!==0)throw Error('Bilan de constituants incohérent : '+this.events.balanceError);
      this.stats=this.summary();this.history.push(clone(this.stats));return this.stats;
@@ -1294,6 +1449,8 @@ html>body{padding:0}</style>
 (function(){
  'use strict';
  const A=globalThis.ChromaticLife,root=document.getElementById('vie-chromatique'),get=id=>root.querySelector('#v-'+id);
+ let illustration=null,illustrations=[];
+ const braneFields=['centralBranes','asymmetry','emergenceTolerance','stabilityTolerance','stabilitySteps','holdSteps','minRegionVoxels','captureFraction'];
  let world=new A.World(),running=false,selectedKey=null,dirty=true,last=performance.now(),accumulator=0;
  let yaw=-25*Math.PI/180,pitch=18*Math.PI/180,zoom=1,drag=null,projected=[],visualTime=0,lastDraw=0;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -1309,7 +1466,7 @@ html>body{padding:0}</style>
    birth:c=>c.life.birth.join(','),survival:c=>c.life.survival.join(','),inheritance:c=>c.life.inheritance,emission:c=>c.emission.probability,
    trigger:c=>c.gravity.trigger,'min-loops':c=>c.condensation.minimumLoops,half:c=>c.structures.pointsPerHalf,string:c=>c.structures.halvesPerString,loop:c=>c.structures.stringsPerLoop};
  function fillControls(){
-   const c=world.config;get('positions').value=c.positions;get('target').value=c.target;get('rate').value=c.ticksPerSecond;
+   const c=world.config;for(const k of braneFields)get('b-'+k).value=c.branes[k];get('b-collective').checked=c.branes.collective;get('positions').value=c.positions;get('target').value=c.target;get('rate').value=c.ticksPerSecond;
    for(const [id,value]of Object.entries(controls))get(id).value=value(c);
    get('minimum').max=get('condensation').max=c.positions;get('radius').max=c.grid.size;
    get('persistent').checked=c.condensation.persistent;get('protect').checked=c.life.protectCondensates;get('radial').checked=c.radial.enabled;get('condensation').disabled=c.emergence.mode!=='palette';get('applied').textContent='Appliqué : intensité '+c.gravity.strength+' · gravité '+(c.gravity.enabled?'activée':'désactivée')+' · condition '+c.emergence.mode;get('life').checked=c.life.enabled;get('gravity').checked=c.gravity.enabled;
@@ -1336,6 +1493,7 @@ html>body{padding:0}</style>
    c.weights={point:number('point-weight'),'demi-corde':number('half-weight'),corde:number('string-weight'),boucle:number('loop-weight')};
    c.gravity.trigger=get('trigger').value;c.condensation.minimumLoops=number('min-loops');c.structures.pointsPerHalf=number('half');c.structures.halvesPerString=number('string');c.structures.stringsPerLoop=number('loop');
    c.emergence.mode=get('mode').value;c.condensation.persistent=get('persistent').checked;c.life.protectCondensates=get('protect').checked;c.radial={enabled:get('radial').checked,rate:number('radial-rate'),unitRadius:number('radial-scale')};
+   for(const k of braneFields)c.branes[k]=number('b-'+k);c.branes.collective=get('b-collective').checked;
    c.gravity.requiredPositions=[];
    c.palette.forEach((p,i)=>{p.color=root.querySelector('[data-position-color="'+i+'"]').value.toUpperCase();if(root.querySelector('[data-position-required="'+i+'"]').checked)c.gravity.requiredPositions.push(i+1);});
    return A.validate(c);
@@ -1343,10 +1501,16 @@ html>body{padding:0}</style>
  get('mode').addEventListener('change',()=>{get('condensation').disabled=get('mode').value!=='palette';});
  root.addEventListener('input',e=>{if(e.target.closest('details')&&!['v-json','v-yaw','v-pitch'].includes(e.target.id))message('Réglages modifiés : cliquer sur Appliquer les réglages.');});
  function refreshUi(){
-   const s=world.stats;
-   get('stats').textContent='Génération '+fmt(s.generation)+' · '+fmt(s.cells)+' cellules · '+fmt(s.sources)+' foyers actifs · '+fmt(s.configurations)+' configurations X · '+fmt(s.spheres)+' condensats';
+   const s=world.stats,g=world.branes.diagnostic,ds=world.branes.active();
+   get('domains').textContent=world.config.emergence.mode==='geometry'?'Géométrie : '+(g?.closed||0)+' cavités · D = '+(g?.score==null?'—':g.score.toFixed(3))+' · '+s.domains+' domaines nés, dont '+s.stableDomains+' stables sur la fenêtre. Émergences calculées : '+s.domainEmergences+' · après intervention : '+s.forcedDomains+'. Captés : '+s.captured+' · réserve de préparation : '+s.preparationReserve+'. '+ds.map(d=>'D'+d.id+' : '+d.status+', horloge '+(world.generation-d.born)+' génération(s)').join(' / '):'Mode historique : diagnostic de fermeture désactivé.';
+   get('expansion').disabled=!ds.length||!!illustration;get('return').hidden=!illustration;
+   get('force').disabled=world.config.emergence.mode!=='geometry';
+
+   get('stats').textContent='Génération '+fmt(s.generation)+' · '+fmt(s.cells)+' cellules · '+fmt(s.sources)+' foyers actifs'+(world.config.emergence.mode==='geometry'?' · '+fmt(s.domains)+' domaines géométriques':' · '+fmt(s.configurations)+' configurations X · '+fmt(s.spheres)+' condensats');
    get('events').textContent=fmt(s.points)+' points libres · '+fmt(s.halves)+' demi-cordes · '+fmt(s.strings)+' cordes · '+fmt(s.loops)+' boucles. Dernier pas : '+fmt(s.additions)+' collisions + / '+fmt(s.subtractions)+' collisions − · '+fmt(s.gravityMoves)+' pas gravitationnels. Apparitions de X : '+fmt(s.totalEmergences)+' cumulées (récidives incluses), +'+s.newConfigurations+' / −'+s.lostConfigurations+' au dernier pas. Constituant(s) : '+fmt(s.units);
    get('balance').textContent='Bilan du dernier pas : +'+fmt(s.unitsBorn)+' créés · −'+fmt(s.unitsDied)+' disparus · −'+fmt(s.unitsCancelled)+' annulés · −'+fmt(s.unitsClipped)+' plafonnés. Écart inexpliqué : '+fmt(s.balanceError)+'. '+fmt(s.breakups)+' ruptures · '+fmt(s.emittedStructures)+' structures émises.';
+   get('lifetime').hidden=world.config.emergence.mode==='geometry';
+   for(const id of ['trigger','tolerance','minimum','spectrum','min-loops','persistent','protect','emission','emission-mode','radial','radial-rate','radial-scale','condensate-style'])get(id).disabled=world.config.emergence.mode==='geometry';
    get('lifetime').textContent='Plus long épisode X en cours : '+fmt(s.longestXAge)+' génération(s). Suivi par site ; une durée ne prouve pas la stabilité physique.';
    root.dataset.configurations=s.configurations;root.dataset.eligible=s.eligible;root.dataset.gravityMoves=s.gravityMoves;root.dataset.generation=s.generation;root.dataset.sources=s.sources;root.dataset.spheres=s.spheres;root.dataset.halves=s.halves;root.dataset.strings=s.strings;root.dataset.loops=s.loops;
    get('run').textContent=running?'Pause':'Démarrer';get('run').setAttribute('aria-pressed',String(running));inspect();
@@ -1365,29 +1529,33 @@ html>body{padding:0}</style>
    cell.counts.forEach((v,i)=>{if(!v)return;const span=document.createElement('span'),chip=document.createElement('span');chip.className='v-chip';chip.style.background=world.config.palette[i].color;span.append(chip,document.createTextNode(String(i+1).padStart(2,'0')+' : '+v+' point(s) constitutif(s)'));inventory.append(span);});box.append(inventory);
  }
  function applyRules(c,restart){
-   const valid=A.validate(c);clearError();
+   const valid=A.validate(c);illustration=null;clearError();
    if(!restart&&(valid.seed!==world.config.seed||valid.initial.shape!==world.config.initial.shape))throw Error('La graine ou la forme initiale a changé : utilisez « Nouvelle population avec ces réglages ».');
-   if(restart){world=new A.World(valid);running=false;selectedKey=null;accumulator=0;}else{world.configure(valid);world.refresh();}
+   if(restart){illustrations=[];world=new A.World(valid);running=false;selectedKey=null;accumulator=0;}else{world.configure(valid);world.refresh();}
    fillControls();refreshUi();dirty=true;message(restart?'Règles appliquées ; nouvelle population en pause.':'Règles appliquées à la population actuelle.');
  }
  get('apply').addEventListener('click',()=>{try{applyRules(readControls(),false);}catch(e){error(e);}});
  get('new-population').addEventListener('click',()=>{try{applyRules(readControls(),true);}catch(e){error(e);}});
- get('perturb').addEventListener('click',()=>{try{running=false;accumulator=0;const result=world.perturb(selectedKey);clearError();refreshUi();dirty=true;message('Structure rompue en '+result.counts.reduce((a,b)=>a+b,0)+' points libres, sans perte de constituants. Intervention enregistrée à la génération '+world.generation+'.');}catch(e){error(e);refreshUi();}});
+ get('perturb').addEventListener('click',()=>{try{illustration=null;running=false;accumulator=0;const result=world.perturb(selectedKey);clearError();refreshUi();dirty=true;message('Structure rompue en '+result.counts.reduce((a,b)=>a+b,0)+' points libres, sans perte de constituants. Intervention enregistrée à la génération '+world.generation+'.');}catch(e){error(e);refreshUi();}});
  get('positions').addEventListener('change',()=>{
    try{const c=readControls(),n=Number(get('positions').value),old=c.positions;c.positions=n;c.palette=n<old?c.palette.slice(0,n):c.palette.concat(A.palette(n,c.target).slice(old));
      c.gravity.minimumPositions=Math.min(c.gravity.minimumPositions,n);c.gravity.requiredPositions=c.gravity.requiredPositions.filter(p=>p<=n);c.condensation.requiredPositions=c.condensation.requiredPositions===old?n:Math.min(c.condensation.requiredPositions,n);applyRules(c,true);
    }catch(e){get('positions').value=world.config.positions;error(e);}
  });
+ get('force').addEventListener('click',()=>{try{applyRules(readControls(),false);const event=world.forceEmergence();running=true;accumulator=0;refreshUi();dirty=true;message('Fermeture préparée : '+event.added+' constituants ajoutés et comptabilisés. Calcul des seuils en cours.');}catch(e){error(e);}});
+ get('breach').addEventListener('click',()=>{try{illustration=null;world.openBreach();running=true;accumulator=0;refreshUi();dirty=true;message('Brèche ouverte ; le calcul détermine les domaines rompus. Leur contenu capté reste conservé.');}catch(e){error(e);}});
+ get('expansion').addEventListener('click',()=>{const d=world.branes.active()[0];if(!d)return;running=false;accumulator=0;illustration={time:0,center:[...d.center],radius:Math.max(.35,d.radius),generation:world.generation,domainId:d.id};illustrations.push({type:'illustrative-expansion',generation:world.generation,domainId:d.id,duration:10,physical:false});refreshUi();dirty=true;message('Expansion illustrative : calcul suspendu, aucune évolution thermique cosmologique calculée.');});
+ get('return').addEventListener('click',()=>{illustration=null;running=false;refreshUi();dirty=true;message('Retour au calcul en pause, état numérique conservé.');});
  get('rate').addEventListener('change',()=>{try{const c=copy(world.config);c.ticksPerSecond=number('rate');world.configure(c);get('json').value=JSON.stringify(world.config,null,2);clearError();}catch(e){error(e);}});
- get('run').addEventListener('click',()=>{running=!running;accumulator=0;refreshUi();message(running?'Évolution par générations. Les règles peuvent être ajustées pendant le calcul.':'Simulation en pause.');});
- function generation(){world.step();refreshUi();dirty=true;}
+ get('run').addEventListener('click',()=>{illustration=null;running=!running;accumulator=0;refreshUi();message(running?'Évolution par générations. Les règles peuvent être ajustées pendant le calcul.':'Simulation en pause.');});
+ function generation(){illustration=null;world.step();refreshUi();dirty=true;}
  get('step').addEventListener('click',()=>{running=false;accumulator=0;generation();message('Une génération calculée.');});
- get('reset').addEventListener('click',()=>{world.reset();running=false;selectedKey=null;accumulator=0;refreshUi();dirty=true;message('Population initiale restaurée avec la même graine.');});
+ get('reset').addEventListener('click',()=>{illustration=null;illustrations=[];world.reset();running=false;selectedKey=null;accumulator=0;refreshUi();dirty=true;message('Population initiale restaurée avec la même graine.');});
  function parseRules(text){if(text.length>200000)throw Error('Fichier de règles trop volumineux (200 Ko maximum).');return A.validate(JSON.parse(text));}
  get('json-apply').addEventListener('click',()=>{try{applyRules(parseRules(get('json').value),true);}catch(e){error(e);}});
  get('import').addEventListener('change',async()=>{try{const file=get('import').files[0];if(!file)return;if(file.size>200000)throw Error('Fichier de règles trop volumineux (200 Ko maximum).');applyRules(parseRules(await file.text()),true);}catch(e){error(e);}finally{get('import').value='';}});
  get('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(world.config,null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='regles-automate-chromatique.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('Export des règles actuellement appliquées.');});
- get('experiment').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(world.experiment(),null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='experience-cordes-generation-'+world.generation+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('Expérience exportée : historique, changements de règles et état courant.');});
+ get('experiment').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({...world.experiment(),illustrativeSequences:illustrations},null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='experience-cordes-generation-'+world.generation+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('Expérience exportée : historique, changements de règles et état courant.');});
  function draw(){
    const W=960,H=600,scale=canvas.width/W,n=world.n,unit=300/n,center=(n-1)/2;
    const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
@@ -1431,6 +1599,8 @@ html>body{padding:0}</style>
      if(cell.key===selectedKey){ctx.strokeStyle=foreground;ctx.lineWidth=2;ctx.strokeRect(q.x-r-6,q.y-r-6,2*r+12,2*r+12);}
      q.hit=Math.max(9,r+4);
    }
+   for(const d of (world.config.emergence.mode==='geometry'?world.branes.domains:[])){if(d.born===null||d.radius<.005)continue;const p=project(d.center),r=d.radius*unit*p.k;ctx.strokeStyle=d.ended!==null?'#fb923c':d.status==='stable sur la fenêtre'?'#34d399':'#fbbf24';ctx.globalAlpha=.85;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y,r,r*.7,0,0,TAU);ctx.stroke();ctx.fillStyle=ctx.strokeStyle;ctx.fillText('D'+d.id+' · '+(d.ended===null?world.generation-d.born:d.ended-d.born),p.x+r+3,p.y);ctx.globalAlpha=1;}
+   if(illustration){const p=project(illustration.center),t=Math.min(1,illustration.time/10),r=(illustration.radius+t*t*world.n*.45)*unit*p.k;ctx.fillStyle='rgba(20,15,40,.7)';ctx.fillRect(0,0,W,H);for(let i=0;i<world.config.positions;i++){ctx.strokeStyle=world.config.palette[i].color;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(p.x,p.y,r,r*.45,i*Math.PI/world.config.positions,0,TAU);ctx.stroke();}ctx.fillStyle='#ffffff';ctx.fillText('Expansion illustrative — calcul suspendu — '+illustration.time.toFixed(1)+' s',20,30);}
    ctx.setTransform(1,0,0,1,0,0);
  }
  function resize(){canvas.width=Math.max(1,Math.round(canvas.clientWidth*Math.min(devicePixelRatio||1,2)));canvas.height=Math.round(canvas.width*600/960);dirty=true;}
@@ -1439,13 +1609,14 @@ html>body{padding:0}</style>
  canvas.addEventListener('pointermove',e=>{if(!drag||!e.isPrimary)return;if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>4)drag.moved=true;if(drag.moved){yaw=((yaw+(e.clientX-drag.x)*.008+Math.PI)%TAU+TAU)%TAU-Math.PI;pitch=clamp(pitch+(e.clientY-drag.y)*.008,-85*Math.PI/180,85*Math.PI/180);camera();}drag.x=e.clientX;drag.y=e.clientY;});
  canvas.addEventListener('pointerup',e=>{if(!drag)return;if(!drag.moved){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*960,y=(e.clientY-r.top)/r.height*600;const hit=[...projected].reverse().find(q=>Math.hypot(q.x-x,q.y-y)<=q.hit);selectedKey=hit?hit.cell.key:null;inspect();dirty=true;}drag=null;});
  canvas.addEventListener('pointercancel',()=>{drag=null;});
- canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=clamp(zoom*Math.exp(-e.deltaY*(e.deltaMode===1?16:1)*.001),.5,2.3);camera();},{passive:false});
+ canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=clamp(zoom*Math.exp(-e.deltaY*(e.deltaMode===1?16:1)*.001),.5,10);camera();},{passive:false});
  get('zoom').addEventListener('input',()=>{zoom=Number(get('zoom').value)/100;camera();});
  get('yaw').addEventListener('input',()=>{yaw=Number(get('yaw').value)*Math.PI/180;camera();});
  get('pitch').addEventListener('input',()=>{pitch=Number(get('pitch').value)*Math.PI/180;camera();});
  new ResizeObserver(resize).observe(canvas);new MutationObserver(()=>{dirty=true;}).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
  function frame(now){
    if(!root.isConnected)return;const dt=Math.min((now-last)/1000,.15);last=now;
+   if(illustration&&!document.hidden&&illustration.time<10){illustration.time=Math.min(10,illustration.time+dt);dirty=true;}
    if(running&&!document.hidden){visualTime+=dt;accumulator+=dt;const interval=1/world.config.ticksPerSecond;if(accumulator>=interval){accumulator-=interval;try{generation();}catch(e){running=false;error(e);refreshUi();}}if(!reduced.matches&&now-lastDraw>66&&(world.stats.halves||world.stats.strings||world.stats.loops))dirty=true;}
    if(dirty&&!document.hidden){draw();dirty=false;lastDraw=now;}requestAnimationFrame(frame);
  }

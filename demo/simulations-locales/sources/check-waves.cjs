@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),W=require('./waves-engine.js');
 let passed=0;const test=(name,f)=>{f();console.log('OK '+name);passed++;};
-const config=patch=>({...W.defaults(),colors:4,domainEnabled:false,resolution:12,detectorResolution:8,...patch});
+const config=patch=>({...W.defaults(),geometry:{...W.defaults().geometry,enabled:false},colors:4,domainEnabled:false,resolution:12,detectorResolution:8,...patch});
 const state=w=>w.surfaces.map(s=>[Array.from(s.h),Array.from(s.velocity)]);
 const steps=(w,n)=>{for(let i=0;i<n;i++)w.step();return w;};
 test('Même graine, même trajectoire et détection',()=>{

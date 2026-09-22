@@ -1,0 +1,5 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),W=require('./waves-engine.js'),{Study}=require('./waves-study.js');
+const config={...W.defaults(),initialLayout:'multiverse',amplitude:.03,resolution:16,detectorResolution:16,geometry:{...W.defaults().geometry,centralBranes:2,asymmetry:0,stabilitySteps:10,minRegionVoxels:4}},study=new Study(config,{seeds:3,steps:40});
+let previous=0;while(!study.done){study.advance();if(study.runs.length!==previous){previous=study.runs.length;const r=study.runs.at(-1);console.log(JSON.stringify({run:previous,total:study.total,central:r.config.geometry.centralBranes,asymmetry:r.config.geometry.asymmetry,seed:r.config.seed,multi:r.multiEmerged,stable:r.multiStableObserved,required:r.requiredTolerance}));}}
+const output=study.export();output.sourceSHA256=Object.fromEntries(['waves-engine.js','waves-geometry.js','waves-study.js'].map(name=>[name,crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,name))).digest('hex')]));fs.writeFileSync(path.join(__dirname,'../etude-geometrie.json'),JSON.stringify(output,null,2)+'\n');console.log(JSON.stringify(study.table()));

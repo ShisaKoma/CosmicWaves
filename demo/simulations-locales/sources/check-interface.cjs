@@ -36,10 +36,17 @@ const get=id=>elements.get('v-'+id);
 let checked=0;
 function check(name,fn){fn();checked++;console.log('✓ '+name);}
 check('Initialisation : tous les contrôles référencés existent et les défauts sont visibles',()=>{
-  assert.equal(get('mode').value,'local-complete');assert.equal(get('persistent').checked,false);
+  assert.equal(get('mode').value,'geometry');assert.equal(get('persistent').checked,false);
   assert.equal(get('protect').checked,false);assert.equal(get('condensation').disabled,true);
   assert.match(get('stats').textContent,/0 foyers actifs/);assert.match(get('applied').textContent,/intensité 3/);
   assert.equal(get('condensate-style').value,'strands');assert.equal(get('initial-shape').value,'cube');assert.match(get('balance').textContent,/Écart inexpliqué : 0/);
+});
+check('Forçage, capture, expansion séparée, retour et brèche',()=>{
+  get('force').click();assert.equal(get('error').hidden,true);
+  for(let i=0;i<4;i++)get('step').click();assert.match(get('domains').textContent,/2 domaines nés/);assert.equal(get('expansion').disabled,false);
+  const before=get('stats').textContent;get('expansion').click();assert.equal(get('return').hidden,false);assert.equal(get('stats').textContent,before);
+  get('return').click();assert.equal(get('return').hidden,true);assert.equal(get('stats').textContent,before);
+  get('breach').click();get('step').click();assert.equal(get('error').hidden,true);assert.match(get('balance').textContent,/Écart inexpliqué : 0/);
 });
 check('Une nouvelle graine exige une nouvelle population ; les nouveaux réglages sont appliqués',()=>{
   const before=root.dataset.generation;get('seed').value='123';get('apply').click();assert.equal(root.dataset.generation,before);assert.equal(get('error').hidden,false);
@@ -72,7 +79,7 @@ check('Import JSON v2 et changement de palette : nouvelle population sans erreur
 });
 (async()=>{
   get('step').click();get('experiment').click();const data=JSON.parse(await downloads.at(-1).text());
-  assert.equal(data.format,'chromatic-experiment-v4');assert.equal(data.history.length,2);assert.equal(data.config.positions,10);assert(Array.isArray(data.episodes));assert.equal(data.scope.bosonDynamics,false);
+  assert.equal(data.format,'chromatic-experiment-v5');assert.equal(data.history.length,2);assert.equal(data.config.positions,10);assert(Array.isArray(data.episodes));assert.equal(data.scope.bosonDynamics,false);
   checked++;console.log('✓ Export de l’expérience : contenu et historique présents');
   console.log(checked+' scénarios d’interface hors navigateur validés (aucune vérification visuelle).');
 })().catch(e=>{console.error(e);process.exitCode=1;});

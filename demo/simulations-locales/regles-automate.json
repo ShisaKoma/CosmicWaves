@@ -1,6 +1,6 @@
 {
-  "version": 4,
-  "positions": 32,
+  "version": 5,
+  "positions": 10,
   "target": "#8B5CF6",
   "seed": 728931,
   "grid": {
@@ -19,97 +19,31 @@
       "color": "#8B5CF6"
     },
     {
-      "color": "#E05130"
+      "color": "#E09A30"
     },
     {
-      "color": "#E07230"
+      "color": "#BDE030"
     },
     {
-      "color": "#E09330"
+      "color": "#53E030"
     },
     {
-      "color": "#E0B430"
-    },
-    {
-      "color": "#E0D530"
-    },
-    {
-      "color": "#CAE030"
-    },
-    {
-      "color": "#A9E030"
-    },
-    {
-      "color": "#88E030"
-    },
-    {
-      "color": "#67E030"
-    },
-    {
-      "color": "#46E030"
-    },
-    {
-      "color": "#30E03B"
-    },
-    {
-      "color": "#30E05C"
-    },
-    {
-      "color": "#30E07D"
-    },
-    {
-      "color": "#30E09E"
-    },
-    {
-      "color": "#30E0BF"
+      "color": "#30E076"
     },
     {
       "color": "#30E0E0"
     },
     {
-      "color": "#30BFE0"
+      "color": "#3076E0"
     },
     {
-      "color": "#309EE0"
+      "color": "#5330E0"
     },
     {
-      "color": "#307DE0"
+      "color": "#BD30E0"
     },
     {
-      "color": "#305CE0"
-    },
-    {
-      "color": "#303BE0"
-    },
-    {
-      "color": "#4630E0"
-    },
-    {
-      "color": "#6730E0"
-    },
-    {
-      "color": "#8830E0"
-    },
-    {
-      "color": "#A930E0"
-    },
-    {
-      "color": "#CA30E0"
-    },
-    {
-      "color": "#E030D5"
-    },
-    {
-      "color": "#E030B4"
-    },
-    {
-      "color": "#E03093"
-    },
-    {
-      "color": "#E03072"
-    },
-    {
-      "color": "#E03051"
+      "color": "#E0309A"
     }
   ],
   "weights": {
@@ -119,7 +53,7 @@
     "boucle": 2
   },
   "life": {
-    "enabled": true,
+    "enabled": false,
     "birth": [
       3,
       4
@@ -170,7 +104,7 @@
     "amplitudeLimit": 64
   },
   "collisions": {
-    "subtraction": "opposed",
+    "subtraction": "never",
     "probability": 0.25
   },
   "gravity": {
@@ -182,10 +116,23 @@
     "strength": 3,
     "radius": 6,
     "softening": 1,
-    "spectralTolerance": 0.45
+    "spectralTolerance": 1
   },
   "emergence": {
-    "mode": "local-complete"
+    "mode": "geometry"
+  },
+  "branes": {
+    "collective": true,
+    "centralBranes": 1,
+    "asymmetry": 0,
+    "emergenceTolerance": 0.8,
+    "stabilityTolerance": 0.2,
+    "stabilitySteps": 12,
+    "holdSteps": 3,
+    "minRegionVoxels": 4,
+    "captureFraction": 0.5,
+    "minimumRadius": 0.35,
+    "shrinkRate": 0.2
   },
   "radial": {
     "enabled": true,
@@ -196,7 +143,7 @@
     "diffusion": 0.12
   },
   "condensation": {
-    "requiredPositions": 32,
+    "requiredPositions": 10,
     "minimumLoops": 4,
     "persistent": false,
     "gravityMultiplier": 2

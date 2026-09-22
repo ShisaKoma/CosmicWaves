@@ -1,6 +1,8 @@
 (function(){
  'use strict';
  const A=globalThis.ChromaticLife,root=document.getElementById('vie-chromatique'),get=id=>root.querySelector('#v-'+id);
+ let illustration=null,illustrations=[];
+ const braneFields=['centralBranes','asymmetry','emergenceTolerance','stabilityTolerance','stabilitySteps','holdSteps','minRegionVoxels','captureFraction'];
  let world=new A.World(),running=false,selectedKey=null,dirty=true,last=performance.now(),accumulator=0;
  let yaw=-25*Math.PI/180,pitch=18*Math.PI/180,zoom=1,drag=null,projected=[],visualTime=0,lastDraw=0;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -16,7 +18,7 @@
    birth:c=>c.life.birth.join(','),survival:c=>c.life.survival.join(','),inheritance:c=>c.life.inheritance,emission:c=>c.emission.probability,
    trigger:c=>c.gravity.trigger,'min-loops':c=>c.condensation.minimumLoops,half:c=>c.structures.pointsPerHalf,string:c=>c.structures.halvesPerString,loop:c=>c.structures.stringsPerLoop};
  function fillControls(){
-   const c=world.config;get('positions').value=c.positions;get('target').value=c.target;get('rate').value=c.ticksPerSecond;
+   const c=world.config;for(const k of braneFields)get('b-'+k).value=c.branes[k];get('b-collective').checked=c.branes.collective;get('positions').value=c.positions;get('target').value=c.target;get('rate').value=c.ticksPerSecond;
    for(const [id,value]of Object.entries(controls))get(id).value=value(c);
    get('minimum').max=get('condensation').max=c.positions;get('radius').max=c.grid.size;
    get('persistent').checked=c.condensation.persistent;get('protect').checked=c.life.protectCondensates;get('radial').checked=c.radial.enabled;get('condensation').disabled=c.emergence.mode!=='palette';get('applied').textContent='Appliqué : intensité '+c.gravity.strength+' · gravité '+(c.gravity.enabled?'activée':'désactivée')+' · condition '+c.emergence.mode;get('life').checked=c.life.enabled;get('gravity').checked=c.gravity.enabled;
@@ -43,6 +45,7 @@
    c.weights={point:number('point-weight'),'demi-corde':number('half-weight'),corde:number('string-weight'),boucle:number('loop-weight')};
    c.gravity.trigger=get('trigger').value;c.condensation.minimumLoops=number('min-loops');c.structures.pointsPerHalf=number('half');c.structures.halvesPerString=number('string');c.structures.stringsPerLoop=number('loop');
    c.emergence.mode=get('mode').value;c.condensation.persistent=get('persistent').checked;c.life.protectCondensates=get('protect').checked;c.radial={enabled:get('radial').checked,rate:number('radial-rate'),unitRadius:number('radial-scale')};
+   for(const k of braneFields)c.branes[k]=number('b-'+k);c.branes.collective=get('b-collective').checked;
    c.gravity.requiredPositions=[];
    c.palette.forEach((p,i)=>{p.color=root.querySelector('[data-position-color="'+i+'"]').value.toUpperCase();if(root.querySelector('[data-position-required="'+i+'"]').checked)c.gravity.requiredPositions.push(i+1);});
    return A.validate(c);
@@ -50,10 +53,16 @@
  get('mode').addEventListener('change',()=>{get('condensation').disabled=get('mode').value!=='palette';});
  root.addEventListener('input',e=>{if(e.target.closest('details')&&!['v-json','v-yaw','v-pitch'].includes(e.target.id))message('Réglages modifiés : cliquer sur Appliquer les réglages.');});
  function refreshUi(){
-   const s=world.stats;
-   get('stats').textContent='Génération '+fmt(s.generation)+' · '+fmt(s.cells)+' cellules · '+fmt(s.sources)+' foyers actifs · '+fmt(s.configurations)+' configurations X · '+fmt(s.spheres)+' condensats';
+   const s=world.stats,g=world.branes.diagnostic,ds=world.branes.active();
+   get('domains').textContent=world.config.emergence.mode==='geometry'?'Géométrie : '+(g?.closed||0)+' cavités · D = '+(g?.score==null?'—':g.score.toFixed(3))+' · '+s.domains+' domaines nés, dont '+s.stableDomains+' stables sur la fenêtre. Émergences calculées : '+s.domainEmergences+' · après intervention : '+s.forcedDomains+'. Captés : '+s.captured+' · réserve de préparation : '+s.preparationReserve+'. '+ds.map(d=>'D'+d.id+' : '+d.status+', horloge '+(world.generation-d.born)+' génération(s)').join(' / '):'Mode historique : diagnostic de fermeture désactivé.';
+   get('expansion').disabled=!ds.length||!!illustration;get('return').hidden=!illustration;
+   get('force').disabled=world.config.emergence.mode!=='geometry';
+
+   get('stats').textContent='Génération '+fmt(s.generation)+' · '+fmt(s.cells)+' cellules · '+fmt(s.sources)+' foyers actifs'+(world.config.emergence.mode==='geometry'?' · '+fmt(s.domains)+' domaines géométriques':' · '+fmt(s.configurations)+' configurations X · '+fmt(s.spheres)+' condensats');
    get('events').textContent=fmt(s.points)+' points libres · '+fmt(s.halves)+' demi-cordes · '+fmt(s.strings)+' cordes · '+fmt(s.loops)+' boucles. Dernier pas : '+fmt(s.additions)+' collisions + / '+fmt(s.subtractions)+' collisions − · '+fmt(s.gravityMoves)+' pas gravitationnels. Apparitions de X : '+fmt(s.totalEmergences)+' cumulées (récidives incluses), +'+s.newConfigurations+' / −'+s.lostConfigurations+' au dernier pas. Constituant(s) : '+fmt(s.units);
    get('balance').textContent='Bilan du dernier pas : +'+fmt(s.unitsBorn)+' créés · −'+fmt(s.unitsDied)+' disparus · −'+fmt(s.unitsCancelled)+' annulés · −'+fmt(s.unitsClipped)+' plafonnés. Écart inexpliqué : '+fmt(s.balanceError)+'. '+fmt(s.breakups)+' ruptures · '+fmt(s.emittedStructures)+' structures émises.';
+   get('lifetime').hidden=world.config.emergence.mode==='geometry';
+   for(const id of ['trigger','tolerance','minimum','spectrum','min-loops','persistent','protect','emission','emission-mode','radial','radial-rate','radial-scale','condensate-style'])get(id).disabled=world.config.emergence.mode==='geometry';
    get('lifetime').textContent='Plus long épisode X en cours : '+fmt(s.longestXAge)+' génération(s). Suivi par site ; une durée ne prouve pas la stabilité physique.';
    root.dataset.configurations=s.configurations;root.dataset.eligible=s.eligible;root.dataset.gravityMoves=s.gravityMoves;root.dataset.generation=s.generation;root.dataset.sources=s.sources;root.dataset.spheres=s.spheres;root.dataset.halves=s.halves;root.dataset.strings=s.strings;root.dataset.loops=s.loops;
    get('run').textContent=running?'Pause':'Démarrer';get('run').setAttribute('aria-pressed',String(running));inspect();
@@ -72,29 +81,33 @@
    cell.counts.forEach((v,i)=>{if(!v)return;const span=document.createElement('span'),chip=document.createElement('span');chip.className='v-chip';chip.style.background=world.config.palette[i].color;span.append(chip,document.createTextNode(String(i+1).padStart(2,'0')+' : '+v+' point(s) constitutif(s)'));inventory.append(span);});box.append(inventory);
  }
  function applyRules(c,restart){
-   const valid=A.validate(c);clearError();
+   const valid=A.validate(c);illustration=null;clearError();
    if(!restart&&(valid.seed!==world.config.seed||valid.initial.shape!==world.config.initial.shape))throw Error('La graine ou la forme initiale a changé : utilisez « Nouvelle population avec ces réglages ».');
-   if(restart){world=new A.World(valid);running=false;selectedKey=null;accumulator=0;}else{world.configure(valid);world.refresh();}
+   if(restart){illustrations=[];world=new A.World(valid);running=false;selectedKey=null;accumulator=0;}else{world.configure(valid);world.refresh();}
    fillControls();refreshUi();dirty=true;message(restart?'Règles appliquées ; nouvelle population en pause.':'Règles appliquées à la population actuelle.');
  }
  get('apply').addEventListener('click',()=>{try{applyRules(readControls(),false);}catch(e){error(e);}});
  get('new-population').addEventListener('click',()=>{try{applyRules(readControls(),true);}catch(e){error(e);}});
- get('perturb').addEventListener('click',()=>{try{running=false;accumulator=0;const result=world.perturb(selectedKey);clearError();refreshUi();dirty=true;message('Structure rompue en '+result.counts.reduce((a,b)=>a+b,0)+' points libres, sans perte de constituants. Intervention enregistrée à la génération '+world.generation+'.');}catch(e){error(e);refreshUi();}});
+ get('perturb').addEventListener('click',()=>{try{illustration=null;running=false;accumulator=0;const result=world.perturb(selectedKey);clearError();refreshUi();dirty=true;message('Structure rompue en '+result.counts.reduce((a,b)=>a+b,0)+' points libres, sans perte de constituants. Intervention enregistrée à la génération '+world.generation+'.');}catch(e){error(e);refreshUi();}});
  get('positions').addEventListener('change',()=>{
    try{const c=readControls(),n=Number(get('positions').value),old=c.positions;c.positions=n;c.palette=n<old?c.palette.slice(0,n):c.palette.concat(A.palette(n,c.target).slice(old));
      c.gravity.minimumPositions=Math.min(c.gravity.minimumPositions,n);c.gravity.requiredPositions=c.gravity.requiredPositions.filter(p=>p<=n);c.condensation.requiredPositions=c.condensation.requiredPositions===old?n:Math.min(c.condensation.requiredPositions,n);applyRules(c,true);
    }catch(e){get('positions').value=world.config.positions;error(e);}
  });
+ get('force').addEventListener('click',()=>{try{applyRules(readControls(),false);const event=world.forceEmergence();running=true;accumulator=0;refreshUi();dirty=true;message('Fermeture préparée : '+event.added+' constituants ajoutés et comptabilisés. Calcul des seuils en cours.');}catch(e){error(e);}});
+ get('breach').addEventListener('click',()=>{try{illustration=null;world.openBreach();running=true;accumulator=0;refreshUi();dirty=true;message('Brèche ouverte ; le calcul détermine les domaines rompus. Leur contenu capté reste conservé.');}catch(e){error(e);}});
+ get('expansion').addEventListener('click',()=>{const d=world.branes.active()[0];if(!d)return;running=false;accumulator=0;illustration={time:0,center:[...d.center],radius:Math.max(.35,d.radius),generation:world.generation,domainId:d.id};illustrations.push({type:'illustrative-expansion',generation:world.generation,domainId:d.id,duration:10,physical:false});refreshUi();dirty=true;message('Expansion illustrative : calcul suspendu, aucune évolution thermique cosmologique calculée.');});
+ get('return').addEventListener('click',()=>{illustration=null;running=false;refreshUi();dirty=true;message('Retour au calcul en pause, état numérique conservé.');});
  get('rate').addEventListener('change',()=>{try{const c=copy(world.config);c.ticksPerSecond=number('rate');world.configure(c);get('json').value=JSON.stringify(world.config,null,2);clearError();}catch(e){error(e);}});
- get('run').addEventListener('click',()=>{running=!running;accumulator=0;refreshUi();message(running?'Évolution par générations. Les règles peuvent être ajustées pendant le calcul.':'Simulation en pause.');});
- function generation(){world.step();refreshUi();dirty=true;}
+ get('run').addEventListener('click',()=>{illustration=null;running=!running;accumulator=0;refreshUi();message(running?'Évolution par générations. Les règles peuvent être ajustées pendant le calcul.':'Simulation en pause.');});
+ function generation(){illustration=null;world.step();refreshUi();dirty=true;}
  get('step').addEventListener('click',()=>{running=false;accumulator=0;generation();message('Une génération calculée.');});
- get('reset').addEventListener('click',()=>{world.reset();running=false;selectedKey=null;accumulator=0;refreshUi();dirty=true;message('Population initiale restaurée avec la même graine.');});
+ get('reset').addEventListener('click',()=>{illustration=null;illustrations=[];world.reset();running=false;selectedKey=null;accumulator=0;refreshUi();dirty=true;message('Population initiale restaurée avec la même graine.');});
  function parseRules(text){if(text.length>200000)throw Error('Fichier de règles trop volumineux (200 Ko maximum).');return A.validate(JSON.parse(text));}
  get('json-apply').addEventListener('click',()=>{try{applyRules(parseRules(get('json').value),true);}catch(e){error(e);}});
  get('import').addEventListener('change',async()=>{try{const file=get('import').files[0];if(!file)return;if(file.size>200000)throw Error('Fichier de règles trop volumineux (200 Ko maximum).');applyRules(parseRules(await file.text()),true);}catch(e){error(e);}finally{get('import').value='';}});
  get('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(world.config,null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='regles-automate-chromatique.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('Export des règles actuellement appliquées.');});
- get('experiment').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(world.experiment(),null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='experience-cordes-generation-'+world.generation+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('Expérience exportée : historique, changements de règles et état courant.');});
+ get('experiment').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({...world.experiment(),illustrativeSequences:illustrations},null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='experience-cordes-generation-'+world.generation+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('Expérience exportée : historique, changements de règles et état courant.');});
  function draw(){
    const W=960,H=600,scale=canvas.width/W,n=world.n,unit=300/n,center=(n-1)/2;
    const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
@@ -138,6 +151,8 @@
      if(cell.key===selectedKey){ctx.strokeStyle=foreground;ctx.lineWidth=2;ctx.strokeRect(q.x-r-6,q.y-r-6,2*r+12,2*r+12);}
      q.hit=Math.max(9,r+4);
    }
+   for(const d of (world.config.emergence.mode==='geometry'?world.branes.domains:[])){if(d.born===null||d.radius<.005)continue;const p=project(d.center),r=d.radius*unit*p.k;ctx.strokeStyle=d.ended!==null?'#fb923c':d.status==='stable sur la fenêtre'?'#34d399':'#fbbf24';ctx.globalAlpha=.85;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y,r,r*.7,0,0,TAU);ctx.stroke();ctx.fillStyle=ctx.strokeStyle;ctx.fillText('D'+d.id+' · '+(d.ended===null?world.generation-d.born:d.ended-d.born),p.x+r+3,p.y);ctx.globalAlpha=1;}
+   if(illustration){const p=project(illustration.center),t=Math.min(1,illustration.time/10),r=(illustration.radius+t*t*world.n*.45)*unit*p.k;ctx.fillStyle='rgba(20,15,40,.7)';ctx.fillRect(0,0,W,H);for(let i=0;i<world.config.positions;i++){ctx.strokeStyle=world.config.palette[i].color;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(p.x,p.y,r,r*.45,i*Math.PI/world.config.positions,0,TAU);ctx.stroke();}ctx.fillStyle='#ffffff';ctx.fillText('Expansion illustrative — calcul suspendu — '+illustration.time.toFixed(1)+' s',20,30);}
    ctx.setTransform(1,0,0,1,0,0);
  }
  function resize(){canvas.width=Math.max(1,Math.round(canvas.clientWidth*Math.min(devicePixelRatio||1,2)));canvas.height=Math.round(canvas.width*600/960);dirty=true;}
@@ -146,13 +161,14 @@
  canvas.addEventListener('pointermove',e=>{if(!drag||!e.isPrimary)return;if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>4)drag.moved=true;if(drag.moved){yaw=((yaw+(e.clientX-drag.x)*.008+Math.PI)%TAU+TAU)%TAU-Math.PI;pitch=clamp(pitch+(e.clientY-drag.y)*.008,-85*Math.PI/180,85*Math.PI/180);camera();}drag.x=e.clientX;drag.y=e.clientY;});
  canvas.addEventListener('pointerup',e=>{if(!drag)return;if(!drag.moved){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*960,y=(e.clientY-r.top)/r.height*600;const hit=[...projected].reverse().find(q=>Math.hypot(q.x-x,q.y-y)<=q.hit);selectedKey=hit?hit.cell.key:null;inspect();dirty=true;}drag=null;});
  canvas.addEventListener('pointercancel',()=>{drag=null;});
- canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=clamp(zoom*Math.exp(-e.deltaY*(e.deltaMode===1?16:1)*.001),.5,2.3);camera();},{passive:false});
+ canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=clamp(zoom*Math.exp(-e.deltaY*(e.deltaMode===1?16:1)*.001),.5,10);camera();},{passive:false});
  get('zoom').addEventListener('input',()=>{zoom=Number(get('zoom').value)/100;camera();});
  get('yaw').addEventListener('input',()=>{yaw=Number(get('yaw').value)*Math.PI/180;camera();});
  get('pitch').addEventListener('input',()=>{pitch=Number(get('pitch').value)*Math.PI/180;camera();});
  new ResizeObserver(resize).observe(canvas);new MutationObserver(()=>{dirty=true;}).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
  function frame(now){
    if(!root.isConnected)return;const dt=Math.min((now-last)/1000,.15);last=now;
+   if(illustration&&!document.hidden&&illustration.time<10){illustration.time=Math.min(10,illustration.time+dt);dirty=true;}
    if(running&&!document.hidden){visualTime+=dt;accumulator+=dt;const interval=1/world.config.ticksPerSecond;if(accumulator>=interval){accumulator-=interval;try{generation();}catch(e){running=false;error(e);refreshUi();}}if(!reduced.matches&&now-lastDraw>66&&(world.stats.halves||world.stats.strings||world.stats.loops))dirty=true;}
    if(dirty&&!document.hidden){draw();dirty=false;lastDraw=now;}requestAnimationFrame(frame);
  }
