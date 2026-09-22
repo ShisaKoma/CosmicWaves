@@ -1,0 +1,2 @@
+# Optionnel : les calculs et les contrôles n'utilisent que Python standard.
+matplotlib==3.11.2

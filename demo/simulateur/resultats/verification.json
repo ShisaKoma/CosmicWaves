@@ -1,0 +1,193 @@
+{
+  "historique_entropie/integration_des_modes_internes": {
+    "erreur_max": 1.6653345369377348e-16,
+    "tolerance": 1e-10
+  },
+  "historique_entropie/entropie_par_derivee_thermique_independante": {
+    "erreur_max": 1.18778320512547e-11,
+    "tolerance": 1e-08
+  },
+  "historique_entropie/courbure_au_seuil": {
+    "erreur_max": 1.1102230246251565e-16,
+    "tolerance": 1e-12
+  },
+  "historique_entropie/relaxation_RK4_contre_solution_exacte": {
+    "erreur_max": 3.6914915568786455e-14,
+    "tolerance": 1e-08
+  },
+  "historique_entropie/convergence_pas_divise_par_deux": {
+    "erreur_max": 3.6637359812630166e-15,
+    "tolerance": 1e-08
+  },
+  "historique_entropie/energie_libre_decroissante_parametres_fixes": {
+    "erreur_max": 0.0,
+    "tolerance": 1e-12
+  },
+  "historique_entropie/fluctuations_au_seuil_contre_solution_exacte": {
+    "erreur_max": 2.7755575615628914e-17,
+    "tolerance": 1e-09
+  },
+  "historique_entropie/convergence_quadrature": {
+    "erreur_max": 2.7755575615628914e-17,
+    "tolerance": 1e-09
+  },
+  "historique_entropie/symetrie_moyenne_signee": {
+    "erreur_max": 0.0,
+    "tolerance": 1e-12
+  },
+  "historique_entropie/temps_atteinte_accumulation": {
+    "erreur_max": 0.0,
+    "tolerance": 1e-12
+  },
+  "historique_germes/trajectoires_pas_divise_par_deux": {
+    "erreur_max": 4.74457972909903e-11,
+    "tolerance": 1e-07
+  },
+  "historique_germes/temps_repere_pas_divise_par_deux": {
+    "erreur_max": 4.607254915356407e-06,
+    "tolerance": 0.0001
+  },
+  "historique_germes/temps_critique_solution_analytique": {
+    "erreur_max": 0.0,
+    "tolerance": 1e-12
+  },
+  "historique_germes/plafond_inferieur_ou_egal_au_seuil": {
+    "statut": "OK"
+  },
+  "historique_germes/etat_exactement_nul_reste_nul_sans_bruit": {
+    "erreur_max": 0.0,
+    "tolerance": 0.0
+  },
+  "historique_germes/symetrie_des_perturbations_initiales": {
+    "erreur_max": 0.0,
+    "tolerance": 1e-12
+  },
+  "germes_configures/convergence_pas_divise_par_deux": {
+    "erreur_max": 6.055156376305604e-13,
+    "tolerance": 1e-06
+  },
+  "germes_configures/convergence_evenements": {
+    "erreur_max": 4.607254915356407e-06,
+    "tolerance": 0.0001
+  },
+  "historique_bulle/racines_et_courbures": {
+    "erreur_max": 1.7763568394002505e-15,
+    "tolerance": 1e-11
+  },
+  "historique_bulle/seuil_degenere": {
+    "erreur_max": 4.440892098500626e-16,
+    "tolerance": 1e-12
+  },
+  "historique_bulle/absence_minimum_au_seuil": {
+    "erreur_max": 0,
+    "tolerance": 0
+  },
+  "historique_bulle/coexistence_analytique": {
+    "erreur_max": 1.1102230246251565e-16,
+    "tolerance": 1e-12
+  },
+  "historique_bulle/reduction_dimensionnelle": {
+    "erreur_max": 3.552713678800501e-15,
+    "tolerance": 1e-12
+  },
+  "historique_bulle/gradient_par_differences_finies": {
+    "erreur_max": 1.2677983107778346e-09,
+    "tolerance": 1e-07
+  },
+  "historique_bulle/balance_mecanique": {
+    "erreur_max": 8.881784197001252e-16,
+    "tolerance": 1e-11
+  },
+  "historique_bulle/convergence_RK4_pas_divise_par_deux": {
+    "erreur_max": 9.663644551238804e-09,
+    "tolerance": 1e-07
+  },
+  "historique_bulle/dissipation_energie_parametres_fixes": {
+    "erreur_max": 9.992007221626409e-16,
+    "tolerance": 1e-12
+  },
+  "historique_bulle/deux_bassins_attraction": {
+    "erreur_max": 1.9984014443252818e-15,
+    "tolerance": 1e-10
+  },
+  "historique_bulle/absence_creation_deterministe_depuis_zero": {
+    "erreur_max": 0.0,
+    "tolerance": 0
+  },
+  "historique_bulle/temps_atteinte_solution_exacte": {
+    "erreur_max": 8.326672684688674e-17,
+    "tolerance": 1e-12
+  },
+  "historique_bulle/contre_cas_sans_retroaction": {
+    "erreur_max": 0.0,
+    "tolerance": 1e-12
+  },
+  "historique_bulle/fraction_convertie_inferieure_5_pourcent": {
+    "erreur_max": 0,
+    "tolerance": 0
+  },
+  "AB/table_du_corpus": {
+    "erreur_max": 4.855299012875014e-07,
+    "tolerance": 5e-07
+  },
+  "AB/racines_configurees": {
+    "erreur_max": 6.522560269672795e-16,
+    "tolerance": 1e-10
+  },
+  "AB/derivee_barriere": {
+    "erreur_max": 4.192468594510501e-11,
+    "tolerance": 1e-08
+  },
+  "AB/symetrie_inclinaison": {
+    "erreur_max": 0.0,
+    "tolerance": 1e-12
+  },
+  "reciproque/convergence_pas_divise_par_deux": {
+    "erreur_max": 3.9968028886505635e-15,
+    "tolerance": 1e-06
+  },
+  "reciproque/dissipation": {
+    "erreur_max": 8.326672684688674e-17,
+    "tolerance": 1e-10
+  },
+  "reciproque/seuil_ordre_quatre": {
+    "erreur_max": 7.656538598001494e-17,
+    "tolerance": 1e-12
+  },
+  "germes_locaux/convergence_pas_divise_par_deux": {
+    "erreur_max": 6.055156376305604e-13,
+    "tolerance": 1e-06
+  },
+  "bulle/rappel_local_corpus": {
+    "erreur_max": 1.5792908314438137e-07,
+    "tolerance": 5e-07
+  },
+  "Jeans/equation_differentielle": {
+    "erreur_max": 1.9988944527371544e-11,
+    "tolerance": 1e-09
+  },
+  "Jeans/domaine_lineaire": {
+    "erreur_max": 0.0,
+    "tolerance": 1e-12
+  },
+  "Jeans/premier_passage_limite": {
+    "erreur_max": 4.163336342344337e-17,
+    "tolerance": 1e-12
+  },
+  "expansion/equation_differentielle": {
+    "erreur_max": 7.900949339223473e-11,
+    "tolerance": 1e-09
+  },
+  "fermeture/equation_maitresse": {
+    "erreur_max": 3.618727539844713e-11,
+    "tolerance": 1e-09
+  },
+  "probabilites/capture_uniforme": {
+    "erreur_max": 0.0,
+    "tolerance": 1e-14
+  },
+  "probabilites/Poisson": {
+    "erreur_max": 1.1102230246251565e-16,
+    "tolerance": 1e-14
+  }
+}

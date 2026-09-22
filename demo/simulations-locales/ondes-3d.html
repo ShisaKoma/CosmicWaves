@@ -1,0 +1,1349 @@
+<!doctype html>
+<html lang="fr" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Surfaces ondulantes — fermeture et attraction</title>
+<style>:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --icon-size: 16px;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --corner-shape: round;
+  --radius: var(--border-radius-lg, 10px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: var(--visualize-paint-gutter, 0px);
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: var(--corner-shape);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget > :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin-block: 6px;
+  border: 0;
+  background: var(--border);
+}
+
+.nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 8px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar:only-child {
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.nav-link,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn,
+.nav-link {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover,
+.nav-link:not(:disabled):not([aria-disabled="true"]):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.nav-pills .nav-link {
+  min-width: 0;
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.nav-justified .nav-link {
+  flex: 1 1 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+.btn:disabled,
+.nav-link:disabled,
+.nav-link[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type="file"]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: var(--corner-shape);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed="true"],
+  [aria-selected="true"],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .nav-link,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Keep small-screen WebKit from zooming when a text field receives focus. */
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type="file"]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type="color"] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="time"],
+    [type="week"]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html>body{padding:0}</style>
+<style>html>body{max-width:960px;margin:0 auto!important;padding:24px!important;box-sizing:border-box}header{margin-bottom:24px}header p{max-width:76ch}header nav{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:18px}@media(max-width:480px){html>body{padding:16px!important}}</style></head><body><header><nav><a href="automate-3d.html">Assemblages de cordes</a><a href="ONDES.md">Guide des ondes</a></nav><h1>Surfaces ondulantes</h1><p>Des surfaces colorées se croisent. Une fermeture peut faire naître un domaine central, puis activer déformation et capture locale 50/50. Son horloge commence à sa naissance. Modèle exploratoire, unités arbitraires.</p></header><style>
+#waves{max-width:1200px;margin:auto;padding:0 24px 40px}#w-canvas{width:100%;height:auto;aspect-ratio:12/7;display:block;border-radius:12px;touch-action:none;background:#101923} .w-layout{display:grid;grid-template-columns:minmax(0,1fr) 265px;gap:20px;align-items:start}.w-panel{padding:16px;border:1px solid var(--border);border-radius:12px}.w-panel label{display:block;margin-bottom:12px}.w-panel input,.w-panel select{width:100%}.w-panel input[type=checkbox]{width:auto}.w-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}#w-legend{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}.w-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}#w-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}#w-stats div{background:var(--card);padding:10px;border-radius:8px}#w-stats strong{display:block;font-size:1.3rem}#w-json{width:100%;font-family:monospace}.w-note{line-height:1.5;font-size:.9rem}#w-error{color:#d14949}@media(max-width:850px){.w-layout{grid-template-columns:1fr}#waves{padding:0 12px 24px}.w-panel{display:block}.w-panel label{min-width:0}.w-panel .btn{white-space:normal;width:100%;margin-bottom:8px}#w-stats{grid-template-columns:repeat(2,1fr)}}
+#waves [hidden]{display:none!important}#waves,#waves *{box-sizing:border-box}#waves section,#waves aside,#waves select,#waves input{min-width:0;max-width:100%}#waves .btn{white-space:normal}#w-stats div{min-width:0;overflow-wrap:anywhere}#w-legend{max-height:105px;overflow:auto}#waves .w-panel{overflow-wrap:anywhere}</style>
+<main id="waves">
+ <div class="w-layout"><section aria-label="Vue et résultats">
+  <canvas width="960" height="560" id="w-canvas" role="img" aria-label="Surfaces ondulantes colorées en trois dimensions et volumes détectés"></canvas>
+  <div class="w-toolbar"><button class="btn btn-primary" id="w-force" hidden>Forcer la sphère → Big Bang</button><button class="btn" id="w-return" hidden>Retour aux ondes</button></div>
+  <div id="w-cycle" class="w-panel" hidden><strong id="w-cycle-phase"></strong><progress id="w-cycle-progress" max="12" value="0" style="width:100%"></progress><p id="w-cycle-info" class="text-small" role="status"></p><p class="text-small">Intervention illustrative : fermeture parfaite, agrégation et expansion imposées. Les calculs d’ondes sont suspendus ; Pause et Un pas pilotent l’animation.</p></div>
+  <label class="form-label">Surfaces affichées<select class="form-select" id="w-focus"><option value="all">Toutes les surfaces</option></select></label>
+  <label class="form-label"><input id="w-voxels" type="checkbox"> Afficher les voxels qualifiés</label><div id="w-legend" class="text-small"></div>
+  <div class="w-toolbar"><button class="btn btn-primary" id="w-run">Démarrer</button><button class="btn" id="w-step">Un pas</button><button class="btn" id="w-reset">Recommencer</button><label for="w-zoom">Zoom</label><input id="w-zoom" type="range" min="50" max="160" value="100"><button class="btn" id="w-view">Vue initiale</button></div>
+  <p class="text-small">Glisser pour tourner · molette ou curseur pour zoomer. Les couleurs identifient les surfaces. Les petits cubes blancs représentent le volume qualifié, les croix dorées ses foyers attractifs. Une sphère centrale apparaît à la naissance de chaque domaine ; elle devient orange après rupture.</p>
+  <div id="w-stats" aria-live="off"></div>
+  <p id="w-status" role="status" class="w-note"></p><p id="w-error" role="alert" hidden></p>
+  <div class="w-panel"><strong>Domaine central — sphère illustrative</strong><label class="form-label">Domaine à inspecter<select class="form-select" id="w-domain"></select></label><p id="w-domain-info" class="w-note"></p><button class="btn" id="w-break" disabled>Rompre les liaisons</button><p class="text-small">Intervention enregistrée. La sphère rétrécit après rupture ; le contenu capté reste comptabilisé comme résidu.</p></div>
+  <button class="btn" id="w-export">Exporter l’expérience</button>
+ </section><aside class="w-panel" aria-label="Paramètres">
+  <label class="form-label">Graine<input class="form-control" id="w-seed" type="number" min="1" max="4294967295"></label>
+  <label class="form-label">Surfaces / couleurs<select class="form-select" id="w-colors"><option>10</option><option>11</option><option>26</option><option>32</option></select></label>
+  <label class="form-label">Condition d’agrégat<select class="form-select" id="w-criterion"><option value="enclosure">Fermeture multicolore</option><option value="intersection">Croisement seul (comparaison)</option></select></label>
+  <label class="form-label">Amplitude initiale<input class="form-control" id="w-amplitude" type="number" min="0" max="0.5" step="0.01"></label>
+  <label class="form-label">Vitesse des ondes<input class="form-control" id="w-waveSpeed" type="number" min="0.05" max="2" step="0.05"></label>
+  <label class="form-label">Demi-épaisseur de détection<input class="form-control" id="w-thickness" type="number" min="0.02" max="0.6" step="0.01"></label>
+  <label class="form-label">Persistance (pas consécutifs)<input class="form-control" id="w-holdSteps" type="number" min="1" max="100"></label>
+  <label class="form-label">Dissipation<input class="form-control" id="w-damping" type="number" min="0" max="2" step="0.01"></label>
+  <label class="form-label">Intensité attractive<input class="form-control" id="w-gravityStrength" type="number" min="0" max="5" step="0.1"></label>
+  <label class="form-label"><input id="w-gravityEnabled" type="checkbox"> Attraction après qualification</label>
+  <button class="btn btn-primary" id="w-apply">Appliquer et recommencer</button><button class="btn" id="w-prepared">Essai de fermeture préparée</button><p class="text-small" id="w-layout-note"></p>
+ </aside></div>
+ <details open><summary>Naissance du domaine et partage 50/50</summary><p class="w-note">Après qualification, une sphère de rayon minimal choisi apparaît près du centre commun, avec le même poids pour chaque surface. L’attraction déforme leur grille et transfère progressivement une quantité égale de contenu depuis chaque portion proche : au maximum 50 % par élément local, l’autre moitié reste sur les surfaces. Le rayon augmente avec la fraction captée, puis rétrécit après rupture des liaisons. Ces règles sont des conventions du modèle.</p><p class="w-note">L’horloge intérieure commence à zéro à la naissance du domaine. Avant celle-ci, seuls les pas et le paramètre de calcul sont affichés : ils ne sont pas identifiés à un temps physique. La simulation suppose encore une dynamique préalable ; elle ne démontre pas l’absence de causalité avant le Big Bang.</p></details>
+ <details><summary>Ce que le seuil signifie ici</summary><p class="w-note">Par défaut, l’union des surfaces doit isoler un volume local du bord de la boîte de détection, et toutes les couleurs doivent être présentes sur sa frontière. Le volume doit persister aux mêmes sites pendant plusieurs pas. Sa forme n’est pas imposée. Un simple croisement ne suffit donc pas ; l’option de comparaison permet de mesurer cette différence.</p><p class="w-note">La fermeture est un test sur des voxels, avec une épaisseur choisie : elle peut changer avec la résolution. Le contour pointillé indique le domaine inspecté. Aucun volume qui communique avec son bord n’est considéré comme fermé, même par un passage diagonal.</p></details>
+ <details><summary>Équation et limites du modèle</summary><p class="w-note">Chaque surface est un graphe 2D orienté dans un espace 3D fixe. Son déplacement normal suit ∂²h/∂t² = c²Δh − γ∂h/∂t + a<sub>normal</sub>, avec bords périodiques dans ses deux coordonnées. Les foyers détectés au pas précédent ajoutent une attraction adoucie, projetée sur sa normale. Leur charge initiale est le volume qualifié ; elle augmente avec la part captée dans le cycle des domaines, par convention.</p><p class="w-note">Cette règle explore le lien fermeture → attraction → déformation. Elle ne crée pas une masse à partir de l’énergie, ne résout pas la relativité et ne calcule ni un univers chaud ni une expansion cosmologique. L’énergie affichée est celle des ondes seules ; elle exclut le couplage attractif et n’est donc pas un bilan total. Les couleurs sont des identifiants, sans identification à des particules.</p><a href="ONDES.md">Lire les équations et les vérifications</a></details>
+ <details><summary>Configuration complète — résolution et pas temporel</summary><p class="w-note">Pour une comparaison, conservez la graine et l’intervalle du paramètre de calcul dt × nombre de pas. Changer dt impose aussi d’adapter holdSteps si vous voulez conserver la durée de persistance. Appliquer le JSON recommence en pause.</p><label for="w-json">Paramètres appliqués</label><textarea class="form-control" id="w-json" rows="20" spellcheck="false"></textarea><button class="btn" id="w-json-apply">Appliquer le JSON</button></details>
+</main>
+
+<script>
+/* Surfaces ondulantes 2D plongées en 3D. Modèle effectif exploratoire. */
+(function(global){
+ 'use strict';
+ const dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
+ const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+ const unit=a=>{const n=Math.hypot(...a);return a.map(x=>x/n);};
+ const COLORS=['#69C9FF','#FF926E','#BD9AFF','#74DFA8','#FFD86A','#F793CE','#A8D578','#92A8FF'];
+ const defaults=()=>({version:2,seed:728931,colors:10,domainEnabled:true,captureFraction:.5,captureRadius:.35,minimumRadius:.05,shrinkRate:1.5,initialLayout:'random',resolution:20,detectorResolution:20,criterion:'enclosure',amplitude:.22,cycles:1,waveSpeed:.6,damping:.02,thickness:.08,holdSteps:3,gravityEnabled:true,gravityStrength:.6,softening:.25,dt:.02});
+ function hexColor(h){const a=.65*.5,f=n=>{const k=(n+h/30)%12;return Math.round(255*(.65-a*Math.max(-1,Math.min(k-3,9-k,1)))).toString(16).padStart(2,'0');};return '#'+f(0)+f(8)+f(4);}
+ for(let i=8;i<32;i++)COLORS.push(hexColor((i*137.507764)%360));
+ const colorMask=count=>2**count-1;
+ // A free region is enclosed only if even diagonal paths cannot reach the box boundary.
+ function enclosedMask(occupied,N,allColors){
+   const seen=new Uint8Array(occupied.length),mask=new Uint8Array(occupied.length);let regions=0;
+   for(let start=0;start<occupied.length;start++)if(!occupied[start]&&!seen[start]){
+     const queue=[start];seen[start]=1;let exterior=false,boundaryColors=0;
+     for(let cursor=0;cursor<queue.length;cursor++){
+       const index=queue[cursor],p=[index%N,Math.floor(index/N)%N,Math.floor(index/N**2)];
+       if(p.some(x=>x===0||x===N-1))exterior=true;
+       for(let z=-1;z<=1;z++)for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++){
+         if(!x&&!y&&!z)continue;const q=[p[0]+x,p[1]+y,p[2]+z];if(q.some(v=>v<0||v>=N))continue;
+         const k=q[0]+N*(q[1]+N*q[2]);if(occupied[k])boundaryColors=(boundaryColors|occupied[k])>>>0;else if(!seen[k]){seen[k]=1;queue.push(k);}
+       }
+     }
+     if(!exterior&&boundaryColors===allColors){regions++;for(const k of queue)mask[k]=1;}
+   }
+   return{mask,regions};
+ }
+ function validate(c){
+   if(c&&c.version===1)c={...defaults(),...c,version:2,domainEnabled:false};
+   const d=defaults();if(!c||typeof c!=='object'||Array.isArray(c))throw Error('Configuration requise.');
+   for(const key of Object.keys(c))if(!Object.hasOwn(d,key))throw Error('Paramètre inconnu : '+key);
+   for(const key of Object.keys(d))if(!Object.hasOwn(c,key))throw Error('Paramètre manquant : '+key);
+   function n(key,lo,hi,int=false){const v=c[key];if(typeof v!=='number'||!Number.isFinite(v)||v<lo||v>hi||(int&&!Number.isInteger(v)))throw Error(key+' : valeur entre '+lo+' et '+hi+'.');}
+   n('version',2,2,true);n('seed',1,4294967295,true);n('colors',2,32,true);n('resolution',12,32,true);n('detectorResolution',8,24,true);
+   n('amplitude',0,.5);n('cycles',1,3,true);n('waveSpeed',.05,2);n('damping',0,2);n('thickness',.02,.6);n('holdSteps',1,100,true);
+   n('gravityStrength',0,5);n('softening',.15,1);n('dt',.001,.04);if(typeof c.gravityEnabled!=='boolean')throw Error('gravityEnabled doit être booléen.');
+   n('captureFraction',0,1);n('captureRadius',.1,.8);n('minimumRadius',.01,.2);n('shrinkRate',.1,10);
+   if(typeof c.domainEnabled!=='boolean')throw Error('domainEnabled doit être booléen.');
+   if(!['random','prepared'].includes(c.initialLayout))throw Error('Disposition inconnue.');
+   if(!['enclosure','intersection'].includes(c.criterion))throw Error('Critère : enclosure ou intersection.');
+   if(c.waveSpeed*c.dt/(3.2/c.resolution)>.5)throw Error('Pas temporel trop grand pour la résolution et la vitesse des ondes.');
+   return JSON.parse(JSON.stringify(c));
+ }
+ class World{
+   constructor(c=defaults()){
+     c=validate(c);this.config=c;this.seed=c.seed;this.generation=0;this.time=0;this.length=3.2;this.surfaces=[];this.sources=[];this.history=[];this.domains=[];this.events=[];this.nextDomainId=1;
+     this.ages=new Uint32Array(c.detectorResolution**3);this.mask=new Uint8Array(this.ages.length);
+     const N=c.resolution,dx=this.length/N,k=2*Math.PI*c.cycles/this.length;
+     for(let color=0;color<c.colors;color++){
+       const rz=2*this.random()-1,ra=2*Math.PI*this.random(),z=c.initialLayout==='prepared'?1-2*(color+.5)/c.colors:rz,a=c.initialLayout==='prepared'?color*Math.PI*(3-Math.sqrt(5)):ra,normal=[Math.sqrt(1-z*z)*Math.cos(a),Math.sqrt(1-z*z)*Math.sin(a),z];
+       const u=unit(cross(normal,Math.abs(normal[2])<.9?[0,0,1]:[0,1,0])),v=cross(normal,u);
+       const offset=(this.random()-.5)*.24;
+       const s={color:COLORS[color],normal,u,v,offset:c.initialLayout==='prepared'?.55:offset,content:new Float64Array(N*N).fill(1),h:new Float64Array(N*N),velocity:new Float64Array(N*N)};
+       const phase=2*Math.PI*this.random(),phase2=2*Math.PI*this.random();
+       for(let j=0;j<N;j++)for(let i=0;i<N;i++){
+         const p=k*(-this.length/2+i*dx)+phase,q=k*(-this.length/2+j*dx)+phase2,index=i+N*j;
+         s.h[index]=c.amplitude/Math.sqrt(2)*(Math.sin(p)+Math.sin(q));
+         s.velocity[index]=-c.waveSpeed*k*c.amplitude/Math.sqrt(2)*(Math.cos(p)+Math.cos(q));
+       }this.surfaces.push(s);
+     }
+     this.detect(false);this.stats=this.summary();this.history.push({...this.stats});
+   }
+   random(){let s=this.seed;s^=s<<13;s^=s>>>17;s^=s<<5;this.seed=s>>>0;return this.seed/4294967296;}
+   position(s,i,j,h=s.h[i+this.config.resolution*j]){
+     const dx=this.length/this.config.resolution,u=-this.length/2+i*dx,v=-this.length/2+j*dx;
+     return s.normal.map((n,k)=>n*(s.offset+h)+s.u[k]*u+s.v[k]*v);
+   }
+   heightAt(s,u,v){
+     const N=this.config.resolution,L=this.length;if(Math.abs(u)>L/2||Math.abs(v)>L/2)return null;
+     const x=(u+L/2)*N/L,y=(v+L/2)*N/L,i=Math.floor(x),j=Math.floor(y),a=x-i,b=y-j;
+     const h=(p,q)=>s.h[(p%N)+N*(q%N)];
+     return(1-a)*(1-b)*h(i,j)+a*(1-b)*h(i+1,j)+(1-a)*b*h(i,j+1)+a*b*h(i+1,j+1);
+   }
+   acceleration(s,sources){
+     const c=this.config,N=c.resolution,dx=this.length/N,result=new Float64Array(N*N);
+     for(let j=0;j<N;j++)for(let i=0;i<N;i++){
+       const k=i+N*j,h=s.h[k];
+       result[k]=c.waveSpeed**2*(s.h[(i+1)%N+N*j]+s.h[(i+N-1)%N+N*j]+s.h[i+N*((j+1)%N)]+s.h[i+N*((j+N-1)%N)]-4*h)/(dx*dx);
+       if(c.gravityEnabled&&c.gravityStrength>0&&sources.length){
+         const p=this.position(s,i,j);
+         for(const source of sources){const delta=source.center.map((x,d)=>x-p[d]),r2=dot(delta,delta)+c.softening**2;result[k]+=c.gravityStrength*source.charge*dot(delta,s.normal)/r2**1.5;}
+       }
+     }return result;
+   }
+   detect(advance=true){
+     const c=this.config,N=c.detectorResolution,dx=2/N,allColors=colorMask(c.colors),occupied=new Uint32Array(N**3);let overlaps=0,qualified=0;
+     for(let z=0;z<N;z++)for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+       const index=x+N*(y+N*z),p=[x,y,z].map(t=>-1+(t+.5)*dx);
+       for(let i=0;i<this.surfaces.length;i++){const s=this.surfaces[i],h=this.heightAt(s,dot(p,s.u),dot(p,s.v));if(h!==null&&Math.abs(dot(p,s.normal)-s.offset-h)<=c.thickness)occupied[index]|=1<<i;}
+       if(occupied[index]===allColors)overlaps++;
+     }
+     const enclosed=c.criterion==='enclosure'?enclosedMask(occupied,N,allColors):{mask:Uint8Array.from(occupied,x=>x===allColors?1:0),regions:0};
+     this.enclosedRegions=enclosed.regions;this.candidateVoxels=0;
+     for(let index=0;index<occupied.length;index++){
+       const candidate=enclosed.mask[index];this.candidateVoxels+=candidate;
+       if(candidate){if(advance)this.ages[index]++;}else this.ages[index]=0;
+       this.mask[index]=candidate&&this.ages[index]>=c.holdSteps?1:0;qualified+=this.mask[index];
+     }
+     const seen=new Uint8Array(this.mask.length),sources=[];
+     for(let k=0;k<this.mask.length;k++)if(this.mask[k]&&!seen[k]){
+       const queue=[k],sum=[0,0,0];seen[k]=1;
+       for(let cursor=0;cursor<queue.length;cursor++){
+         const a=queue[cursor],p=[a%N,Math.floor(a/N)%N,Math.floor(a/N**2)];
+         for(let d=0;d<3;d++){sum[d]+=-1+(p[d]+.5)*dx;for(const direction of [-1,1]){const q=[...p];q[d]+=direction;if(q[d]<0||q[d]>=N)continue;const b=q[0]+N*(q[1]+N*q[2]);if(this.mask[b]&&!seen[b]){seen[b]=1;queue.push(b);}}}
+       }
+       sources.push({key:k,center:sum.map(x=>x/queue.length),voxels:queue.length,cells:queue,charge:queue.length*dx**3});
+     }
+     this.sources=sources;this.overlaps=overlaps;this.qualified=qualified;
+   }
+   activeAttractors(){
+     if(!this.config.domainEnabled)return this.sources;
+     return this.domains.filter(d=>d.phase==='linked').map(d=>({center:d.center,charge:d.initialCharge*(1+this.captureProgress(d))}));
+   }
+   captureProgress(d){return d.targetPerSurface>0?Math.min(1,d.captured.reduce((a,b)=>a+b,0)/(d.targetPerSurface*this.config.colors)):0;}
+   createDomain(source){
+     const c=this.config,N=c.resolution,dx=this.length/N,count=Math.min(N*N,Math.max(1,Math.round(Math.PI*c.captureRadius**2/dx**2)));
+     const patches=this.surfaces.map(s=>Array.from({length:N*N},(_,k)=>({k,d:this.position(s,k%N,Math.floor(k/N)).reduce((a,x,i)=>a+(x-source.center[i])**2,0)})).sort((a,b)=>a.d-b.d||a.k-b.k).slice(0,count).map(p=>p.k));
+     const anchors=patches.map((p,i)=>this.position(this.surfaces[i],p[0]%N,Math.floor(p[0]/N))),mean=[0,1,2].map(i=>anchors.reduce((a,p)=>a+p[i],0)/c.colors);
+     const D=c.detectorResolution,point=k=>[k%D,Math.floor(k/D)%D,Math.floor(k/D**2)].map(x=>-1+(x+.5)*2/D);
+     const center=point(source.cells.reduce((best,k)=>{const dist=a=>point(a).reduce((v,x,i)=>v+(x-mean[i])**2,0);return dist(k)<dist(best)?k:best;},source.cells[0]));
+     const floor=1-c.captureFraction,targetPerSurface=Math.min(...patches.map((patch,i)=>patch.reduce((sum,k)=>sum+Math.max(0,this.surfaces[i].content[k]-floor),0)));
+     const d={id:this.nextDomainId++,bornStep:this.generation,internalTime:0,phase:'linked',center,patches,anchors,cells:[...source.cells],radius:c.minimumRadius,initialCharge:source.charge,targetPerSurface,captured:Array(c.colors).fill(0),breakStep:null,breakReason:null};
+     this.domains.push(d);this.events.push({step:this.generation,type:'birth',domainId:d.id,center:[...center]});return d;
+   }
+   syncDomains(){
+     const previous=this.domains.filter(d=>d.cells.length),used=new Set();
+     for(const source of this.sources){
+       const cells=new Set(source.cells);let match=null,best=0;
+       for(const d of previous)if(!used.has(d.id)){let shared=0;for(const k of d.cells)if(cells.has(k))shared++;if(shared>best){best=shared;match=d;}}
+       if(match){used.add(match.id);match.cells=[...source.cells];}else this.createDomain(source);
+     }
+     for(const d of previous)if(!used.has(d.id)){d.cells=[];if(d.phase==='linked')this.breakDomain(d.id,'loss-of-closure',false);}
+   }
+   breakDomain(id,reason='manual',record=true){
+     const d=this.domains.find(d=>d.id===id);if(!d||d.phase!=='linked')return false;
+     d.phase='broken';d.breakStep=this.generation;d.breakReason=reason;
+     this.events.push({step:this.generation,type:'break',domainId:id,reason});
+     if(record){this.stats=this.summary();this.history.push({...this.stats});}return true;
+   }
+   capture(){
+     const c=this.config;if(!c.gravityEnabled||c.gravityStrength===0)return;
+     const floor=1-c.captureFraction,rate=1-Math.exp(-c.gravityStrength*c.dt);
+     for(const d of this.domains)if(d.phase==='linked'){
+       const available=d.patches.map((patch,i)=>patch.reduce((sum,k)=>sum+Math.max(0,this.surfaces[i].content[k]-floor),0));
+       const common=Math.max(0,Math.min(d.targetPerSurface-d.captured[0],...available)),amount=common*rate;
+       if(amount>0)for(let i=0;i<c.colors;i++){const s=this.surfaces[i];for(const k of d.patches[i])s.content[k]-=amount*Math.max(0,s.content[k]-floor)/available[i];d.captured[i]+=amount;}
+       d.radius=c.minimumRadius*(1+this.captureProgress(d));
+     }
+   }
+   domainEvolution(){
+     for(const d of this.domains)if(d.phase==='broken'){
+       d.radius*=Math.exp(-this.config.shrinkRate*this.config.dt);
+       if(d.radius<this.config.minimumRadius*.01){d.radius=0;d.phase='remnant';this.events.push({step:this.generation,type:'remnant',domainId:d.id});}
+     }
+     const b=this.contentBalance();if(Math.abs(b.error)>1e-7)throw Error('Bilan de contenu incohérent.');
+   }
+   contentBalance(){const initial=this.config.colors*this.config.resolution**2,remaining=this.surfaces.reduce((a,s)=>a+s.content.reduce((u,v)=>u+v,0),0),captured=this.domains.reduce((a,d)=>a+d.captured.reduce((u,v)=>u+v,0),0);return{initial,remaining,captured,error:remaining+captured-initial};}
+   energy(){
+     const c=this.config,N=c.resolution,dx=this.length/N;let e=0;
+     for(const s of this.surfaces)for(let j=0;j<N;j++)for(let i=0;i<N;i++){
+       const k=i+N*j,du=(s.h[(i+1)%N+N*j]-s.h[k])/dx,dv=(s.h[i+N*((j+1)%N)]-s.h[k])/dx;
+       e+=(s.velocity[k]**2+c.waveSpeed**2*(du*du+dv*dv))*dx*dx/2;
+     }return e;
+   }
+   summary(){const b=this.contentBalance();return{generation:this.generation,calculationParameter:this.time,internalTime:this.domains.length?Math.max(...this.domains.map(d=>d.internalTime)):null,overlapVoxels:this.overlaps,enclosedRegions:this.enclosedRegions,candidateVoxels:this.candidateVoxels,qualifiedVoxels:this.qualified,aggregates:this.sources.length,activeSources:this.config.gravityEnabled&&this.config.gravityStrength>0?this.activeAttractors().length:0,domainsBorn:this.domains.length,linkedDomains:this.domains.filter(d=>d.phase==='linked').length,brokenDomains:this.domains.filter(d=>d.phase==='broken').length,capturedContent:b.captured,remainingContent:b.remaining,contentBalanceError:b.error,waveEnergy:this.energy(),maxDisplacement:Math.max(...this.surfaces.map(s=>Math.max(...s.h.map(Math.abs))))};}
+   step(){
+     const c=this.config,dt=c.dt,damping=Math.exp(-c.damping*dt/2),sources=this.activeAttractors();
+     // Velocity Verlet, exact damping half-steps. Sources frozen from the previous detection.
+     for(const s of this.surfaces){
+       const a=this.acceleration(s,sources);
+       for(let k=0;k<s.h.length;k++){s.velocity[k]=s.velocity[k]*damping+a[k]*dt/2;s.h[k]+=s.velocity[k]*dt;}
+       const b=this.acceleration(s,sources);
+       for(let k=0;k<s.h.length;k++){s.velocity[k]=(s.velocity[k]+b[k]*dt/2)*damping;if(!Number.isFinite(s.h[k])||!Number.isFinite(s.velocity[k]))throw Error('Évolution non finie : réduire le pas ou le couplage.');}
+     }
+     this.generation++;this.time=this.generation*dt;
+     if(c.domainEnabled){for(const d of this.domains)if(d.phase!=='remnant')d.internalTime+=dt;this.capture();}
+     this.detect();if(c.domainEnabled){this.syncDomains();this.domainEvolution();}this.stats=this.summary();this.history.push({...this.stats});return this.stats;
+   }
+   experiment(){return{format:'wave-surfaces-v2',domains:JSON.parse(JSON.stringify(this.domains)),events:JSON.parse(JSON.stringify(this.events)),contentBalance:this.contentBalance(),config:{...this.config},history:this.history.map(s=>({...s})),sources:this.sources.map(s=>({...s,center:[...s.center]})),surfaces:this.surfaces.map(s=>({...s,normal:[...s.normal],u:[...s.u],v:[...s.v],content:Array.from(s.content),h:Array.from(s.h),velocity:Array.from(s.velocity)})),ages:Array.from(this.ages),note:'Surfaces 2D à déplacement normal dans un espace 3D fixé. Fermeture discrète : région libre sans chemin extérieur à 26 voisins, bordée par toutes les couleurs. Alternative : croisement sans fermeture. Persistance mesurée par site, non par objet suivi. Charge attractive = volume qualifié, sans conversion d’énergie ni masse physique identifiée. Domaines v2 : sphère illustrative centrale, capture locale à parts égales, horloge conventionnelle démarrée à la naissance, rétrécissement après rupture des liaisons. Le paramètre numérique préalable ne démontre ni temps physique préalable ni absence de causalité. Aucun calcul de métrique ou de cosmologie.'};}
+ }
+ const api={World,defaults,validate,COLORS,enclosedMask,colorMask};if(typeof module!=='undefined'&&module.exports)module.exports=api;else global.WaveSurfaces=api;
+})(globalThis);
+
+</script>
+<script>
+/* Séquence imposée par l'utilisateur. Ne modifie jamais le solveur d'ondes. */
+(function(global){
+ 'use strict';
+ const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
+ class Sequence{
+   constructor(world){
+     this.elapsed=0;this.duration=12;this.sourceStep=world.generation;this.sourceConfig={...world.config};this.particles=[];this.patchKeys=new Set();
+     const N=world.config.resolution,dx=world.length/N,K=Math.min(N*N,Math.max(1,Math.round(Math.PI*world.config.captureRadius**2/dx**2))),C=world.surfaces.length;
+     const reference=world.domains.find(d=>d.phase==='linked')?.center||[0,0,0];
+     const patches=world.surfaces.map(s=>Array.from({length:N*N},(_,k)=>({k,origin:world.position(s,k%N,Math.floor(k/N))})).sort((a,b)=>{const d=p=>p.reduce((sum,x,i)=>sum+(x-reference[i])**2,0);return d(a.origin)-d(b.origin)||a.k-b.k;}).slice(0,K));
+     this.center=[0,1,2].map(axis=>patches.reduce((sum,p)=>sum+p[0].origin[axis],0)/C);
+     this.localContent=0;this.capturedContent=0;
+     for(let j=0;j<K;j++)for(let i=0;i<C;i++){
+       const {k,origin}=patches[i][j],index=j*C+i,z=1-2*(index+.5)/(K*C),angle=index*Math.PI*(3-Math.sqrt(5)),r=Math.sqrt(1-z*z),content=world.surfaces[i].content[k];
+       const captured=Math.max(0,content-(1-world.config.captureFraction));
+       this.localContent+=content;this.capturedContent+=captured;this.patchKeys.add(i+':'+k);
+       this.particles.push({surface:i,k,color:world.surfaces[i].color,origin:[...origin],direction:[r*Math.cos(angle),z,r*Math.sin(angle)],captured});
+     }
+     this.remainingContent=this.localContent-this.capturedContent;
+   }
+   get phase(){return this.elapsed<2?'fermeture':this.elapsed<5?'agregation':this.elapsed<12?'expansion':'terminee';}
+   get radius(){return this.elapsed<2?.65:this.elapsed<5?.65+(.16-.65)*smooth((this.elapsed-2)/3):.16+(2.05-.16)*smooth((this.elapsed-5)/7);}
+   get expansion(){return smooth((this.elapsed-5)/7);}
+   get assembly(){return smooth(this.elapsed/2);}
+   step(seconds){if(!Number.isFinite(seconds)||seconds<0)throw Error('Durée d’animation invalide.');this.elapsed=Math.min(this.duration,this.elapsed+seconds);return this.phase;}
+   position(p){const target=this.center.map((x,i)=>x+this.radius*p.direction[i]),q=this.assembly;return p.origin.map((x,i)=>x+(target[i]-x)*q);}
+   deform(position,surface,k){if(!this.patchKeys.has(surface+':'+k))return position;const q=.32*smooth(this.elapsed/5);return position.map((x,i)=>x+(this.center[i]-x)*q);}
+   export(){return{kind:'forced-spherical-illustration-v1',forced:true,sourceStep:this.sourceStep,sourceConfig:{...this.sourceConfig},elapsed:this.elapsed,duration:this.duration,phase:this.phase,center:[...this.center],radius:this.radius,localContent:this.localContent,capturedContent:this.capturedContent,remainingContent:this.remainingContent,particles:this.particles.map(p=>({...p,origin:[...p.origin],direction:[...p.direction]})),note:'Fermeture sphérique imposée, agrégation puis expansion prescrites. Répartition illustrative du contenu transférable des patches présents ; aucune modification du monde source, aucun événement spontané ni calcul cosmologique.'};}
+ }
+ const api={Sequence};if(typeof module!=='undefined'&&module.exports)module.exports=api;else global.WaveIllustration=api;
+})(globalThis);
+
+</script>
+<script>
+(function(){
+ 'use strict';
+ const $=id=>document.getElementById('w-'+id),canvas=$('canvas'),ctx=canvas.getContext('2d');
+ const fields=['seed','colors','criterion','amplitude','waveSpeed','thickness','holdSteps','damping','gravityStrength','gravityEnabled'];
+ let world=new WaveSurfaces.World(),running=false,timer=null,yaw=.65,pitch=.45,zoom=1,drag=null,illustration=null,illustrations=[],lastFrame=0;
+ function pause(){running=false;clearTimeout(timer);$('run').textContent='Démarrer';}
+ function fail(e){pause();$('error').hidden=false;$('error').textContent=e.message;}
+ function controls(){if(!Array.from($('colors').options).some(o=>Number(o.value)===world.config.colors)){const o=document.createElement('option');o.value=world.config.colors;o.textContent=world.config.colors+' (ancien réglage)';$('colors').append(o);}$('focus').innerHTML='<option value="all">Toutes les surfaces</option>'+world.surfaces.map((s,i)=>'<option value="'+i+'">Surface '+(i+1)+'</option>').join('');$('layout-note').textContent=world.config.initialLayout==='prepared'?'Disposition préparée : surfaces autour du centre, faible amplitude. Ce témoin facilite une fermeture ; il ne mesure pas sa fréquence spontanée.':'Disposition aléatoire. Le bouton d’essai prépare une enveloppe avec les surfaces choisies, puis recommence en pause.';for(const k of fields){if(k==='gravityEnabled')$(k).checked=world.config[k];else $(k).value=world.config[k];}$('json').value=JSON.stringify(world.config,null,2);$('legend').innerHTML=world.surfaces.map((s,i)=>'<span><i class="w-dot" style="background:'+s.color+'"></i>Surface '+(i+1)+'</span>').join('');}
+ function restart(c){try{const next=new WaveSurfaces.World(c);pause();illustration=null;illustrations=[];world=next;$('error').hidden=true;controls();render();}catch(e){fail(e);}}
+ function displayZoom(){return zoom/(1+(illustration?.expansion||0)*.6);}
+ function project(p){const a=p[0]*Math.cos(yaw)+p[2]*Math.sin(yaw),b=-p[0]*Math.sin(yaw)+p[2]*Math.cos(yaw),y=p[1]*Math.cos(pitch)-b*Math.sin(pitch),z=p[1]*Math.sin(pitch)+b*Math.cos(pitch);return[480+a*112*displayZoom(),280-y*112*displayZoom(),z];}
+ function path(points){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));}
+ function cube(center,r,color,dashed=false){const p=[];for(let i=0;i<8;i++)p.push(project(center.map((x,d)=>x+((i>>d&1)?r:-r))));ctx.strokeStyle=color;ctx.lineWidth=1;ctx.setLineDash(dashed?[4,5]:[]);for(let i=0;i<8;i++)for(let d=0;d<3;d++)if(!(i>>d&1)){path([p[i],p[i|1<<d]]);ctx.stroke();}ctx.setLineDash([]);}
+ function render(){
+   ctx.fillStyle='#101923';ctx.fillRect(0,0,960,560);cube([0,0,0],1,'#7b899d66',true);
+   const N=world.config.resolution,faces=[];
+   for(let si=0;si<world.surfaces.length;si++){const s=world.surfaces[si];if($('focus').value!=='all'&&Number($('focus').value)!==si)continue;const pts=[];for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const k=i%N+N*(j%N),position=world.position(s,i,j,s.h[k]);pts.push(project(illustration?illustration.deform(position,si,k):position));};
+    for(let j=0;j<N;j++)for(let i=0;i<N;i++){const k=i+(N+1)*j,ps=[pts[k],pts[k+1],pts[k+N+2],pts[k+N+1]];faces.push({ps,z:ps.reduce((v,p)=>v+p[2],0)/4,color:s.color,content:s.content[i+N*j]});}}
+   faces.sort((a,b)=>a.z-b.z);const opacity=($('focus').value==='all'?Math.sqrt(4/world.config.colors):1)*(illustration?1-.8*illustration.expansion:1);for(const f of faces){path(f.ps);ctx.closePath();ctx.fillStyle=f.color;ctx.globalAlpha=.08*opacity*f.content;ctx.fill();ctx.strokeStyle=f.color;ctx.globalAlpha=.5*opacity*f.content;ctx.lineWidth=.65;ctx.stroke();}ctx.globalAlpha=1;
+   const D=world.config.detectorResolution,dx=2/D;
+   for(let k=0;k<world.mask.length;k++)if(!illustration&&world.mask[k]&&$('voxels').checked)cube([k%D,Math.floor(k/D)%D,Math.floor(k/D**2)].map(x=>-1+(x+.5)*dx),dx*.35,'#edf6ff88');
+   for(const s of (illustration?[]:world.activeAttractors())){const p=project(s.center);ctx.strokeStyle=world.stats.activeSources?'#FFD86A':'#f0f4ff';ctx.lineWidth=2;path([[p[0]-5,p[1]],[p[0]+5,p[1]]]);ctx.stroke();path([[p[0],p[1]-5],[p[0],p[1]+5]]);ctx.stroke();}
+   for(const d of world.domains)if(!illustration&&d.radius>0){
+     const p=project(d.center),r=Math.max(1,d.radius*112*displayZoom()),color=d.phase==='linked'?'#fff0ac':'#ff9b67';
+     ctx.fillStyle=color+'35';ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p[0],p[1],r,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.beginPath();ctx.ellipse(p[0],p[1],r,r*.35,0,0,Math.PI*2);ctx.stroke();ctx.font='12px system-ui';ctx.fillStyle=color;ctx.fillText('D'+d.id,p[0]+r+4,p[1]-r-4);
+     if(d.phase==='linked')for(let i=0;i<d.patches.length;i++){const k=d.patches[i][0],anchor=project(world.position(world.surfaces[i],k%N,Math.floor(k/N)));ctx.strokeStyle=world.surfaces[i].color+'99';ctx.lineWidth=.7;path([anchor,p]);ctx.stroke();}
+   }
+   if(illustration)drawIllustration();
+   ctx.font='14px system-ui';ctx.fillStyle='#b8c6d8';ctx.fillText(illustration?'SÉQUENCE FORCÉE · EXPANSION ILLUSTRATIVE':'SURFACES 2D · ESPACE 3D FIXE',20,28);ctx.fillText('Pas '+world.generation+' · paramètre numérique '+world.time.toFixed(2),20,538);
+   const s=world.stats,items=[['Pas de calcul',s.generation],['Horloge intérieure (max.)',s.internalTime===null?'Pas encore née':s.internalTime.toFixed(2)],['Voxels toutes couleurs',s.overlapVoxels],['Régions fermées',world.config.criterion==='enclosure'?s.enclosedRegions:'—'],['Voxels qualifiés',s.qualifiedVoxels],['Agrégats / foyers actifs',s.aggregates+' / '+s.activeSources],['Contenu capté',s.capturedContent.toFixed(3)],['Écart du bilan',Math.abs(s.contentBalanceError).toExponential(1)],['Énergie des ondes seules',s.waveEnergy.toFixed(4)]];
+   $('stats').innerHTML=items.map(([name,value])=>'<div><span class="text-small">'+name+'</span><strong>'+value+'</strong></div>').join('');
+   const selected=$('domain').value,signature=world.domains.map(d=>d.id+':'+d.phase).join(',');
+   if($('domain').dataset.signature!==signature){$('domain').dataset.signature=signature;$('domain').innerHTML=world.domains.length?world.domains.map(d=>'<option value="'+d.id+'">Domaine '+d.id+' · '+({linked:'lié',broken:'rompu',remnant:'résidu'})[d.phase]+'</option>').join(''):'<option value="">Aucun domaine né</option>';if(world.domains.some(d=>String(d.id)===selected))$('domain').value=selected;}
+   domainInfo();
+   $('force').hidden=world.generation===0;$('force').disabled=!!illustration&&illustration.phase!=='terminee';$('force').textContent=illustration?'Rejouer la sphère → Big Bang':'Forcer la sphère → Big Bang';
+   $('return').hidden=!illustration;$('cycle').hidden=!illustration;
+   $('run').disabled=!!illustration&&illustration.phase==='terminee';$('step').disabled=!!illustration&&illustration.phase==='terminee';
+   $('step').textContent=illustration?'Un pas d’animation':'Un pas';
+   if(illustration){const a=illustration;$('cycle-phase').textContent=({fermeture:'1 / 3 · Fermeture sphérique parfaite',agregation:'2 / 3 · Agrégation centrale',expansion:'3 / 3 · Expansion « Big Bang »',terminee:'Séquence terminée · Expansion illustrative'})[a.phase];$('cycle-progress').value=a.elapsed;$('cycle-info').textContent='Animation '+a.elapsed.toFixed(1)+' / 12 s · contenu local '+a.localContent.toFixed(2)+' = part agrégée '+a.capturedContent.toFixed(2)+' + part restante '+a.remainingContent.toFixed(2)+'. Monde source suspendu au pas '+a.sourceStep+'.';}
+
+   $('status').textContent=illustration?'Les compteurs ci-dessus restent ceux du calcul suspendu. La fermeture et l’expansion affichées sont forcées.':(running?'En cours. ':'En pause. ')+(s.aggregates?'La condition persiste sur '+s.qualifiedVoxels+' voxel(s). '+(s.activeSources?'Ces foyers agiront sur les surfaces au prochain pas.':'Aucun foyer actif : intensité nulle, attraction désactivée ou liaisons rompues.'):(world.config.criterion==='enclosure'?'Aucun agrégat fermé persistant à ce pas. Les croisements seuls ne déclenchent pas l’attraction.':'Aucun croisement de toutes les couleurs assez persistant à ce pas.'));
+ }
+ function drawIllustration(){
+   const a=illustration,center=project(a.center),radius=a.radius*112*displayZoom();
+   const glow=ctx.createRadialGradient(center[0],center[1],0,center[0],center[1],Math.max(6,radius*1.5));glow.addColorStop(0,'#fff5ce55');glow.addColorStop(.4,'#aabbff22');glow.addColorStop(1,'#9bcaff00');ctx.fillStyle=glow;ctx.fillRect(center[0]-radius*1.5,center[1]-radius*1.5,radius*3,radius*3);
+   if(a.assembly>.01){ctx.strokeStyle='#e3ecff'+Math.round(110*a.assembly).toString(16).padStart(2,'0');ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(center[0],center[1],radius,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.ellipse(center[0],center[1],radius,radius*.3,0,0,Math.PI*2);ctx.stroke();}
+   const points=a.particles.filter(p=>p.captured>0).map(p=>({p,q:project(a.position(p))})).sort((x,y)=>x.q[2]-y.q[2]);
+   for(const {p,q} of points){ctx.fillStyle=p.color;ctx.globalAlpha=.9;ctx.beginPath();ctx.arc(q[0],q[1],Math.max(1.7,3.3*zoom),0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;
+ }
+ function domainInfo(){const d=world.domains.find(d=>String(d.id)===$('domain').value);$('break').disabled=!!illustration||!d||d.phase!=='linked';$('domain-info').textContent=d?'Naissance au pas '+d.bornStep+' · horloge '+d.internalTime.toFixed(2)+' · rayon '+d.radius.toFixed(4)+' · cible captée '+(100*world.captureProgress(d)).toFixed(1)+' % · '+d.captured[0].toFixed(4)+' unité(s) par surface.':'La sphère apparaîtra si le seuil est franchi. Aucune naissance n’est garantie.';}
+ function advance(){try{if(illustration){illustration.step(.1);if(illustration.phase==='terminee')pause();}else world.step();render();}catch(e){fail(e);}}
+ function tick(){if(!running)return;if(illustration){const now=performance.now();illustration.step(Math.min(.1,(now-lastFrame)/1000));lastFrame=now;if(illustration.phase==='terminee')pause();render();}else advance();if(running)timer=setTimeout(tick,illustration?16:35);}
+ $('run').onclick=()=>{if(running){pause();render();}else{if(illustration&&illustration.phase==='terminee'){render();return;}running=true;lastFrame=performance.now();$('run').textContent='Pause';tick();}};
+ $('step').onclick=()=>{pause();advance();};$('reset').onclick=()=>restart(world.config);
+ $('apply').onclick=()=>{const c={...world.config};for(const k of fields)c[k]=k==='gravityEnabled'?$(k).checked:k==='criterion'?$(k).value:Number($(k).value);restart(c);};
+ $('json-apply').onclick=()=>{try{restart(JSON.parse($('json').value));}catch(e){fail(e);}};
+ $('voxels').onchange=render;$('focus').onchange=render;$('domain').onchange=domainInfo;
+ $('break').onclick=()=>{pause();world.breakDomain(Number($('domain').value));render();};
+ $('prepared').onclick=()=>{const c={...world.config,colors:Number($('colors').value),seed:Number($('seed').value),domainEnabled:true,criterion:'enclosure',initialLayout:'prepared',amplitude:.02,thickness:.08,detectorResolution:24};restart(c);};
+ $('force').onclick=()=>{if(world.generation===0)return;pause();illustration=new WaveIllustration.Sequence(world);illustrations.push(illustration);world.events.push({type:'forced-illustration',step:world.generation,sequence:illustrations.length});$('focus').value='all';running=true;lastFrame=performance.now();$('run').textContent='Pause';tick();};
+ $('return').onclick=()=>{pause();illustration=null;render();};
+ $('export').onclick=()=>{const blob=new Blob([JSON.stringify({...world.experiment(),illustrativeSequences:illustrations.map(a=>a.export())},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='ondes-'+world.config.seed+'-pas-'+world.generation+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ canvas.onpointerdown=e=>{drag=[e.clientX,e.clientY];canvas.setPointerCapture(e.pointerId);};canvas.onpointermove=e=>{if(!drag)return;yaw+=(e.clientX-drag[0])*.009;pitch=Math.max(-1.4,Math.min(1.4,pitch+(e.clientY-drag[1])*.009));drag=[e.clientX,e.clientY];render();};canvas.onpointerup=canvas.onpointercancel=()=>{drag=null;};
+ canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.5,Math.min(1.6,zoom*Math.exp(-e.deltaY*.001)));$('zoom').value=Math.round(zoom*100);render();},{passive:false});$('zoom').oninput=()=>{zoom=Number($('zoom').value)/100;render();};$('view').onclick=()=>{yaw=.65;pitch=.45;zoom=1;$('zoom').value=100;render();};
+ controls();render();
+})();
+
+</script>
+</body></html>

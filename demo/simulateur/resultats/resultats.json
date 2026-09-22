@@ -1,0 +1,987 @@
+{
+  "configuration": {
+    "duree_germes": 120.0,
+    "pas_germes": 0.01,
+    "q_initial": 0.05,
+    "germes_locaux": [
+      {
+        "nom": "reference",
+        "k": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "modes": 10,
+        "temperature": 0.1,
+        "alpha": 0.4,
+        "mobility": 1.0,
+        "apport": 0.3,
+        "perte": 0.2
+      },
+      {
+        "nom": "temperature_plus_basse",
+        "k": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "modes": 10,
+        "temperature": 0.05,
+        "alpha": 0.4,
+        "mobility": 1.0,
+        "apport": 0.3,
+        "perte": 0.2
+      },
+      {
+        "nom": "moins_de_modes",
+        "k": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "modes": 5,
+        "temperature": 0.1,
+        "alpha": 0.4,
+        "mobility": 1.0,
+        "apport": 0.3,
+        "perte": 0.2
+      }
+    ],
+    "domaines_AB": {
+      "lambda4": 1.0,
+      "v": 1.0,
+      "rapports_h_hc": [
+        -1.2,
+        -1.0,
+        -0.4,
+        0.0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1.0,
+        1.2
+      ]
+    },
+    "couplage_reciproque": {
+      "etas": [
+        0.1,
+        0.3,
+        0.3333333333333333,
+        0.4,
+        0.5
+      ],
+      "perturbation": 0.01,
+      "duree": 30.0,
+      "pas": 0.01
+    },
+    "gravitation": {
+      "G": 0.07957747154594767,
+      "rho0": 1.0,
+      "c_s": 1.0,
+      "nombres_onde": [
+        0.5,
+        1.0,
+        2.0
+      ],
+      "D0": 0.001,
+      "vitesse_initiale": 0.0,
+      "duree": 10.0,
+      "pas": 0.02,
+      "limite_lineaire": 0.1,
+      "expansion": {
+        "t0": 1.0,
+        "duree": 20.0
+      }
+    },
+    "fermeture": {
+      "longueurs": [
+        5.0,
+        19.739208802178716,
+        30.0
+      ],
+      "kappa": 1.0,
+      "epsilon": 1.0,
+      "taux_illustratifs": {
+        "k_OC": 0.3,
+        "k_CO": 0.1,
+        "P0": 0.0,
+        "duree": 20.0,
+        "pas": 0.1
+      }
+    },
+    "probabilites": {
+      "capture_uniforme_rmax": 2.0,
+      "nucleation": null
+    }
+  },
+  "couverture": [
+    {
+      "hypothese": "Accumulation, entropie et neuf germes",
+      "statut": "Calculé",
+      "source": "seuil-entropie/comparaison_germes.md",
+      "portee": "Réutilisation des équations et des neuf préparations historiques ; q est une amplitude de configuration."
+    },
+    {
+      "hypothese": "Seuils locaux hétérogènes",
+      "statut": "Calculé",
+      "source": "seuil-entropie/notes_dimensions_fermeture.md",
+      "portee": "Paramètres propres à chaque germe : k, g, b, N, température, alpha, mobilité, apport et perte. N reste fixe pour chaque trajectoire."
+    },
+    {
+      "hypothese": "Domaines A/B",
+      "statut": "Potentiel local calculé",
+      "source": "seuil-entropie/domaines_AB.md",
+      "portee": "Inclinaison h signée, extrema, seuil et barrière. Aucun médiateur causal ni taux de transition déduit."
+    },
+    {
+      "hypothese": "Couplage réciproque",
+      "statut": "Calculé",
+      "source": "synthese-arxiv/manuscrit_fr.md",
+      "portee": "Relaxation de deux domaines, modes propres et perte de coexistence ; au seuil eta=1/3, le point n’est déjà plus un minimum."
+    },
+    {
+      "hypothese": "Bulle et réservoir fini",
+      "statut": "Calculé",
+      "source": "plasma-bulle/nuage_plasma_bulle.md",
+      "portee": "Branches, énergies, deux seuils, quatre bassins/préparations, sensibilité à la tension et accessibilité sous accumulation."
+    },
+    {
+      "hypothese": "Attracteur radial",
+      "statut": "Calculé",
+      "source": "plasma-bulle/gravitation_et_probabilite.md",
+      "portee": "Rappel exponentiel local autour du minimum ; la barrière et le bassin sont conservés. La gravitation est absente de cette équation."
+    },
+    {
+      "hypothese": "Gravitation et agrégation",
+      "statut": "Approximation linéaire calculée",
+      "source": "plasma-bulle/gravitation_et_probabilite.md",
+      "portee": "Jeans statique : croissance possible, régime marginal ou oscillations selon pression, densité et échelle ; arrêt à |D|=0,1 au plus."
+    },
+    {
+      "hypothese": "Fond en expansion",
+      "statut": "Exemple analytique calculé",
+      "source": "plasma-bulle/gravitation_et_probabilite.md",
+      "portee": "Fond plat de matière sans pression : modes t^(2/3) et t^(-1). Aucun plasma relativiste ni expansion d’une bulle ne sont décrits."
+    },
+    {
+      "hypothese": "Fermeture du filament",
+      "statut": "Énergie comparée ; taux imposés",
+      "source": "seuil-entropie/notes_dimensions_fermeture.md",
+      "portee": "Segment/cercle de même longueur ; cinétique ouvert/fermé illustrative avec taux explicitement fournis, indépendants du critère énergétique."
+    },
+    {
+      "hypothese": "Probabilité de capture",
+      "statut": "Conditionnelle",
+      "source": "plasma-bulle/gravitation_et_probabilite.md",
+      "portee": "Distribution uniforme illustrative de rayons déjà préparés. Cette mesure du bassin n’est pas une probabilité de création."
+    },
+    {
+      "hypothese": "Probabilité de nucléation",
+      "statut": "Calculable si un taux est fourni",
+      "source": "plasma-bulle/gravitation_et_probabilite.md",
+      "portee": "Poisson à taux et volume constants imposés ; aucune valeur par défaut de Gamma et aucun taux dérivé de la barrière."
+    },
+    {
+      "hypothese": "Nuage → agrégation → plasma → seuil → bulle → persistance",
+      "statut": "Chaîne hypothétique conservée",
+      "source": "journal_hypotheses.md",
+      "portee": "Les modules ci-dessus examinent des étapes distinctes ; aucune loi commune ne les relie encore."
+    },
+    {
+      "hypothese": "Fermions, bosons et composition du plasma",
+      "statut": "À définir",
+      "source": "journal_hypotheses.md",
+      "portee": "Quarks, antiquarks, leptons, photons, gluons, W et Z : pas d’équation d’état ni de populations calibrées dans le corpus."
+    },
+    {
+      "hypothese": "Dimensions spatiales et modes accessibles",
+      "statut": "À définir",
+      "source": "seuil-entropie/notes_dimensions_fermeture.md",
+      "portee": "Dimensions compactes, création de dimensions et nombre de modes internes restent distincts ; pas de loi de changement du nombre de dimensions."
+    },
+    {
+      "hypothese": "Observation interne et propagation",
+      "statut": "À définir",
+      "source": "seuil-entropie/notes_dimensions_fermeture.md",
+      "portee": "Pas de signal physique ni d’instrument définis ; aucune correction de référentiel ne modifie artificiellement les seuils."
+    },
+    {
+      "hypothese": "Nucléation gravitationnelle, cordes et cosmologie",
+      "statut": "À définir",
+      "source": "plasma-bulle/gravitation_et_probabilite.md",
+      "portee": "Action et préfacteur de Coleman–De Luccia, champs, métrique, production de particules et thermalisation restent à construire."
+    },
+    {
+      "hypothese": "Saturation informationnelle et analogies externes",
+      "statut": "Non adoptées comme lois",
+      "source": "seuil-entropie/commentaire_garnier_malet.md",
+      "portee": "Aucun déclenchement par simple décompte de paramètres, dédoublement du temps ou analogie humaine n’est ajouté aux équations."
+    }
+  ],
+  "germes_reference": [
+    {
+      "id": "alpha_-0.4_J_0.1",
+      "alpha": -0.4,
+      "J": 0.1,
+      "n_infini": 0.5,
+      "n_critique": 0.6,
+      "temps_critique": null,
+      "seuil_franchi_avant_fin": false,
+      "temps_repere_amplitude": null,
+      "delai_apres_seuil": null,
+      "q_final": 2.5154996733358457e-08,
+      "A_final": 0.10000000001887566
+    },
+    {
+      "id": "alpha_-0.4_J_0.2",
+      "alpha": -0.4,
+      "J": 0.2,
+      "n_infini": 1.0,
+      "n_critique": 0.6,
+      "temps_critique": 4.5814536593707755,
+      "seuil_franchi_avant_fin": true,
+      "temps_repere_amplitude": 13.430739225904711,
+      "delai_apres_seuil": 8.849285566533936,
+      "q_final": 0.632455531993882,
+      "A_final": -0.39999999996224866
+    },
+    {
+      "id": "alpha_-0.4_J_0.3",
+      "alpha": -0.4,
+      "J": 0.3,
+      "n_infini": 1.4999999999999998,
+      "n_critique": 0.6,
+      "temps_critique": 2.5541281188299534,
+      "seuil_franchi_avant_fin": true,
+      "temps_repere_amplitude": 7.107582492414235,
+      "delai_apres_seuil": 4.553454373584281,
+      "q_final": 0.9486832980169378,
+      "A_final": -0.8999999999433729
+    },
+    {
+      "id": "alpha_+0.0_J_0.1",
+      "alpha": 0.0,
+      "J": 0.1,
+      "n_infini": 0.5,
+      "n_critique": 1.0,
+      "temps_critique": null,
+      "seuil_franchi_avant_fin": false,
+      "temps_repere_amplitude": null,
+      "delai_apres_seuil": null,
+      "q_final": 3.5891729425668547e-29,
+      "A_final": 0.5000000000188757
+    },
+    {
+      "id": "alpha_+0.0_J_0.2",
+      "alpha": 0.0,
+      "J": 0.2,
+      "n_infini": 1.0,
+      "n_critique": 1.0,
+      "temps_critique": null,
+      "seuil_franchi_avant_fin": false,
+      "temps_repere_amplitude": null,
+      "delai_apres_seuil": null,
+      "q_final": 0.00033641785109274607,
+      "A_final": 3.775135759553905e-11
+    },
+    {
+      "id": "alpha_+0.0_J_0.3",
+      "alpha": 0.0,
+      "J": 0.3,
+      "n_infini": 1.4999999999999998,
+      "n_critique": 1.0,
+      "temps_critique": 5.49306144334055,
+      "seuil_franchi_avant_fin": true,
+      "temps_repere_amplitude": 15.77422168374332,
+      "delai_apres_seuil": 10.28116024040277,
+      "q_final": 0.7071067811364957,
+      "A_final": -0.49999999994337285
+    },
+    {
+      "id": "alpha_+0.4_J_0.1",
+      "alpha": 0.4,
+      "J": 0.1,
+      "n_infini": 0.5,
+      "n_critique": 1.4,
+      "temps_critique": null,
+      "seuil_franchi_avant_fin": false,
+      "temps_repere_amplitude": null,
+      "delai_apres_seuil": null,
+      "q_final": 5.117200701683989e-50,
+      "A_final": 0.9000000000188757
+    },
+    {
+      "id": "alpha_+0.4_J_0.2",
+      "alpha": 0.4,
+      "J": 0.2,
+      "n_infini": 1.0,
+      "n_critique": 1.4,
+      "temps_critique": null,
+      "seuil_franchi_avant_fin": false,
+      "temps_repere_amplitude": null,
+      "delai_apres_seuil": null,
+      "q_final": 4.796821154998468e-25,
+      "A_final": 0.4000000000377514
+    },
+    {
+      "id": "alpha_+0.4_J_0.3",
+      "alpha": 0.4,
+      "J": 0.3,
+      "n_infini": 1.4999999999999998,
+      "n_critique": 1.4,
+      "temps_critique": 13.540251005511056,
+      "seuil_franchi_avant_fin": true,
+      "temps_repere_amplitude": 82.46802960444074,
+      "delai_apres_seuil": 68.92777859892969,
+      "q_final": 0.3154486171090451,
+      "A_final": -0.09999999994337283
+    }
+  ],
+  "germes_locaux": [
+    {
+      "nom": "reference",
+      "parametres": {
+        "nom": "reference",
+        "k": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "modes": 10,
+        "temperature": 0.1,
+        "alpha": 0.4,
+        "mobility": 1.0,
+        "apport": 0.3,
+        "perte": 0.2
+      },
+      "n_critique": 1.4,
+      "temps_critique": 13.540251005511056,
+      "temps_repere_amplitude": 82.46802960444074,
+      "A_initial": 1.4,
+      "A_final": -0.09999999994337283,
+      "q_final": 0.3154486171090451
+    },
+    {
+      "nom": "temperature_plus_basse",
+      "parametres": {
+        "nom": "temperature_plus_basse",
+        "k": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "modes": 10,
+        "temperature": 0.05,
+        "alpha": 0.4,
+        "mobility": 1.0,
+        "apport": 0.3,
+        "perte": 0.2
+      },
+      "n_critique": 1.2,
+      "temps_critique": 8.047189562170503,
+      "temps_repere_amplitude": 27.265879538162014,
+      "A_initial": 1.2,
+      "A_final": -0.29999999994337284,
+      "q_final": 0.5477225574276263
+    },
+    {
+      "nom": "moins_de_modes",
+      "parametres": {
+        "nom": "moins_de_modes",
+        "k": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "modes": 5,
+        "temperature": 0.1,
+        "alpha": 0.4,
+        "mobility": 1.0,
+        "apport": 0.3,
+        "perte": 0.2
+      },
+      "n_critique": 1.2,
+      "temps_critique": 8.047189562170503,
+      "temps_repere_amplitude": 27.265879538162014,
+      "A_initial": 1.2,
+      "A_final": -0.29999999994337284,
+      "q_final": 0.5477225574276263
+    }
+  ],
+  "domaines_AB": [
+    {
+      "h_sur_hc": -1.2,
+      "h_critique": 0.3849001794597505,
+      "h": -0.4618802153517006,
+      "extrema": [
+        {
+          "phi": -1.1796373378462213,
+          "V": -0.5065244229412194,
+          "courbure": 3.17463274652276
+        }
+      ],
+      "barriere_metastable": null,
+      "statut": "un seul minimum"
+    },
+    {
+      "h_sur_hc": -1.0,
+      "h_critique": 0.3849001794597505,
+      "h": -0.3849001794597505,
+      "extrema": [
+        {
+          "phi": -1.1547005383792517,
+          "V": -0.4166666666666667,
+          "courbure": 3.000000000000001
+        },
+        {
+          "phi": 0.5773502691896258,
+          "V": 0.3333333333333333,
+          "courbure": 2.220446049250313e-16
+        }
+      ],
+      "barriere_metastable": 0.0,
+      "statut": "seuil : point dégénéré et un minimum"
+    },
+    {
+      "h_sur_hc": -0.4,
+      "h_critique": 0.3849001794597505,
+      "h": -0.15396007178390023,
+      "extrema": [
+        {
+          "phi": -1.0695549497137762,
+          "V": -0.15948851524037852,
+          "courbure": 2.431843371371715
+        },
+        {
+          "phi": 0.15789664865705139,
+          "V": 0.2619994966069756,
+          "courbure": -0.925205945028615
+        },
+        {
+          "phi": 0.911658301056725,
+          "V": 0.1474890186334029,
+          "courbure": 1.4933625736569023
+        }
+      ],
+      "barriere_metastable": 0.11451047797357267,
+      "statut": "deux minima, dont un métastable"
+    },
+    {
+      "h_sur_hc": 0.0,
+      "h_critique": 0.3849001794597505,
+      "h": 0.0,
+      "extrema": [
+        {
+          "phi": -1.0000000000000002,
+          "V": 4.930380657631324e-32,
+          "courbure": 2.0000000000000018
+        },
+        {
+          "phi": 7.07050159149938e-17,
+          "V": 0.25,
+          "courbure": -1.0
+        },
+        {
+          "phi": 1.0000000000000002,
+          "V": 4.930380657631324e-32,
+          "courbure": 2.0000000000000018
+        }
+      ],
+      "barriere_metastable": 0.25,
+      "statut": "minima dégénérés"
+    },
+    {
+      "h_sur_hc": 0.2,
+      "h_critique": 0.3849001794597505,
+      "h": 0.07698003589195011,
+      "extrema": [
+        {
+          "phi": -0.9590260841551744,
+          "V": 0.0754366392621845,
+          "courbure": 1.7591930902700228
+        },
+        {
+          "phi": -0.07744452132603043,
+          "V": 0.25297184805263,
+          "courbure": -0.982007038349746
+        },
+        {
+          "phi": 1.036470605481205,
+          "V": -0.07840848731481453,
+          "courbure": 2.2228139480797267
+        }
+      ],
+      "barriere_metastable": 0.17753520879044551,
+      "statut": "deux minima, dont un métastable"
+    },
+    {
+      "h_sur_hc": 0.4,
+      "h_critique": 0.3849001794597505,
+      "h": 0.15396007178390023,
+      "extrema": [
+        {
+          "phi": -0.9116583010567251,
+          "V": 0.1474890186334029,
+          "courbure": 1.4933625736569032
+        },
+        {
+          "phi": -0.157896648657051,
+          "V": 0.2619994966069756,
+          "courbure": -0.9252059450286154
+        },
+        {
+          "phi": 1.0695549497137762,
+          "V": -0.15948851524037852,
+          "courbure": 2.431843371371715
+        }
+      ],
+      "barriere_metastable": 0.11451047797357267,
+      "statut": "deux minima, dont un métastable"
+    },
+    {
+      "h_sur_hc": 0.6,
+      "h_critique": 0.3849001794597505,
+      "h": 0.2309401076758503,
+      "extrema": [
+        {
+          "phi": -0.8541885076421236,
+          "V": 0.21554028780078993,
+          "courbure": 1.1889140197636348
+        },
+        {
+          "phi": -0.2457887189603064,
+          "V": 0.27746883132461475,
+          "courbure": -0.8187637168955546
+        },
+        {
+          "phi": 1.0999772266024301,
+          "V": -0.2430091191254047,
+          "courbure": 2.6298496971319216
+        }
+      ],
+      "barriere_metastable": 0.06192854352382482,
+      "statut": "deux minima, dont un métastable"
+    },
+    {
+      "h_sur_hc": 0.8,
+      "h_critique": 0.3849001794597505,
+      "h": 0.30792014356780045,
+      "extrema": [
+        {
+          "phi": -0.7769783309368777,
+          "V": 0.278511627722001,
+          "courbure": 0.811085980236369
+        },
+        {
+          "phi": -0.35125978177035805,
+          "V": 0.3002741132519023,
+          "courbure": -0.6298496971319213
+        },
+        {
+          "phi": 1.1282381127072356,
+          "V": -0.32878574097390323,
+          "courbure": 2.8187637168955546
+        }
+      ],
+      "barriere_metastable": 0.021762485529901288,
+      "statut": "deux minima, dont un métastable"
+    },
+    {
+      "h_sur_hc": 1.0,
+      "h_critique": 0.3849001794597505,
+      "h": 0.3849001794597505,
+      "extrema": [
+        {
+          "phi": -0.5773502691896258,
+          "V": 0.3333333333333333,
+          "courbure": 2.220446049250313e-16
+        },
+        {
+          "phi": 1.1547005383792517,
+          "V": -0.4166666666666667,
+          "courbure": 3.000000000000001
+        }
+      ],
+      "barriere_metastable": 0.0,
+      "statut": "seuil : point dégénéré et un minimum"
+    },
+    {
+      "h_sur_hc": 1.2,
+      "h_critique": 0.3849001794597505,
+      "h": 0.4618802153517006,
+      "extrema": [
+        {
+          "phi": 1.1796373378462213,
+          "V": -0.5065244229412194,
+          "courbure": 3.17463274652276
+        }
+      ],
+      "barriere_metastable": null,
+      "statut": "un seul minimum"
+    }
+  ],
+  "couplage_reciproque": [
+    {
+      "eta": 0.1,
+      "q_oppose": 0.8944271909999159,
+      "statut": "coexistence opposée stable",
+      "valeurs_propres_opposees": [
+        1.4,
+        1.6
+      ],
+      "valeurs_propres_communes": [
+        2.0,
+        2.2
+      ],
+      "perturbation_commune": 0.01
+    },
+    {
+      "eta": 0.3,
+      "q_oppose": 0.6324555320336759,
+      "statut": "coexistence opposée stable",
+      "valeurs_propres_opposees": [
+        0.20000000000000018,
+        0.8
+      ],
+      "valeurs_propres_communes": [
+        2.0,
+        2.6
+      ],
+      "perturbation_commune": 0.01
+    },
+    {
+      "eta": 0.3333333333333333,
+      "q_oppose": 0.5773502691896258,
+      "statut": "seuil : coexistence non minimale à l’ordre quatre",
+      "valeurs_propres_opposees": [
+        0.0,
+        0.6666666666666667
+      ],
+      "valeurs_propres_communes": [
+        2.0,
+        2.6666666666666665
+      ],
+      "perturbation_commune": 0.01
+    },
+    {
+      "eta": 0.4,
+      "q_oppose": 0.44721359549995787,
+      "statut": "coexistence opposée instable (selle)",
+      "valeurs_propres_opposees": [
+        -0.40000000000000036,
+        0.3999999999999999
+      ],
+      "valeurs_propres_communes": [
+        2.0,
+        2.8
+      ],
+      "perturbation_commune": 0.01
+    },
+    {
+      "eta": 0.5,
+      "q_oppose": null,
+      "statut": "aucune branche opposée non nulle",
+      "valeurs_propres_opposees": null,
+      "valeurs_propres_communes": [
+        2.0,
+        3.0
+      ],
+      "perturbation_commune": 0.01
+    }
+  ],
+  "bulles": {
+    "parametres": {
+      "sigma": 1.0,
+      "K": 100.0,
+      "V_reservoir": 628.3185307179587,
+      "delta_initial": 0.8,
+      "beta": 1.0,
+      "perte_gamma": 0.2,
+      "unites": "Arbitraires ; aucune calibration QCD ou cosmologique"
+    },
+    "cas": [
+      {
+        "delta": 0.8,
+        "delta_p": 2.1333333333333333,
+        "r_barriere": null,
+        "r_bulle": null,
+        "statut": "aucun équilibre de rayon positif",
+        "f_barriere": null,
+        "f_bulle": null,
+        "barriere_sortie_bulle": null,
+        "fraction_volume": null,
+        "kappa_locale": null,
+        "temps_relaxation_local": null
+      },
+      {
+        "delta": 1.0,
+        "delta_p": 2.6666666666666665,
+        "r_barriere": 1.0,
+        "r_bulle": 1.0,
+        "statut": "point dégénéré sans minimum",
+        "f_barriere": 0.22222222222222227,
+        "f_bulle": 0.22222222222222227,
+        "barriere_sortie_bulle": null,
+        "fraction_volume": 0.006666666666666666,
+        "kappa_locale": null,
+        "temps_relaxation_local": null
+      },
+      {
+        "delta": 1.05,
+        "delta_p": 2.8,
+        "r_barriere": 0.8241062408043229,
+        "r_bulle": 1.1870828581634258,
+        "statut": "minimum local de bulle défavorisé face à R=0",
+        "f_barriere": 0.19157749092815543,
+        "f_bulle": 0.15880545953719027,
+        "barriere_sortie_bulle": 0.032772031390965156,
+        "fraction_volume": 0.011151976407996787,
+        "kappa_locale": 1.9714960085727764,
+        "temps_relaxation_local": 0.5072290259029889
+      },
+      {
+        "delta": 1.1397535284773888,
+        "delta_p": 3.0393427426063697,
+        "r_barriere": 0.7155349807318396,
+        "r_bulle": 1.3160740129524924,
+        "statut": "égalité des deux minima de cette famille",
+        "f_barriere": 0.15575120215505808,
+        "f_bulle": 1.1102230246251565e-16,
+        "barriere_sortie_bulle": 0.15575120215505797,
+        "fraction_volume": 0.015196713713031846,
+        "kappa_locale": 3.9999999999999982,
+        "temps_relaxation_local": 0.2500000000000001
+      },
+      {
+        "delta": 1.2,
+        "delta_p": 3.1999999999999997,
+        "r_barriere": 0.6659839501682909,
+        "r_bulle": 1.379519983549054,
+        "statut": "minimum de bulle favorisé face à R=0",
+        "f_barriere": 0.13815004684532617,
+        "f_bulle": -0.1314593560316044,
+        "barriere_sortie_bulle": 0.2696094028769306,
+        "fraction_volume": 0.017502203492154905,
+        "kappa_locale": 5.243391842070917,
+        "temps_relaxation_local": 0.19071624439287424
+      },
+      {
+        "delta": 1.5,
+        "delta_p": 4.0,
+        "r_barriere": 0.5113996193930972,
+        "r_bulle": 1.6044392090434942,
+        "statut": "minimum de bulle favorisé face à R=0",
+        "f_barriere": 0.08518896519433779,
+        "f_bulle": -1.0373084193258728,
+        "barriere_sortie_bulle": 1.1224973845202106,
+        "fraction_volume": 0.027534585363366157,
+        "kappa_locale": 11.25327050852193,
+        "temps_relaxation_local": 0.0888630553440189
+      },
+      {
+        "delta": 2.0,
+        "delta_p": 5.333333333333333,
+        "r_barriere": 0.3775395683912327,
+        "r_bulle": 1.8549627501615684,
+        "statut": "minimum de bulle favorisé face à R=0",
+        "f_barriere": 0.04719028168751132,
+        "f_bulle": -3.379601552427176,
+        "barriere_sortie_bulle": 3.4267918341146872,
+        "fraction_volume": 0.04255144566563866,
+        "kappa_locale": 21.679404002585095,
+        "temps_relaxation_local": 0.04612672930864511
+      }
+    ],
+    "accumulation": [
+      {
+        "I": 0.03,
+        "q_plafond": 0.15,
+        "delta_plafond": 0.9500000000000001,
+        "t_apparition_branches": null,
+        "t_egalite_energies": null
+      },
+      {
+        "I": 0.04,
+        "q_plafond": 0.19999999999999998,
+        "delta_plafond": 1.0,
+        "t_apparition_branches": null,
+        "t_egalite_energies": null
+      },
+      {
+        "I": 0.05,
+        "q_plafond": 0.25,
+        "delta_plafond": 1.05,
+        "t_apparition_branches": 8.047189562170502,
+        "t_egalite_energies": null
+      },
+      {
+        "I": 0.07,
+        "q_plafond": 0.35000000000000003,
+        "delta_plafond": 1.1500000000000001,
+        "t_apparition_branches": 4.236489301936017,
+        "t_egalite_energies": 17.654998749301363
+      },
+      {
+        "I": 0.14,
+        "q_plafond": 0.7000000000000001,
+        "delta_plafond": 1.5,
+        "t_apparition_branches": 1.682361183106065,
+        "t_egalite_energies": 3.3214594736803327
+      }
+    ],
+    "relaxations": [
+      {
+        "nom": "sans_germe",
+        "delta": 1.2,
+        "r_initial": 0.0,
+        "r_final": 0.0
+      },
+      {
+        "nom": "sous_barriere",
+        "delta": 1.2,
+        "r_initial": 0.5993855551514619,
+        "r_final": 6.484533215636355e-52
+      },
+      {
+        "nom": "au_dessus_barriere",
+        "delta": 1.2,
+        "r_initial": 0.7325823451851201,
+        "r_final": 1.379519983549052
+      },
+      {
+        "nom": "bulle_plus_grande",
+        "delta": 1.2,
+        "r_initial": 1.5174719819039595,
+        "r_final": 1.379519983549056
+      }
+    ],
+    "tension": [
+      {
+        "sigma": 0.5,
+        "delta_p_fixe": 3.2,
+        "delta": 2.018151396608915,
+        "R_bulle": 1.5662602885174073
+      },
+      {
+        "sigma": 1,
+        "delta_p_fixe": 3.2,
+        "delta": 1.2000000000000002,
+        "R_bulle": 1.379519983549054
+      },
+      {
+        "sigma": 2,
+        "delta_p_fixe": 3.2,
+        "delta": 0.7135242690016327,
+        "R_bulle": null
+      }
+    ]
+  },
+  "gravitation": [
+    {
+      "G": 0.07957747154594767,
+      "rho0": 1.0,
+      "c_s": 1.0,
+      "k_onde": 0.5,
+      "s2": 0.75,
+      "rapport_Jeans": 4.0,
+      "regime": "mode exponentiel possible",
+      "coefficient_croissant": 0.0005,
+      "limite_lineaire": 0.1,
+      "temps_limite": 6.117941047061104
+    },
+    {
+      "G": 0.07957747154594767,
+      "rho0": 1.0,
+      "c_s": 1.0,
+      "k_onde": 1.0,
+      "s2": 0.0,
+      "rapport_Jeans": 1.0,
+      "regime": "marginal : D affine",
+      "coefficient_croissant": null,
+      "limite_lineaire": 0.1,
+      "temps_limite": null
+    },
+    {
+      "G": 0.07957747154594767,
+      "rho0": 1.0,
+      "c_s": 1.0,
+      "k_onde": 2.0,
+      "s2": -3.0,
+      "rapport_Jeans": 0.25,
+      "regime": "oscillations",
+      "coefficient_croissant": null,
+      "limite_lineaire": 0.1,
+      "temps_limite": null
+    }
+  ],
+  "expansion_matiere": [
+    {
+      "mode": "croissant",
+      "t0": 1.0,
+      "vitesse_initiale": 0.0006666666666666666,
+      "temps_limite": null
+    },
+    {
+      "mode": "decroissant",
+      "t0": 1.0,
+      "vitesse_initiale": -0.001,
+      "temps_limite": null
+    }
+  ],
+  "fermeture": {
+    "parametres": {
+      "longueurs": [
+        5.0,
+        19.739208802178716,
+        30.0
+      ],
+      "kappa": 1.0,
+      "epsilon": 1.0,
+      "taux_illustratifs": {
+        "k_OC": 0.3,
+        "k_CO": 0.1,
+        "P0": 0.0,
+        "duree": 20.0,
+        "pas": 0.1
+      }
+    },
+    "energies": [
+      {
+        "L": 5.0,
+        "Delta_E": 2.947841760435743
+      },
+      {
+        "L": 19.739208802178716,
+        "Delta_E": 0.0
+      },
+      {
+        "L": 30.0,
+        "Delta_E": -0.3420263732607095
+      }
+    ],
+    "statut": "Taux imposés pour illustration ; non dérivés du filament ou du plasma"
+  },
+  "probabilites": {
+    "distribution_rayons": "uniforme illustrative sur [0,2.0]",
+    "capture": [
+      {
+        "delta": 0.8,
+        "P_capture": 0.0
+      },
+      {
+        "delta": 1.0,
+        "P_capture": 0.0
+      },
+      {
+        "delta": 1.05,
+        "P_capture": 0.5879468795978385
+      },
+      {
+        "delta": 1.1397535284773888,
+        "P_capture": 0.6422325096340802
+      },
+      {
+        "delta": 1.2,
+        "P_capture": 0.6670080249158545
+      },
+      {
+        "delta": 1.5,
+        "P_capture": 0.7443001903034514
+      },
+      {
+        "delta": 2.0,
+        "P_capture": 0.8112302158043836
+      }
+    ],
+    "nucleation": null
+  }
+}

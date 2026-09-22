@@ -1,0 +1,23 @@
+{
+  "duree_germes": 120.0,
+  "pas_germes": 0.01,
+  "q_initial": 0.05,
+  "germes_locaux": [
+    {"nom": "reference", "k": 1.0, "g": 1.0, "b": 1.0, "modes": 10, "temperature": 0.1, "alpha": 0.4, "mobility": 1.0, "apport": 0.3, "perte": 0.2},
+    {"nom": "temperature_plus_basse", "k": 1.0, "g": 1.0, "b": 1.0, "modes": 10, "temperature": 0.05, "alpha": 0.4, "mobility": 1.0, "apport": 0.3, "perte": 0.2},
+    {"nom": "moins_de_modes", "k": 1.0, "g": 1.0, "b": 1.0, "modes": 5, "temperature": 0.1, "alpha": 0.4, "mobility": 1.0, "apport": 0.3, "perte": 0.2}
+  ],
+  "domaines_AB": {"lambda4": 1.0, "v": 1.0, "rapports_h_hc": [-1.2, -1.0, -0.4, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2]},
+  "couplage_reciproque": {"etas": [0.1, 0.3, 0.3333333333333333, 0.4, 0.5], "perturbation": 0.01, "duree": 30.0, "pas": 0.01},
+  "gravitation": {
+    "G": 0.07957747154594767, "rho0": 1.0, "c_s": 1.0,
+    "nombres_onde": [0.5, 1.0, 2.0], "D0": 0.001, "vitesse_initiale": 0.0,
+    "duree": 10.0, "pas": 0.02, "limite_lineaire": 0.1,
+    "expansion": {"t0": 1.0, "duree": 20.0}
+  },
+  "fermeture": {
+    "longueurs": [5.0, 19.739208802178716, 30.0], "kappa": 1.0, "epsilon": 1.0,
+    "taux_illustratifs": {"k_OC": 0.3, "k_CO": 0.1, "P0": 0.0, "duree": 20.0, "pas": 0.1}
+  },
+  "probabilites": {"capture_uniforme_rmax": 2.0, "nucleation": null}
+}

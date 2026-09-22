@@ -1,0 +1,218 @@
+{
+  "version": 4,
+  "positions": 32,
+  "target": "#8B5CF6",
+  "seed": 728931,
+  "grid": {
+    "size": 18,
+    "boundary": "closed",
+    "neighborhood": 26
+  },
+  "initial": {
+    "density": 0.14,
+    "shape": "cube",
+    "pairedPoints": true
+  },
+  "ticksPerSecond": 3,
+  "palette": [
+    {
+      "color": "#8B5CF6"
+    },
+    {
+      "color": "#E05130"
+    },
+    {
+      "color": "#E07230"
+    },
+    {
+      "color": "#E09330"
+    },
+    {
+      "color": "#E0B430"
+    },
+    {
+      "color": "#E0D530"
+    },
+    {
+      "color": "#CAE030"
+    },
+    {
+      "color": "#A9E030"
+    },
+    {
+      "color": "#88E030"
+    },
+    {
+      "color": "#67E030"
+    },
+    {
+      "color": "#46E030"
+    },
+    {
+      "color": "#30E03B"
+    },
+    {
+      "color": "#30E05C"
+    },
+    {
+      "color": "#30E07D"
+    },
+    {
+      "color": "#30E09E"
+    },
+    {
+      "color": "#30E0BF"
+    },
+    {
+      "color": "#30E0E0"
+    },
+    {
+      "color": "#30BFE0"
+    },
+    {
+      "color": "#309EE0"
+    },
+    {
+      "color": "#307DE0"
+    },
+    {
+      "color": "#305CE0"
+    },
+    {
+      "color": "#303BE0"
+    },
+    {
+      "color": "#4630E0"
+    },
+    {
+      "color": "#6730E0"
+    },
+    {
+      "color": "#8830E0"
+    },
+    {
+      "color": "#A930E0"
+    },
+    {
+      "color": "#CA30E0"
+    },
+    {
+      "color": "#E030D5"
+    },
+    {
+      "color": "#E030B4"
+    },
+    {
+      "color": "#E03093"
+    },
+    {
+      "color": "#E03072"
+    },
+    {
+      "color": "#E03051"
+    }
+  ],
+  "weights": {
+    "point": 0.25,
+    "demi-corde": 0.5,
+    "corde": 1,
+    "boucle": 2
+  },
+  "life": {
+    "enabled": true,
+    "birth": [
+      3,
+      4
+    ],
+    "survival": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26
+    ],
+    "inheritance": "point",
+    "protectCondensates": false
+  },
+  "structures": {
+    "pointsPerHalf": 2,
+    "halvesPerString": 2,
+    "stringsPerLoop": 2,
+    "halfProbability": 1,
+    "stringProbability": 1,
+    "loopProbability": 0.8,
+    "bondProbability": 0.75
+  },
+  "colors": {
+    "addition": "average",
+    "amplitudeLimit": 64
+  },
+  "collisions": {
+    "subtraction": "opposed",
+    "probability": 0.25
+  },
+  "gravity": {
+    "enabled": true,
+    "trigger": "configuration",
+    "tolerance": 0.09,
+    "minimumPositions": 1,
+    "requiredPositions": [],
+    "strength": 3,
+    "radius": 6,
+    "softening": 1,
+    "spectralTolerance": 0.45
+  },
+  "emergence": {
+    "mode": "local-complete"
+  },
+  "radial": {
+    "enabled": true,
+    "rate": 0.2,
+    "unitRadius": 0.18
+  },
+  "motion": {
+    "diffusion": 0.12
+  },
+  "condensation": {
+    "requiredPositions": 32,
+    "minimumLoops": 4,
+    "persistent": false,
+    "gravityMultiplier": 2
+  },
+  "breakup": {
+    "probability": 0
+  },
+  "emission": {
+    "probability": 0,
+    "reserveEachPosition": true,
+    "freeSteps": 5,
+    "mode": "point"
+  },
+  "display": {
+    "waveAmplitude": 0.2,
+    "waveFrequency": 1.2,
+    "condensateStyle": "strands"
+  }
+}

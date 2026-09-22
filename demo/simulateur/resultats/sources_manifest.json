@@ -1,0 +1,66 @@
+[
+  {
+    "fichier": "/output/journal_hypotheses.md",
+    "sha256": "cd353f3bd487a71c52ebc560ff1392ea41963a701db602fad39f0687292c26fb"
+  },
+  {
+    "fichier": "/output/plasma-bulle/calcul_bulle.py",
+    "sha256": "2b9848872bca6b49ddb85290b939671e07c6c3f2ad80feedb4ca6a16f2a09aeb"
+  },
+  {
+    "fichier": "/output/plasma-bulle/gravitation_et_probabilite.md",
+    "sha256": "eae13c408fffcb4f168c651c9207953de661309a216f1a999319b03f6a5197d9"
+  },
+  {
+    "fichier": "/output/plasma-bulle/nuage_plasma_bulle.md",
+    "sha256": "67b085ed0b3515615909bf99a1bbde2c0337370fc030e6552d6cda8304f86c33"
+  },
+  {
+    "fichier": "/output/seuil-entropie/calcul_seuil.py",
+    "sha256": "8678d332bf7591fd01c2a1fe81061b8c609358cd32bc7b19938d2f5b34db7f1a"
+  },
+  {
+    "fichier": "/output/seuil-entropie/commentaire_garnier_malet.md",
+    "sha256": "e88cf426af190739c95879dbfc5ec8604c9af1c8270657feafb58011e9505f32"
+  },
+  {
+    "fichier": "/output/seuil-entropie/comparaison_germes.md",
+    "sha256": "6e829bc576a56c5563230e0d909d9c55a4ff5682ad40a37d041ad19f7edb3f24"
+  },
+  {
+    "fichier": "/output/seuil-entropie/comparer_germes.py",
+    "sha256": "60c2f65578c56c951a990890102f6a2826edb927bd01002002f1713bbc7642a3"
+  },
+  {
+    "fichier": "/output/seuil-entropie/domaines_AB.md",
+    "sha256": "7380b63182ad31cc71c777666c9d3d62bd722dd797008b8b4bd5e396d5b0df64"
+  },
+  {
+    "fichier": "/output/seuil-entropie/notes_dimensions_fermeture.md",
+    "sha256": "6af59e8ed84331edf234022f303b62dd0c89019bab68bfe60a0b61a15b35e80b"
+  },
+  {
+    "fichier": "/output/simulateur/configuration.json",
+    "sha256": "10bcc467f5b5444cd8b046a0c4f57698de2455368382d35a22fa2c57d6d1cd06"
+  },
+  {
+    "fichier": "/output/simulateur/modeles.py",
+    "sha256": "2c00e09bb43f4d2f18b8da7ed08a120badb7a88ae83f1ea3d7e96117d402732c"
+  },
+  {
+    "fichier": "/output/simulateur/simulation.py",
+    "sha256": "336fbee013240644b8f5bddd0c5abc9538280ace9c4ae0a3f8b94387b6fa1e7e"
+  },
+  {
+    "fichier": "/output/simulateur/test_modeles.py",
+    "sha256": "87fdbf53b6ff9cbd84690258f8f809edc3e2d48912c640ed11e3d92f54ba86ee"
+  },
+  {
+    "fichier": "/output/simulateur/verification.py",
+    "sha256": "2c348764ad8a97fe26bb4570aea8a94274255d952bccc40fd546fe85700c8e9f"
+  },
+  {
+    "fichier": "/output/synthese-arxiv/manuscrit_fr.md",
+    "sha256": "5bcc3731349ca8e3108d16ec3495822a115e7966189b96ee1c0980e7405b9a41"
+  }
+]

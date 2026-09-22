@@ -1,0 +1,238 @@
+{
+  "statut": "Modèle effectif conditionnel ; stabilité radiale seulement",
+  "parametres": {
+    "sigma": 1.0,
+    "K": 100.0,
+    "V_reservoir": 628.3185307179587,
+    "delta_initial": 0.8,
+    "beta": 1.0,
+    "perte_gamma": 0.2,
+    "unites": "Arbitraires ; aucune calibration QCD ou cosmologique"
+  },
+  "seuils": {
+    "delta_apparition": 1,
+    "delta_egalite": 1.1397535284773888,
+    "q_apparition": 0.2,
+    "q_egalite": 0.3397535284773887
+  },
+  "cas": [
+    {
+      "delta": 0.8,
+      "delta_p": 2.1333333333333333,
+      "r_barriere": null,
+      "r_bulle": null,
+      "statut": "aucun équilibre de rayon positif",
+      "f_barriere": null,
+      "f_bulle": null,
+      "barriere_sortie_bulle": null,
+      "fraction_volume": null
+    },
+    {
+      "delta": 1.0,
+      "delta_p": 2.6666666666666665,
+      "r_barriere": 1.0,
+      "r_bulle": 1.0,
+      "statut": "point dégénéré sans minimum",
+      "f_barriere": 0.22222222222222227,
+      "f_bulle": 0.22222222222222227,
+      "barriere_sortie_bulle": null,
+      "fraction_volume": 0.006666666666666666
+    },
+    {
+      "delta": 1.05,
+      "delta_p": 2.8,
+      "r_barriere": 0.8241062408043229,
+      "r_bulle": 1.1870828581634258,
+      "statut": "minimum local de bulle défavorisé face à R=0",
+      "f_barriere": 0.19157749092815543,
+      "f_bulle": 0.15880545953719027,
+      "barriere_sortie_bulle": 0.032772031390965156,
+      "fraction_volume": 0.011151976407996787
+    },
+    {
+      "delta": 1.1397535284773888,
+      "delta_p": 3.0393427426063697,
+      "r_barriere": 0.7155349807318396,
+      "r_bulle": 1.3160740129524924,
+      "statut": "égalité des deux minima de cette famille",
+      "f_barriere": 0.15575120215505808,
+      "f_bulle": 1.1102230246251565e-16,
+      "barriere_sortie_bulle": 0.15575120215505797,
+      "fraction_volume": 0.015196713713031846
+    },
+    {
+      "delta": 1.2,
+      "delta_p": 3.1999999999999997,
+      "r_barriere": 0.6659839501682909,
+      "r_bulle": 1.379519983549054,
+      "statut": "minimum de bulle favorisé face à R=0",
+      "f_barriere": 0.13815004684532617,
+      "f_bulle": -0.1314593560316044,
+      "barriere_sortie_bulle": 0.2696094028769306,
+      "fraction_volume": 0.017502203492154905
+    },
+    {
+      "delta": 1.5,
+      "delta_p": 4.0,
+      "r_barriere": 0.5113996193930972,
+      "r_bulle": 1.6044392090434942,
+      "statut": "minimum de bulle favorisé face à R=0",
+      "f_barriere": 0.08518896519433779,
+      "f_bulle": -1.0373084193258728,
+      "barriere_sortie_bulle": 1.1224973845202106,
+      "fraction_volume": 0.027534585363366157
+    },
+    {
+      "delta": 2.0,
+      "delta_p": 5.333333333333333,
+      "r_barriere": 0.3775395683912327,
+      "r_bulle": 1.8549627501615684,
+      "statut": "minimum de bulle favorisé face à R=0",
+      "f_barriere": 0.04719028168751132,
+      "f_bulle": -3.379601552427176,
+      "barriere_sortie_bulle": 3.4267918341146872,
+      "fraction_volume": 0.04255144566563866
+    }
+  ],
+  "accumulation": [
+    {
+      "I": 0.03,
+      "q_plafond": 0.15,
+      "delta_plafond": 0.9500000000000001,
+      "t_apparition_branches": null,
+      "t_egalite_energies": null
+    },
+    {
+      "I": 0.04,
+      "q_plafond": 0.19999999999999998,
+      "delta_plafond": 1.0,
+      "t_apparition_branches": null,
+      "t_egalite_energies": null
+    },
+    {
+      "I": 0.05,
+      "q_plafond": 0.25,
+      "delta_plafond": 1.05,
+      "t_apparition_branches": 8.047189562170502,
+      "t_egalite_energies": null
+    },
+    {
+      "I": 0.07,
+      "q_plafond": 0.35000000000000003,
+      "delta_plafond": 1.1500000000000001,
+      "t_apparition_branches": 4.236489301936017,
+      "t_egalite_energies": 17.654998749301363
+    },
+    {
+      "I": 0.14,
+      "q_plafond": 0.7000000000000001,
+      "delta_plafond": 1.5,
+      "t_apparition_branches": 1.682361183106065,
+      "t_egalite_energies": 3.3214594736803327
+    }
+  ],
+  "sensibilite_tension": [
+    {
+      "sigma": 0.5,
+      "delta_p_fixe": 3.2,
+      "delta": 2.018151396608915,
+      "R_bulle": 1.5662602885174073
+    },
+    {
+      "sigma": 1,
+      "delta_p_fixe": 3.2,
+      "delta": 1.2000000000000002,
+      "R_bulle": 1.379519983549054
+    },
+    {
+      "sigma": 2,
+      "delta_p_fixe": 3.2,
+      "delta": 0.7135242690016327,
+      "R_bulle": null
+    }
+  ],
+  "relaxations": [
+    {
+      "nom": "sans_germe",
+      "delta": 1.2,
+      "r_initial": 0.0,
+      "r_final": 0.0
+    },
+    {
+      "nom": "sous_barriere",
+      "delta": 1.2,
+      "r_initial": 0.5993855551514619,
+      "r_final": 6.484533215636355e-52
+    },
+    {
+      "nom": "au_dessus_barriere",
+      "delta": 1.2,
+      "r_initial": 0.7325823451851201,
+      "r_final": 1.379519983549052
+    },
+    {
+      "nom": "bulle_plus_grande",
+      "delta": 1.2,
+      "r_initial": 1.5174719819039595,
+      "r_final": 1.379519983549056
+    }
+  ],
+  "verifications": {
+    "racines_et_courbures": {
+      "erreur_max": 1.7763568394002505e-15,
+      "tolerance": 1e-11
+    },
+    "seuil_degenere": {
+      "erreur_max": 4.440892098500626e-16,
+      "tolerance": 1e-12
+    },
+    "absence_minimum_au_seuil": {
+      "erreur_max": 0,
+      "tolerance": 0
+    },
+    "coexistence_analytique": {
+      "erreur_max": 1.1102230246251565e-16,
+      "tolerance": 1e-12
+    },
+    "reduction_dimensionnelle": {
+      "erreur_max": 3.552713678800501e-15,
+      "tolerance": 1e-12
+    },
+    "gradient_par_differences_finies": {
+      "erreur_max": 1.2677983107778346e-09,
+      "tolerance": 1e-07
+    },
+    "balance_mecanique": {
+      "erreur_max": 8.881784197001252e-16,
+      "tolerance": 1e-11
+    },
+    "convergence_RK4_pas_divise_par_deux": {
+      "erreur_max": 9.663644551238804e-09,
+      "tolerance": 1e-07
+    },
+    "dissipation_energie_parametres_fixes": {
+      "erreur_max": 9.992007221626409e-16,
+      "tolerance": 1e-12
+    },
+    "deux_bassins_attraction": {
+      "erreur_max": 1.9984014443252818e-15,
+      "tolerance": 1e-10
+    },
+    "absence_creation_deterministe_depuis_zero": {
+      "erreur_max": 0.0,
+      "tolerance": 0
+    },
+    "temps_atteinte_solution_exacte": {
+      "erreur_max": 8.326672684688674e-17,
+      "tolerance": 1e-12
+    },
+    "contre_cas_sans_retroaction": {
+      "erreur_max": 0.0,
+      "tolerance": 1e-12
+    },
+    "fraction_convertie_inferieure_5_pourcent": {
+      "erreur_max": 0,
+      "tolerance": 0
+    }
+  }
+}
