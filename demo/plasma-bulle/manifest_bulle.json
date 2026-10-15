@@ -1,0 +1,55 @@
+{
+  "date": "2026-09-20",
+  "python": "3.12.14",
+  "nature": "Extension phénoménologique de stabilité radiale ; aucune calibration physique",
+  "fichiers": [
+    {
+      "path": "output/plasma-bulle/bulles_stabilite.png",
+      "sha256": "55e98f677f2a88904a88d49b423aadc5af6955c0aae846a9bb2717c241a416fd"
+    },
+    {
+      "path": "output/plasma-bulle/bulles_stabilite.svg",
+      "sha256": "3a718752a7a8cd804c4b7fa0ac4619384912b2b33a0ff46fbf5619ce62cc26c3"
+    },
+    {
+      "path": "output/plasma-bulle/calcul_bulle.py",
+      "sha256": "2b9848872bca6b49ddb85290b939671e07c6c3f2ad80feedb4ca6a16f2a09aeb"
+    },
+    {
+      "path": "output/plasma-bulle/nuage_plasma_bulle.md",
+      "sha256": "67b085ed0b3515615909bf99a1bbde2c0337370fc030e6552d6cda8304f86c33"
+    },
+    {
+      "path": "output/plasma-bulle/requirements-figures.txt",
+      "sha256": "3af11a0f167c47d9c6016898c3f6ab8d9be58d6b98df84f2d006ab6d9fa733ce"
+    },
+    {
+      "path": "output/plasma-bulle/resultats_bulle.json",
+      "sha256": "02e8f07ff4655577f0802e7a75ec246ee6a5f5f5c4e1a2fe26bbb00ce57f0e3a"
+    },
+    {
+      "path": "output/plasma-bulle/resultats_bulle.md",
+      "sha256": "2b3456989f179bd504b915f42fa3cc2bcb37de8758b6980a0d2ef780d4e436d8"
+    },
+    {
+      "path": "output/plasma-bulle/trajectoires_bulle.csv",
+      "sha256": "68505f00968bbd482931fff0a7cecd46bb52348150b239ac273b63df210dd58b"
+    },
+    {
+      "path": "output/journal_hypotheses.md",
+      "sha256": "80d2fbebda870b1160e42ef6866874a5a06f4cf4b93c70e85c4e2d2d1afa4672"
+    },
+    {
+      "path": "output/seuil-entropie/notes_dimensions_fermeture.md",
+      "sha256": "6af59e8ed84331edf234022f303b62dd0c89019bab68bfe60a0b61a15b35e80b"
+    },
+    {
+      "path": "output/synthese-arxiv/manuscrit_fr.md",
+      "sha256": "5bcc3731349ca8e3108d16ec3495822a115e7966189b96ee1c0980e7405b9a41"
+    },
+    {
+      "path": "output/synthese-arxiv/preparation_arxiv.md",
+      "sha256": "0ea5c3508197c0c70ae83174beca6e47c27a875cf1e4d818c865b1a61b15697f"
+    }
+  ]
+}

@@ -1,0 +1,1457 @@
+<!doctype html>
+<html lang="fr" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Automate chromatique 3D — règles modifiables</title>
+<style>:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --icon-size: 16px;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --corner-shape: round;
+  --radius: var(--border-radius-lg, 10px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: var(--visualize-paint-gutter, 0px);
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: var(--corner-shape);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget > :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin-block: 6px;
+  border: 0;
+  background: var(--border);
+}
+
+.nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 8px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar:only-child {
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.nav-link,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn,
+.nav-link {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover,
+.nav-link:not(:disabled):not([aria-disabled="true"]):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.nav-pills .nav-link {
+  min-width: 0;
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.nav-justified .nav-link {
+  flex: 1 1 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+.btn:disabled,
+.nav-link:disabled,
+.nav-link[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type="file"]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: var(--corner-shape);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed="true"],
+  [aria-selected="true"],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .nav-link,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Keep small-screen WebKit from zooming when a text field receives focus. */
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type="file"]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type="color"] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="time"],
+    [type="week"]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html>body{padding:0}</style>
+<style>html>body{max-width:960px;margin:0 auto!important;padding:24px!important;box-sizing:border-box}header{margin-bottom:24px}header p{max-width:76ch}header nav{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:18px}@media(max-width:480px){html>body{padding:16px!important}}</style></head><body><header><nav><a href="ondes-3d.html">Surfaces ondulantes</a><a href="cycle-3d.html">Cycle 3D précédent</a><a href="index.html">Version 2D</a><a href="REGLES-AUTOMATE.md">Guide des règles</a></nav><h1>Assemblages locaux — émergence et devenir</h1><p>Points, cordes et boucles peuvent former une configuration X puis activer une attraction. Comparez les assemblages, leurs ruptures et les composants émis ; suivez les constituants et les durées. Automate exploratoire 3D, version 4.</p></header><main id="vie-chromatique">
+  <div class="viz-controls">
+    <label class="form-label" for="v-positions">Positions de couleur<select class="form-select" id="v-positions"><option>10</option><option>11</option><option>26</option><option selected>32</option></select></label>
+    <label class="form-label" for="v-target">Couleur cible (recette optionnelle)<input class="form-control" id="v-target" value="#8B5CF6" maxlength="7" spellcheck="false"></label>
+  </div>
+  <p class="text-small text-muted">10, 11, 26 ou 32 états de couleur. Ce choix règle la diversité à réunir ; l’espace simulé reste en 3D.</p>
+  <details><summary>Préparer une expérience reproductible</summary><div class="viz-controls"><label class="form-label" for="v-seed">Graine<input class="form-control" id="v-seed" type="number" min="1" max="4294967295" step="1"></label><label class="form-label" for="v-initial-shape">Région du nuage initial<select class="form-select" id="v-initial-shape"><option value="cube">Volume de la grille</option><option value="sphere">Région sphérique</option></select></label><button class="btn" type="button" id="v-new-population">Nouvelle population avec ces réglages</button></div><p class="text-small">Même graine et mêmes règles : même trajectoire. Conservez aussi les expériences sans émergence. Cette commande recommence en pause avec tous les réglages saisis.</p></details>
+  <canvas id="v-canvas" role="img" aria-label="Automate cellulaire en trois dimensions. Glisser pour tourner ; cliquer sur une cellule pour l’inspecter.">Cellules et foyers de gravité autonomes en 3D.</canvas>
+  <div class="viz-row text-small"><span>Glisser : rotation · molette : zoom · cliquer : inspecter</span><label class="form-label" for="v-zoom">Zoom<input class="form-range" id="v-zoom" type="range" min="50" max="230" value="100"></label></div>
+  <div class="viz-row"><button type="button" class="btn btn-primary" id="v-run">Démarrer</button><button type="button" class="btn" id="v-step">Une génération</button><button type="button" class="btn" id="v-reset">Recommencer</button><label class="form-label" for="v-rate">Générations / seconde<input class="form-control" id="v-rate" type="number" min="0.1" max="12" step="0.1" value="2"></label></div>
+  <p id="v-applied" class="text-small"></p>
+  <div id="v-stats" class="viz-row tabular-nums"></div>
+  <div id="v-events" class="text-small text-muted"></div>
+  <div id="v-balance" class="text-small"></div><div id="v-lifetime" class="text-small"></div>
+  <div class="v-legend text-small"><span>• point</span><span>∿ demi-corde</span><span>∿∿ corde</span><span>○ boucle</span><span>× configuration X</span><span>◎ attraction active</span></div>
+  <p id="v-message" class="text-small" role="status" aria-live="polite">Simulation en pause. Les combinaisons locales précèdent la gravitation. La condition X est réglable.</p>
+  <p id="v-error" class="text-destructive" role="alert" hidden></p>
+  <details open><summary>Cellule inspectée</summary><div id="v-inspector" class="text-small">Cliquez sur une cellule : sa couleur, ses positions et sa gravité seront affichées ici.</div></details>
+  <button type="button" class="btn" id="v-perturb">Rompre une structure de la cellule inspectée</button><p class="text-small">Perturbation contrôlée : la structure de plus haut niveau est rendue à ses points, sans perte. Reprendre permet d’observer la réorganisation ou la perte de X. L’intervention est enregistrée séparément.</p>
+  <details open><summary>Règles courantes</summary>
+    <div class="viz-controls">
+      <label class="form-label" for="v-addition">Combinaison des couleurs<select class="form-select" id="v-addition"><option value="average">Moyenne pondérée</option><option value="modulo">Addition RGB modulo 256</option><option value="clamp">Addition RGB plafonnée</option></select></label>
+      <label class="form-label" for="v-trigger">Déclencheur de gravité<select class="form-select" id="v-trigger"><option value="configuration">Configuration X actuelle</option><option value="sphere">Condensat, mémoire éventuelle incluse</option><option value="color">Couleur cible obtenue</option><option value="both">X ET couleur cible</option><option value="either">X OU couleur cible</option></select></label>
+      <label class="form-label" for="v-tolerance">Tolérance à la couleur cible (0–1)<input class="form-control" id="v-tolerance" type="number" min="0" max="1" step="0.01"></label>
+      <label class="form-label" for="v-minimum">Positions distinctes requises pour la recette de couleur<input class="form-control" id="v-minimum" type="number" min="1" max="32"></label>
+      <label class="form-label" for="v-mode">Condition locale X<select class="form-select" id="v-mode"><option value="local-complete">Toutes les boucles du voisinage réunies ici</option><option value="loop-count">Nombre de boucles réunies ici</option><option value="palette">Recette historique : couverture des couleurs</option></select></label>
+      <label class="form-label" for="v-condensation">Positions requises (recette historique seulement)<input class="form-control" id="v-condensation" type="number" min="1" max="32"></label>
+      <label class="form-label" for="v-min-loops">Nombre minimal de boucles pour X<input class="form-control" id="v-min-loops" type="number" min="1" max="100"></label>
+      <label class="form-label" for="v-half">Points de même couleur par demi-corde<input class="form-control" id="v-half" type="number" min="2" max="4"></label>
+      <label class="form-label" for="v-string">Demi-cordes par corde<input class="form-control" id="v-string" type="number" min="2" max="4"></label>
+      <label class="form-label" for="v-loop">Cordes par boucle<input class="form-control" id="v-loop" type="number" min="2" max="4"></label>
+      <label class="form-label" for="v-strength">Intensité gravitationnelle<input class="form-control" id="v-strength" type="number" min="0" max="30" step="0.1"></label>
+      <label class="form-label" for="v-radius">Portée (cellules)<input class="form-control" id="v-radius" type="number" min="1" max="24" step="1"></label>
+      <label class="form-label" for="v-spectrum">Écart de couleur accepté pour l’attraction (0–1)<input class="form-control" id="v-spectrum" type="number" min="0" max="1" step="0.01"></label>
+      <label class="form-label" for="v-subtraction">Collisions soustractives<select class="form-select" id="v-subtraction"><option value="opposed">Directions opposées seulement</option><option value="any">Toute collision</option><option value="never">Jamais</option></select></label>
+      <label class="form-label" for="v-probability">Probabilité de soustraction (0–1)<input class="form-control" id="v-probability" type="number" min="0" max="1" step="0.05"></label>
+      <label class="form-label" for="v-birth">Naissance : nombres de voisins<input class="form-control" id="v-birth" placeholder="3,4"></label>
+      <label class="form-label" for="v-survival">Survie : nombres de voisins<input class="form-control" id="v-survival" placeholder="1,2,3,4,5,6,7,8"></label>
+      <label class="form-label" for="v-inheritance">Composition d’une naissance<select class="form-select" id="v-inheritance"><option value="point">Un point issu d’une couleur voisine</option><option value="union">Un point par position voisine</option><option value="parent">Copie d’un assemblage voisin</option><option value="addition">Tous les points voisins</option></select></label>
+      <label class="form-label" for="v-emission">Probabilité d’émission d’un condensat (0–1)<input class="form-control" id="v-emission" type="number" min="0" max="1" step="0.01"></label>
+      <label class="form-label" for="v-emission-mode">Contenu émis<select class="form-select" id="v-emission-mode"><option value="point">Un point constitutif</option><option value="structure">Un composant entier, forme conservée</option></select></label>
+      <label class="form-label" for="v-breakup">Probabilité de rupture par structure et génération<input class="form-control" id="v-breakup" type="number" min="0" max="1" step="0.01"></label>
+      <label class="form-label" for="v-condensate-style">Représentation des condensats<select class="form-select" id="v-condensate-style"><option value="strands">Voir les constituants</option><option value="envelope">Enveloppe sphérique illustrative</option></select></label>
+    </div>
+    <div class="viz-row"><label class="form-check"><input class="form-check-input" id="v-life" type="checkbox"><span class="form-check-label">Naissances et disparitions actives</span></label><label class="form-check"><input class="form-check-input" id="v-gravity" type="checkbox"><span class="form-check-label">Gravité active</span></label></div>
+    <p class="text-small">« Local » = une cellule et ses 6 ou 26 voisins immédiats. Toutes les boucles sont réunies ici si le minimum est atteint dans la cellule et si ses voisins ne contiennent plus de boucle. Les points et cordes ouverts voisins ne bloquent pas X. C’est une convention modifiable, sans garantie d’émergence.</p>
+    <div class="viz-row"><label class="form-check"><input class="form-check-input" id="v-persistent" type="checkbox">Mémoriser le condensat après perte de X</label><label class="form-check"><input class="form-check-input" id="v-protect" type="checkbox">Protéger les condensats des disparitions</label></div>
+    <div class="viz-controls"><label class="form-check"><input class="form-check-input" id="v-radial" type="checkbox">Rayon d’enveloppe évolutif</label><label class="form-label" for="v-radial-rate">Rappel par génération<input class="form-control" id="v-radial-rate" type="number" min="0.001" max="1" step="0.01"></label><label class="form-label" for="v-radial-scale">Échelle du rayon (cellules)<input class="form-control" id="v-radial-scale" type="number" min="0.01" max="1" step="0.01"></label></div>
+    <p class="text-small">Le rayon suit progressivement la quantité réunie dans les boucles et décroît lorsque le condensat disparaît. Cette enveloppe ne calcule pas un équilibre physique et ne change pas les collisions de la grille.</p>
+    <p class="text-small">La rupture rend une structure à ses points après les assemblages du pas ; ceux-ci peuvent se réassembler plus tard. Son taux et celui d’émission sont des règles choisies, nuls par défaut. L’émission d’un composant entier peut laisser circuler une corde ou une boucle ; elle n’en fait pas un boson ni de la matière noire. L’affichage des constituants ne calcule pas encore leur déformation mécanique.</p>
+    <button type="button" class="btn btn-primary" id="v-apply">Appliquer les réglages</button>
+  </details>
+  <details><summary>Couleurs, demi-cordes, cordes et boucles</summary>
+    <div class="viz-controls"><label class="form-label" for="v-point-weight">Poids d’un point<input class="form-control" id="v-point-weight" type="number" min="0.01" max="100" step="0.05"></label><label class="form-label" for="v-half-weight">Poids d’une demi-corde<input class="form-control" id="v-half-weight" type="number" min="0.01" max="100" step="0.1"></label><label class="form-label" for="v-string-weight">Poids d’une corde<input class="form-control" id="v-string-weight" type="number" min="0.01" max="100" step="0.1"></label><label class="form-label" for="v-loop-weight">Poids d’une boucle<input class="form-control" id="v-loop-weight" type="number" min="0.01" max="100" step="0.1"></label></div>
+    <p class="text-small">Une couleur ne reçoit pas une forme prédéfinie : les formes résultent des assemblages. Les poids participent au mélange et à la masse attractive. Les positions cochées sont nécessaires à la recette de couleur optionnelle.</p>
+    <div class="table-responsive"><table class="table table-sm"><thead><tr><th>Position</th><th>Couleur initiale</th><th>Requise pour la recette</th></tr></thead><tbody id="v-palette-table"></tbody></table></div>
+  </details>
+  <button class="btn" id="v-experiment" type="button">Exporter l’expérience et son historique</button>
+  <p class="text-small">Les apparitions comptent les entrées dans X à chaque site, y compris les récidives. Les changements de règles sont enregistrés séparément. Ce compteur ne mesure pas un taux physique Γ.</p>
+  <details><summary>Toutes les règles — JSON modifiable</summary>
+    <p class="text-small">Ce JSON contient l’ensemble des paramètres appliqués. L’appliquer ou importer un fichier recommence la population à partir de la graine indiquée. Aucune formule saisie n’est exécutée comme du code.</p>
+    <label class="form-label" for="v-json">Règles complètes<textarea class="form-control v-json" id="v-json" rows="20" spellcheck="false"></textarea></label>
+    <div class="viz-row"><button class="btn btn-primary" id="v-json-apply" type="button">Appliquer le JSON et recommencer</button><button class="btn" id="v-export" type="button">Exporter les règles appliquées</button><label class="form-label" for="v-import">Importer des règles<input class="form-control" id="v-import" type="file" accept=".json,application/json"></label></div>
+  </details>
+  <details><summary>Ordre des règles et formules</summary>
+    <ol class="v-rules">
+      <li><strong>Positions et points.</strong> Chaque position représente une couleur initiale. Les 10/11/26/32 positions sont distinctes des 6/26 voisins de la grille 3D. La population commence uniquement avec des points ; l’option <code>initial.pairedPoints</code> place aussi un voisin de même couleur, sans créer de liaison à l’avance.</li>
+      <li><strong>Générations.</strong> Naissance et survie dépendent du nombre de voisins de la génération précédente. Par défaut, une naissance crée un seul point d’une couleur voisine. Les listes et le mode d’héritage sont modifiables. Autoriser une naissance à zéro voisin crée un point de couleur aléatoire.</li>
+      <li><strong>Liaison locale.</strong> Deux cellules voisines peuvent se rejoindre si elles contiennent des points de même couleur ou si chacune possède déjà une structure. Une cellule ne participe qu’à une liaison par génération ; la destination reste immobile. La probabilité est réglée par <code>structures.bondProbability</code>. Les sources ne sont pas déplacées.</li>
+      <li><strong>Assemblage progressif.</strong> Par défaut : deux points de même couleur → une demi-corde ; deux demi-cordes, éventuellement de couleurs différentes → une corde ; deux cordes → une boucle. Les trois seuils et probabilités sont modifiables. Un composant ne franchit qu’un niveau par génération. Les parties nouvellement assemblées participent au niveau suivant au pas suivant.</li>
+      <li><strong>Configuration X.</strong> La condition X examine les boucles locales suivant le mode choisi. Par défaut, le minimum est quatre et aucune boucle ne doit rester dans les cellules voisines. La couleur globale de la palette n’est pas une exigence. X est recalculé à chaque génération ; sa perte retire le statut condensé, sauf mémoire explicitement activée. La sphère est une option d’affichage.</li>
+      <li><strong>Mélange pondéré.</strong> La couleur d’une structure est la moyenne RGB de ses points constitutifs. La couleur de la cellule est ensuite la moyenne de ses structures pondérée par leurs poids : point 0,25 ; demi-corde 0,5 ; corde 1 ; boucle 2 par défaut. Ces poids sont modifiables. Les modes alternatifs additionnent les codes RGB des points, modulo 256 ou plafonnés à 255.</li>
+      <li><strong>Gravité.</strong> Par défaut, X déclenche la gravité au pas suivant. Une intensité nulle ou une gravité désactivée supprime les foyers actifs et les déplacements gravitationnels, tout en laissant évoluer les combinaisons locales. La couleur cible et le condensat mémorisé sont des variantes explicites. La recette chromatique exige une distance à la cible inférieure à la tolérance, un minimum de positions et les positions cochées. Le condensat garde la couleur issue de son contenu.</li>
+      <li><strong>Attraction sélective.</strong> L’écart de couleur est la distance euclidienne RGB divisée par 255√3. Une source attire dans sa portée les couleurs assez proches de son propre mélange. La probabilité d’avancer d’une cellule vaut min(1, intensité × √masse × multiplicateur de sphère / (distance spatiale² + adoucissement²)). La source admissible la plus forte est choisie. « Spectre » désigne ici cette proximité RGB.</li>
+      <li><strong>Collisions.</strong> Les arrivées s’additionnent. Si la condition de soustraction et sa probabilité sont remplies, les points de mêmes positions s’annulent par paires entre les deux arrivées. Les points restants sont conservés ; une structure touchée se défait en points. Le contenu ne devient jamais négatif. Les amplitudes par position sont plafonnées par <code>colors.amplitudeLimit</code> ; un excès défait aussi les structures touchées.</li>
+      <li><strong>Émission facultative.</strong> Un condensat peut transférer un point ou un composant entier vers un voisin. Extraire un point défait la structure d’où il provient. La réserve protège au moins un point de chaque position ; une structure entière n’est émise que si cette réserve peut être respectée. Le composant émis a un nombre réglable de pas de sortie avant d’être à nouveau soumis aux règles ordinaires. Cette règle est désactivée par défaut.</li>
+      <li><strong>Ordre d’un pas.</strong> Lecture de la population précédente → naissance/survie → réservation des liaisons locales → émission → mouvements (liaison réservée, puis sortie d’émission, attraction ou diffusion) → collisions → un niveau d’assemblage → ruptures facultatives → recalcul des couleurs, configurations X et foyers → évolution du rayon → bilan et suivi des épisodes X. Les collisions sont traitées par ordre d’origine croissant, puis les émissions. À force égale, la source de plus petite origine est choisie.</li>
+      <li><strong>Quantités et affichage.</strong> Les assemblages et additions conservent les points. Les naissances, disparitions, annulations et plafonnements modifient leur quantité. L’ondulation est une animation visuelle, réglable par <code>display.waveAmplitude</code> et <code>display.waveFrequency</code>, sans effet mécanique. Jusqu’à huit composants représentatifs sont dessinés par cellule ; l’inspecteur compte l’ensemble.</li>
+    </ol>
+    <p class="text-small">Repère : les supercordes sont décrites en 10 dimensions d’espace-temps et la théorie M en 11. Ces dimensions ne sont pas les positions de couleur de cet automate. Choisir le même nombre permet ici une exploration numérique, sans implémenter ces théories. <a href="https://arxiv.org/abs/hep-th/9608117" target="_blank" rel="noopener noreferrer">Référence : M. J. Duff, M-Theory (1996)</a>.</p>
+    <p class="text-small">Il s’agit d’un modèle exploratoire à règles explicites. Les assemblages, émissions et ruptures ont un bilan de constituants. La masse attractive reste un poids de modèle ; aucune énergie ni entropie thermodynamique n’est calculée.</p>
+  </details>
+  <details><summary>Portée du modèle et hypothèses à construire</summary><p class="text-small">Calculé : assemblage local, condition X, attraction discrète, ruptures, émissions, bilan de constituants et durées par site. Le nuage et l’affichage n’imposent plus une sphère.</p><p class="text-small">À définir : géométrie mécanique des filaments, dimensions spatiales émergentes, champ bosonique et sa masse, interaction avec les photons, gravitation relativiste et évolution thermique cosmologique. Les couleurs et ondulations ne représentent pas ces propriétés. Aucune lentille gravitationnelle ni réfraction n’est simulée.</p><p class="text-small">Les épisodes X sont suivis par site, pas comme des objets identifiés lors des fusions. Une modification des règles ou une intervention interrompt la mesure de durée ; ces épisodes sont marqués comme censurés dans l’export. Un épisode encore présent à la fin n’a pas une durée de vie totale connue.</p></details>
+  <details><summary>Orientation au clavier</summary><div class="viz-controls"><label class="form-label" for="v-yaw">Rotation horizontale<input class="form-range" id="v-yaw" type="range" min="-180" max="180" value="-25"></label><label class="form-label" for="v-pitch">Rotation verticale<input class="form-range" id="v-pitch" type="range" min="-85" max="85" value="18"></label></div></details>
+</main>
+<style>
+ #vie-chromatique{display:grid;gap:14px}#vie-chromatique canvas{display:block;width:100%;aspect-ratio:16/10;cursor:grab;touch-action:none;color:var(--foreground)}#vie-chromatique canvas:active{cursor:grabbing}#vie-chromatique details>div,#vie-chromatique details>p,#vie-chromatique details>label{margin-top:14px}#vie-chromatique .v-legend{display:flex;flex-wrap:wrap;gap:8px 18px}#vie-chromatique p{margin:0}#vie-chromatique .v-rules li{margin-bottom:12px}#vie-chromatique .v-json{font-family:monospace}#vie-chromatique .v-inventory{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:8px}#vie-chromatique .v-chip{display:inline-block;width:10px;height:10px;margin-right:5px}#vie-chromatique td:nth-child(1){white-space:nowrap}
+</style>
+
+<script>
+/* Formation locale de points, demi-cordes, cordes, boucles et condensats. */
+(function(global){
+ 'use strict';
+ const TYPES=['point','demi-corde','corde','boucle'],clone=x=>JSON.parse(JSON.stringify(x)),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ const rgb=s=>[1,3,5].map(i=>parseInt(s.slice(i,i+2),16));
+ const hex=a=>'#'+a.map(v=>clamp(Math.round(v),0,255).toString(16).padStart(2,'0')).join('').toUpperCase();
+ const distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]))/(255*Math.sqrt(3));
+ function palette(n,target='#8B5CF6'){const result=[{color:target}];for(let i=1;i<n;i++){const h=i/n*6,k=Math.floor(h),t=Math.round(48+176*(h-k)),q=272-t;result.push({color:hex([[224,t,48],[q,224,48],[48,224,t],[48,q,224],[t,48,224],[224,48,q]][k%6])});}return result;}
+ function defaults(n=32){return{version:4,positions:n,target:'#8B5CF6',seed:728931,
+   grid:{size:18,boundary:'closed',neighborhood:26},initial:{density:.14,shape:'cube',pairedPoints:true},ticksPerSecond:3,
+   palette:palette(n),weights:{point:.25,'demi-corde':.5,corde:1,boucle:2},
+   life:{enabled:true,birth:[3,4],survival:Array.from({length:27},(_,i)=>i),inheritance:'point',protectCondensates:false},
+   structures:{pointsPerHalf:2,halvesPerString:2,stringsPerLoop:2,halfProbability:1,stringProbability:1,loopProbability:.8,bondProbability:.75},
+   colors:{addition:'average',amplitudeLimit:64},collisions:{subtraction:'opposed',probability:.25},
+   gravity:{enabled:true,trigger:'configuration',tolerance:.09,minimumPositions:1,requiredPositions:[],strength:3,radius:6,softening:1,spectralTolerance:.45},
+   emergence:{mode:'local-complete'},radial:{enabled:true,rate:.2,unitRadius:.18},
+   motion:{diffusion:.12},condensation:{requiredPositions:n,minimumLoops:4,persistent:false,gravityMultiplier:2},
+   breakup:{probability:0},
+   emission:{probability:0,reserveEachPosition:true,freeSteps:5,mode:'point'},display:{waveAmplitude:.2,waveFrequency:1.2,condensateStyle:'strands'}};}
+ function validate(input){
+   if(!input||typeof input!=='object'||Array.isArray(input)||![10,11,26,32].includes(input.positions))throw Error('Un objet de règles avec 10, 11, 26 ou 32 positions est requis.');
+   const c=clone(input),base=defaults(c.positions);
+   // Old complete configurations retain their assembly recipe and persistence.
+   if(c.version===2){if(Object.hasOwn(c,'emergence')||Object.hasOwn(c,'radial'))throw Error('Champs version 3 dans un fichier version 2.');c.version=3;c.emergence={mode:'palette'};c.radial={enabled:false,rate:.2,unitRadius:.18};}
+   if(c.version===3){if(Object.hasOwn(c,'breakup')||Object.hasOwn(c.emission||{},'mode')||Object.hasOwn(c.display||{},'condensateStyle'))throw Error('Champs version 4 dans un fichier ancien.');c.version=4;c.breakup={probability:0};if(c.emission)c.emission.mode='point';if(c.display)c.display.condensateStyle='envelope';}
+   function keys(a,b,path){if(!a||typeof a!=='object'||Array.isArray(a))throw Error(path+' doit être un objet.');for(const k of Object.keys(a))if(!Object.hasOwn(b,k))throw Error('Règle inconnue : '+path+'.'+k);for(const k of Object.keys(b))if(!Object.hasOwn(a,k))throw Error('Règle manquante : '+path+'.'+k);}
+   const num=(v,a,b,name,int=false)=>{if(typeof v!=='number'||!Number.isFinite(v)||v<a||v>b||(int&&!Number.isInteger(v)))throw Error(name+' doit être '+(int?'un entier ':'un nombre ')+'entre '+a+' et '+b+'.');};
+   const choice=(v,values,name)=>{if(!values.includes(v))throw Error(name+' : choisir '+values.join(', '));};
+   const bool=(v,name)=>{if(typeof v!=='boolean')throw Error(name+' doit être true ou false.');};
+   keys(c,base,'règles');choice(c.version,[4],'version');if(!/^#[0-9a-f]{6}$/i.test(c.target))throw Error('target : couleur #RRGGBB requise.');c.target=c.target.toUpperCase();num(c.seed,1,4294967295,'seed',true);num(c.ticksPerSecond,.1,12,'ticksPerSecond');
+   for(const key of ['grid','initial','weights','life','structures','colors','collisions','gravity','motion','condensation','emission','display','emergence','radial','breakup'])keys(c[key],base[key],key);
+   num(c.breakup.probability,0,1,'breakup.probability');choice(c.emission.mode,['point','structure'],'emission.mode');choice(c.display.condensateStyle,['strands','envelope'],'display.condensateStyle');
+   choice(c.emergence.mode,['local-complete','loop-count','palette'],'emergence.mode');bool(c.radial.enabled,'radial.enabled');num(c.radial.rate,.001,1,'radial.rate');num(c.radial.unitRadius,.01,1,'radial.unitRadius');
+   num(c.grid.size,8,24,'grid.size',true);choice(c.grid.boundary,['closed','wrap'],'grid.boundary');choice(c.grid.neighborhood,[6,26],'grid.neighborhood');
+   num(c.initial.density,0,.5,'initial.density');choice(c.initial.shape,['sphere','cube'],'initial.shape');bool(c.initial.pairedPoints,'initial.pairedPoints');
+   if(!Array.isArray(c.palette)||c.palette.length!==c.positions)throw Error('Une couleur est requise par position.');
+   c.palette.forEach((p,i)=>{keys(p,{color:0},'palette['+i+']');if(!/^#[0-9a-f]{6}$/i.test(p.color))throw Error('Couleur invalide en position '+(i+1));p.color=p.color.toUpperCase();});
+   for(const type of TYPES)num(c.weights[type],.01,100,'weights.'+type);
+   bool(c.life.enabled,'life.enabled');bool(c.life.protectCondensates,'life.protectCondensates');choice(c.life.inheritance,['point','parent','union','addition'],'life.inheritance');
+   for(const k of ['birth','survival']){if(!Array.isArray(c.life[k])||new Set(c.life[k]).size!==c.life[k].length)throw Error('life.'+k+' : liste sans doublons requise.');c.life[k].forEach(v=>num(v,0,c.grid.neighborhood,'life.'+k,true));}
+   for(const k of ['pointsPerHalf','halvesPerString','stringsPerLoop'])num(c.structures[k],2,4,'structures.'+k,true);
+   for(const k of ['halfProbability','stringProbability','loopProbability','bondProbability'])num(c.structures[k],0,1,'structures.'+k);
+   choice(c.colors.addition,['average','modulo','clamp'],'colors.addition');num(c.colors.amplitudeLimit,1,1000,'colors.amplitudeLimit',true);
+   choice(c.collisions.subtraction,['never','opposed','any'],'collisions.subtraction');num(c.collisions.probability,0,1,'collisions.probability');
+   bool(c.gravity.enabled,'gravity.enabled');choice(c.gravity.trigger,['configuration','sphere','color','either','both'],'gravity.trigger');num(c.gravity.tolerance,0,1,'gravity.tolerance');num(c.gravity.minimumPositions,1,c.positions,'gravity.minimumPositions',true);
+   if(!Array.isArray(c.gravity.requiredPositions)||new Set(c.gravity.requiredPositions).size!==c.gravity.requiredPositions.length)throw Error('gravity.requiredPositions : liste sans doublons requise.');c.gravity.requiredPositions.forEach(v=>num(v,1,c.positions,'gravity.requiredPositions',true));
+   num(c.gravity.strength,0,30,'gravity.strength');num(c.gravity.radius,1,c.grid.size,'gravity.radius');num(c.gravity.softening,.1,10,'gravity.softening');num(c.gravity.spectralTolerance,0,1,'gravity.spectralTolerance');num(c.motion.diffusion,0,1,'motion.diffusion');
+   num(c.condensation.requiredPositions,1,c.positions,'condensation.requiredPositions',true);num(c.condensation.minimumLoops,1,100,'condensation.minimumLoops',true);bool(c.condensation.persistent,'condensation.persistent');num(c.condensation.gravityMultiplier,0,20,'condensation.gravityMultiplier');
+   num(c.emission.probability,0,1,'emission.probability');bool(c.emission.reserveEachPosition,'emission.reserveEachPosition');num(c.emission.freeSteps,0,100,'emission.freeSteps',true);num(c.display.waveAmplitude,0,1,'display.waveAmplitude');num(c.display.waveFrequency,0,5,'display.waveFrequency');return c;
+ }
+ class World{
+   constructor(c=defaults()){this.configure(c);this.reset();}
+   configure(c){const valid=validate(c);if(this.cells&&(valid.grid.size!==this.n||valid.positions!==this.config.positions))throw Error('Changer la grille ou la palette demande une nouvelle population.');if(this.activeEpisodes){this.closeEpisodes('rules');this.pendingReclassification='rules';}this.config=valid;this.n=this.config.grid.size;this.colors=this.config.palette.map(p=>rgb(p.color));this.target=rgb(this.config.target);this.offsets=[];for(let z=-1;z<=1;z++)for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++)if((x||y||z)&&(this.config.grid.neighborhood===26||Math.abs(x)+Math.abs(y)+Math.abs(z)===1))this.offsets.push([x,y,z]);if(this.ruleHistory)this.ruleHistory.push({generation:this.generation,config:clone(this.config)});}
+   random(){let s=this.seed;s^=s<<13;s^=s>>>17;s^=s<<5;this.seed=s>>>0;return this.seed/4294967296;}
+   key(x,y,z){return x+this.n*(y+this.n*z);}
+   coordinates(k){return[k%this.n,Math.floor(k/this.n)%this.n,Math.floor(k/this.n**2)];}
+   neighbor(k,d){const p=this.coordinates(k).map((v,i)=>v+d[i]);if(this.config.grid.boundary==='wrap')return this.key(...p.map(v=>(v+this.n)%this.n));return p.some(v=>v<0||v>=this.n)?null:this.key(...p);}
+   delta(a,b){const d=b-a;return this.config.grid.boundary!=='wrap'?d:d>this.n/2?d-this.n:d<-this.n/2?d+this.n:d;}
+   vector(){return Array(this.config.positions).fill(0);}
+   point(i){const counts=this.vector();counts[i]=1;return{stage:0,counts};}
+   points(counts){const parts=[];counts.forEach((v,i)=>{for(let j=0;j<v;j++)parts.push(this.point(i));});return parts;}
+   counts(parts){const out=this.vector();for(const p of parts)for(let i=0;i<out.length;i++)out[i]+=p.counts[i];return out;}
+   cell(key,counts,extra={}){const parts=extra.parts?extra.parts.map(p=>({stage:p.stage,counts:[...p.counts]})):this.points(counts);return{key,counts:this.counts(parts),condensed:false,envelopeRadius:0,flight:0,direction:[0,0,0],...extra,parts};}
+   partColor(part){const total=part.counts.reduce((a,b)=>a+b,0);return[0,1,2].map(j=>part.counts.reduce((sum,v,i)=>sum+v*this.colors[i][j],0)/Math.max(1,total));}
+   describe(cell){
+     const c=this.config,counts=this.counts(cell.parts),shapeCounts=[0,0,0,0],loopPositions=new Set(),sums=[0,0,0];let mass=0;
+     for(const p of cell.parts){shapeCounts[p.stage]++;const weight=c.weights[TYPES[p.stage]],color=this.partColor(p);mass+=weight;for(let j=0;j<3;j++)sums[j]+=color[j]*weight;if(p.stage===3)p.counts.forEach((v,i)=>{if(v)loopPositions.add(i);});}
+     const raw=[0,1,2].map(j=>counts.reduce((sum,v,i)=>sum+v*this.colors[i][j],0));
+     const channels=c.colors.addition==='average'?sums.map(v=>Math.round(v/Math.max(.000001,mass))):raw.map(v=>c.colors.addition==='modulo'?v%256:Math.min(255,v));
+     const coverage=counts.filter(Boolean).length,units=counts.reduce((a,b)=>a+b,0);
+     let neighborLoops=0;
+     for(const d of this.offsets){const other=this.cells?.get(this.neighbor(cell.key,d));if(other)for(const p of other.parts)if(p.stage===3)neighborLoops++;}
+     const assembled=shapeCounts[3]>=c.condensation.minimumLoops&&(c.emergence.mode==='local-complete'?neighborLoops===0:c.emergence.mode==='palette'?loopPositions.size>=c.condensation.requiredPositions:true);
+     const condensed=assembled||(c.condensation.persistent&&cell.condensed&&units>0);
+     const matches=coverage>=c.gravity.minimumPositions&&c.gravity.requiredPositions.every(i=>counts[i-1]>0)&&distance(channels,this.target)<=c.gravity.tolerance;
+     const trigger=c.gravity.trigger,eligible=trigger==='configuration'?assembled:trigger==='sphere'?condensed:trigger==='color'?matches:trigger==='both'?assembled&&matches:assembled||matches;
+     const source=eligible&&c.gravity.enabled&&c.gravity.strength>0&&(!condensed||c.condensation.gravityMultiplier>0);
+     const loopUnits=cell.parts.filter(p=>p.stage===3).reduce((sum,p)=>sum+p.counts.reduce((a,b)=>a+b,0),0);
+     const targetRadius=condensed?c.radial.unitRadius*Math.cbrt(loopUnits):0;
+     return{counts,rgb:channels,color:hex(channels),mass,units,coverage,loopCoverage:loopPositions.size,shapeCounts,neighborLoops,configurationX:assembled,condensed,matches,eligible,source,targetRadius};
+   }
+   refresh(){for(const p of this.cells.values())Object.assign(p,this.describe(p));if(this.pendingReclassification){this.syncEpisodes(this.pendingReclassification);this.pendingReclassification=null;}this.stats=this.summary();}
+   summary(){let sources=0,eligible=0,configurations=0,spheres=0,units=0;const shapes=[0,0,0,0];for(const p of this.cells.values()){sources+=+p.source;eligible+=+p.eligible;configurations+=+p.configurationX;spheres+=+p.condensed;units+=p.units;for(let i=0;i<4;i++)shapes[i]+=p.shapeCounts[i];}const longestXAge=Math.max(0,...[...(this.activeEpisodes?.values()||[])].map(e=>this.generation-e.start));return{generation:this.generation,cells:this.cells.size,sources,eligible,configurations,spheres,units,longestXAge,totalEmergences:this.totalEmergences,points:shapes[0],halves:shapes[1],strings:shapes[2],loops:shapes[3],...this.events};}
+   clearEvents(){this.events={births:0,deaths:0,additions:0,subtractions:0,annihilations:0,emissions:0,emittedStructures:0,breakups:0,unitsBorn:0,unitsDied:0,unitsCancelled:0,unitsClipped:0,balanceError:0,newHalves:0,newStrings:0,newLoops:0,newConfigurations:0,lostConfigurations:0,gravityMoves:0};}
+   closeEpisodes(reason){for(const e of this.activeEpisodes.values()){e.end=this.generation;e.duration=e.end-e.start;e.endReason=reason;e.rightCensored=reason!=='lost';}this.activeEpisodes.clear();}
+   syncEpisodes(reason){
+     for(const [key,e]of this.activeEpisodes)if(!this.cells.get(key)?.configurationX){e.end=this.generation;e.duration=e.end-e.start;e.endReason='lost';e.rightCensored=false;this.activeEpisodes.delete(key);}
+     for(const p of this.cells.values())if(p.configurationX&&!this.activeEpisodes.has(p.key)){const e={id:this.nextEpisodeId++,key:p.key,start:this.generation,end:null,startReason:reason,leftCensored:reason!=='dynamics',rightCensored:true};this.activeEpisodes.set(p.key,e);this.episodes.push(e);}
+   }
+   perturb(key){
+     const cell=this.cells.get(key);if(!cell)throw Error('Sélectionnez une cellule occupée.');
+     const index=cell.parts.reduce((best,p,i)=>p.stage>0&&(best<0||p.stage>cell.parts[best].stage)?i:best,-1);
+     if(index<0)throw Error('Cette cellule ne contient aucune structure à rompre.');
+     const part=cell.parts[index],units=this.counts(cell.parts).reduce((a,b)=>a+b,0);
+     this.closeEpisodes('intervention');this.pendingReclassification='intervention';
+     cell.parts.splice(index,1,...this.points(part.counts));
+     this.interventions.push({generation:this.generation,key,type:'break-one-structure',stage:part.stage,counts:[...part.counts],unitsBefore:units,unitsAfter:this.counts(cell.parts).reduce((a,b)=>a+b,0)});
+     this.refresh();return this.interventions.at(-1);
+   }
+   experiment(){return clone({format:'chromatic-experiment-v4',config:this.config,ruleHistory:this.ruleHistory,interventions:this.interventions,episodes:this.episodes,history:this.history,current:this.stats,rngState:this.seed,cells:[...this.cells.values()],scope:{spatialDimensions:3,bosonDynamics:false,photonPropagation:false,thermalCosmology:false},note:'Épisodes de X par site, pas identités d’objets. Épisodes ouverts censurés à droite ; réglages et interventions censurent les durées. Bilan de constituants, pas énergie. Aucun taux physique. Export documentaire, non importable comme règles.'});}
+   reset(){this.seed=this.config.seed;this.generation=0;this.totalEmergences=0;this.episodes=[];this.activeEpisodes=new Map();this.nextEpisodeId=1;this.interventions=[];this.pendingReclassification=null;this.history=[];this.ruleHistory=[{generation:0,config:clone(this.config)}];this.cells=new Map();this.clearEvents();const center=(this.n-1)/2;
+     for(let z=0;z<this.n;z++)for(let y=0;y<this.n;y++)for(let x=0;x<this.n;x++){
+       const k=this.key(x,y,z);if(this.cells.has(k)||(this.config.initial.shape==='sphere'&&Math.hypot(x-center,y-center,z-center)>this.n*.46)||this.random()>=this.config.initial.density)continue;
+       const i=Math.floor(this.random()*this.config.positions),v=this.vector();v[i]=1;this.cells.set(k,this.cell(k,v));
+       if(this.config.initial.pairedPoints){const d=this.offsets[Math.floor(this.random()*this.offsets.length)],q=this.neighbor(k,d);if(q!==null&&!this.cells.has(q))this.cells.set(q,this.cell(q,v));}
+     }this.refresh();this.syncEpisodes('initial');this.history.push(clone(this.stats));
+   }
+   assemble(parts){
+     const c=this.config,groups=new Map(),out=[];
+     for(const p of parts){const key=p.stage===0?'p'+this.config.palette[p.counts.findIndex(Boolean)].color:'s'+p.stage;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);}
+     for(const pool of groups.values()){
+       const stage=pool[0].stage;if(stage===3){out.push(...pool);continue;}
+       const amount=[c.structures.pointsPerHalf,c.structures.halvesPerString,c.structures.stringsPerLoop][stage],probability=[c.structures.halfProbability,c.structures.stringProbability,c.structures.loopProbability][stage];
+       let i=0;for(;i+amount<=pool.length;i+=amount){const group=pool.slice(i,i+amount);if(this.random()<probability){out.push({stage:stage+1,counts:this.counts(group)});this.events[['newHalves','newStrings','newLoops'][stage]]++;}else out.push(...group);}out.push(...pool.slice(i));
+     }return out;
+   }
+   remove(parts,needed){const rest=[...needed],out=[];for(const p of parts){const counts=[...p.counts];let changed=false;for(let i=0;i<counts.length;i++){const take=Math.min(counts[i],rest[i]);counts[i]-=take;rest[i]-=take;changed=changed||take>0;}if(changed)out.push(...this.points(counts));else out.push(p);}return out;}
+   mergeParts(a,b,subtract){let parts;if(subtract){const ac=this.counts(a),bc=this.counts(b),cancel=ac.map((v,i)=>Math.min(v,bc[i]));this.events.unitsCancelled+=2*cancel.reduce((s,v)=>s+v,0);parts=this.remove(a,cancel).concat(this.remove(b,cancel));}else parts=a.concat(b);const counts=this.counts(parts),excess=counts.map(v=>Math.max(0,v-this.config.colors.amplitudeLimit));this.events.unitsClipped+=excess.reduce((s,v)=>s+v,0);return excess.some(Boolean)?this.remove(parts,excess):parts;}
+   inherit(parents){
+     const mode=this.config.life.inheritance;if(!parents.length)return[this.point(Math.floor(this.random()*this.config.positions))];
+     if(mode==='point'){const parent=parents[Math.floor(this.random()*parents.length)],present=parent.counts.map((v,i)=>v?i:-1).filter(i=>i>=0);return[this.point(present[Math.floor(this.random()*present.length)])];}
+     if(mode==='parent')return parents[0].parts.map(p=>({stage:p.stage,counts:[...p.counts]}));
+     const counts=this.counts(parents.flatMap(p=>p.parts)).map(v=>mode==='union'?Math.min(1,v):Math.min(v,this.config.colors.amplitudeLimit));return this.points(counts);
+   }
+   canBond(a,b){
+     const formedA=a.parts.some(p=>p.stage>0),formedB=b.parts.some(p=>p.stage>0);if(formedA&&formedB)return true;
+     const colors=new Set(a.parts.filter(p=>p.stage===0).map(p=>this.config.palette[p.counts.findIndex(Boolean)].color));
+     return b.parts.some(p=>p.stage===0&&colors.has(this.config.palette[p.counts.findIndex(Boolean)].color));
+   }
+   step(){
+     if(this.pendingReclassification)this.refresh();
+     const c=this.config;this.syncEpisodes('observed');this.clearEvents();const old=[...this.cells.values()].sort((a,b)=>a.key-b.key),unitsBefore=old.reduce((s,p)=>s+this.counts(p.parts).reduce((a,b)=>a+b,0),0),oldX=new Set(old.filter(p=>p.configurationX).map(p=>p.key)),sources=old.filter(p=>p.source).map(p=>({p,xyz:this.coordinates(p.key)})),neighbors=new Map();
+     for(const p of old)for(const d of this.offsets){const k=this.neighbor(p.key,d);if(k===null)continue;if(!neighbors.has(k))neighbors.set(k,[]);neighbors.get(k).push(p);}
+     const candidates=[];for(const p of old){const count=(neighbors.get(p.key)||[]).length;if(!c.life.enabled||(p.condensed&&c.life.protectCondensates)||c.life.survival.includes(count))candidates.push(this.cell(p.key,p.counts,{parts:p.parts,condensed:p.condensed,envelopeRadius:p.envelopeRadius,flight:p.flight,direction:[...p.direction]}));else{this.events.deaths++;this.events.unitsDied+=this.counts(p.parts).reduce((a,b)=>a+b,0);}}
+     if(c.life.enabled){const keys=c.life.birth.includes(0)?Array.from({length:this.n**3},(_,k)=>k):[...neighbors.keys()];for(const k of keys.sort((a,b)=>a-b)){if(this.cells.has(k))continue;const parents=neighbors.get(k)||[];if(!c.life.birth.includes(parents.length))continue;const parts=this.inherit(parents);if(parts.length){candidates.push(this.cell(k,[],{parts}));this.events.births++;this.events.unitsBorn+=this.counts(parts).reduce((a,b)=>a+b,0);}}}
+     const sorted=candidates.sort((a,b)=>a.key-b.key),byKey=new Map(sorted.map(p=>[p.key,p])),bonds=new Map(),held=new Set();
+     // Matching neighbors bind once per generation; the destination stays in place.
+     for(const a of sorted){if(held.has(a.key)||a.flight>0||this.random()>=c.structures.bondProbability)continue;for(const d of this.offsets){const k=this.neighbor(a.key,d),b=byKey.get(k);if(!b||held.has(k)||b.flight>0||!this.canBond(a,b))continue;const ai=this.describe(a),bi=this.describe(b);if((ai.source||ai.condensed)&&(bi.source||bi.condensed))continue;const anchor=ai.source||ai.condensed?a:b,mover=anchor===a?b:a;bonds.set(mover.key,anchor.key);held.add(a.key);held.add(b.key);break;}}
+     const emitted=[];for(const p of sorted)if(p.condensed&&c.emission.probability>0&&this.random()<c.emission.probability){
+       const counts=this.counts(p.parts),whole=c.emission.mode==='structure';
+       const choices=whole?p.parts.map((part,i)=>!c.emission.reserveEachPosition||part.counts.every((v,j)=>!v||counts[j]-v>=1)?i:-1).filter(i=>i>=0):counts.map((v,i)=>v>(c.emission.reserveEachPosition?1:0)?i:-1).filter(i=>i>=0);
+       if(!choices.length)continue;const d=this.offsets[Math.floor(this.random()*this.offsets.length)],k=this.neighbor(p.key,d);if(k===null)continue;const i=choices[Math.floor(this.random()*choices.length)];let parts;
+       if(whole){parts=p.parts.splice(i,1);if(parts[0].stage>0)this.events.emittedStructures++;}else{const v=this.vector();v[i]=1;p.parts=this.remove(p.parts,v);parts=this.points(v);}
+       emitted.push(this.cell(k,[],{parts,flight:c.emission.freeSteps,direction:d}));this.events.emissions++;
+     }
+     const proposals=[];for(const p of sorted){if(!p.parts.length)continue;const info=this.describe(p),xyz=this.coordinates(p.key);let d=[0,0,0],destination=p.key;
+       if(bonds.has(p.key)){destination=bonds.get(p.key);const q=this.coordinates(destination);d=q.map((v,i)=>Math.sign(this.delta(xyz[i],v)));}
+       else if(!held.has(p.key)&&!info.source&&!info.condensed){
+         if(p.flight>0){d=p.direction;p.flight--;}
+         else{let best=0,direction=null;for(const {p:source,xyz:q}of sources){if(source.key===p.key)continue;const delta=q.map((v,i)=>this.delta(xyz[i],v)),r2=delta.reduce((s,v)=>s+v*v,0);if(!r2||r2>c.gravity.radius**2||distance(info.rgb,source.rgb)>c.gravity.spectralTolerance)continue;const pull=c.gravity.strength*Math.sqrt(source.mass)*(source.condensed?c.condensation.gravityMultiplier:1)/(r2+c.gravity.softening**2);if(pull>best){best=pull;direction=delta.map(Math.sign);}}
+           if(direction&&this.random()<Math.min(1,best)){d=direction;this.events.gravityMoves++;}else if(this.random()<c.motion.diffusion)d=this.offsets[Math.floor(this.random()*this.offsets.length)];}
+         const k=this.neighbor(p.key,d);if(k!==null)destination=k;
+       }proposals.push({p,d,k:destination});
+     }
+     for(const p of emitted)proposals.push({p,d:p.direction,k:p.key});const next=new Map();
+     for(const {p,d,k}of proposals){if(!next.has(k)){next.set(k,this.cell(k,[],{parts:p.parts,condensed:p.condensed,envelopeRadius:p.envelopeRadius,flight:p.flight,direction:[...d]}));continue;}const a=next.get(k),opposed=a.direction.reduce((s,v,i)=>s+v*d[i],0)<0;const subtract=(c.collisions.subtraction==='any'||(c.collisions.subtraction==='opposed'&&opposed))&&this.random()<c.collisions.probability;a.parts=this.mergeParts(a.parts,p.parts,subtract);a.condensed=a.condensed||p.condensed;a.envelopeRadius=Math.cbrt(a.envelopeRadius**3+p.envelopeRadius**3);a.flight=0;a.direction=[0,0,0];this.events[subtract?'subtractions':'additions']++;if(!a.parts.length){next.delete(k);this.events.annihilations++;}}
+     for(const p of next.values()){
+       p.parts=this.assemble(p.parts);
+       if(c.breakup.probability>0)p.parts=p.parts.flatMap(part=>{if(part.stage>0&&this.random()<c.breakup.probability){this.events.breakups++;return this.points(part.counts);}return[part];});
+     }
+     this.cells=next;this.generation++;this.refresh();
+     for(const p of this.cells.values()){
+       if(p.configurationX&&!oldX.has(p.key))this.events.newConfigurations++;
+       if(c.radial.enabled)p.envelopeRadius+=(p.targetRadius-p.envelopeRadius)*(1-Math.exp(-c.radial.rate));
+       else p.envelopeRadius=0;
+     }
+     for(const k of oldX)if(!this.cells.get(k)?.configurationX)this.events.lostConfigurations++;
+     this.totalEmergences+=this.events.newConfigurations;this.syncEpisodes('dynamics');
+     const unitsAfter=[...this.cells.values()].reduce((s,p)=>s+p.units,0);
+     this.events.balanceError=unitsAfter-unitsBefore-this.events.unitsBorn+this.events.unitsDied+this.events.unitsCancelled+this.events.unitsClipped;
+     if(this.events.balanceError!==0)throw Error('Bilan de constituants incohérent : '+this.events.balanceError);
+     this.stats=this.summary();this.history.push(clone(this.stats));return this.stats;
+   }
+ }
+ const api={World,defaults,validate,palette,rgb,hex,distance,TYPES};if(typeof module!=='undefined'&&module.exports)module.exports=api;else global.ChromaticLife=api;
+})(globalThis);
+
+</script>
+<script>
+(function(){
+ 'use strict';
+ const A=globalThis.ChromaticLife,root=document.getElementById('vie-chromatique'),get=id=>root.querySelector('#v-'+id);
+ let world=new A.World(),running=false,selectedKey=null,dirty=true,last=performance.now(),accumulator=0;
+ let yaw=-25*Math.PI/180,pitch=18*Math.PI/180,zoom=1,drag=null,projected=[],visualTime=0,lastDraw=0;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ const canvas=get('canvas'),ctx=canvas.getContext('2d'),TAU=Math.PI*2;
+ const fmt=n=>n.toLocaleString('fr-FR'),copy=x=>JSON.parse(JSON.stringify(x));
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ const message=s=>{get('message').textContent=s;};
+ function error(e){get('error').textContent=e.message||String(e);get('error').hidden=false;}
+ function clearError(){get('error').hidden=true;get('error').textContent='';}
+ const controls={seed:c=>c.seed,'initial-shape':c=>c.initial.shape,'condensate-style':c=>c.display.condensateStyle,breakup:c=>c.breakup.probability,'emission-mode':c=>c.emission.mode,mode:c=>c.emergence.mode,'radial-rate':c=>c.radial.rate,'radial-scale':c=>c.radial.unitRadius,addition:c=>c.colors.addition,tolerance:c=>c.gravity.tolerance,minimum:c=>c.gravity.minimumPositions,
+   condensation:c=>c.condensation.requiredPositions,strength:c=>c.gravity.strength,radius:c=>c.gravity.radius,
+   spectrum:c=>c.gravity.spectralTolerance,subtraction:c=>c.collisions.subtraction,probability:c=>c.collisions.probability,
+   birth:c=>c.life.birth.join(','),survival:c=>c.life.survival.join(','),inheritance:c=>c.life.inheritance,emission:c=>c.emission.probability,
+   trigger:c=>c.gravity.trigger,'min-loops':c=>c.condensation.minimumLoops,half:c=>c.structures.pointsPerHalf,string:c=>c.structures.halvesPerString,loop:c=>c.structures.stringsPerLoop};
+ function fillControls(){
+   const c=world.config;get('positions').value=c.positions;get('target').value=c.target;get('rate').value=c.ticksPerSecond;
+   for(const [id,value]of Object.entries(controls))get(id).value=value(c);
+   get('minimum').max=get('condensation').max=c.positions;get('radius').max=c.grid.size;
+   get('persistent').checked=c.condensation.persistent;get('protect').checked=c.life.protectCondensates;get('radial').checked=c.radial.enabled;get('condensation').disabled=c.emergence.mode!=='palette';get('applied').textContent='Appliqué : intensité '+c.gravity.strength+' · gravité '+(c.gravity.enabled?'activée':'désactivée')+' · condition '+c.emergence.mode;get('life').checked=c.life.enabled;get('gravity').checked=c.gravity.enabled;
+   get('point-weight').value=c.weights.point;get('half-weight').value=c.weights['demi-corde'];get('string-weight').value=c.weights.corde;get('loop-weight').value=c.weights.boucle;
+   const body=get('palette-table');body.replaceChildren();
+   c.palette.forEach((entry,index)=>{
+     const row=document.createElement('tr'),id=document.createElement('th'),colorCell=document.createElement('td'),requiredCell=document.createElement('td');
+     id.scope='row';id.textContent=String(index+1).padStart(2,'0');
+     const color=document.createElement('input');color.type='color';color.value=entry.color;color.className='form-control form-control-color';color.dataset.positionColor=index;color.setAttribute('aria-label','Couleur de la position '+(index+1));colorCell.append(color);
+     const required=document.createElement('input');required.type='checkbox';required.className='form-check-input';required.checked=c.gravity.requiredPositions.includes(index+1);required.dataset.positionRequired=index;required.setAttribute('aria-label','Position '+(index+1)+' indispensable pour la gravité');requiredCell.append(required);
+     row.append(id,colorCell,requiredCell);body.append(row);
+   });
+   get('json').value=JSON.stringify(c,null,2);
+ }
+ function normalizedHex(s){s=s.trim().replace(/^#/,'');if(/^[0-9a-f]{3}$/i.test(s))s=s.split('').map(c=>c+c).join('');if(!/^[0-9a-f]{6}$/i.test(s))throw Error('Couleur cible invalide : utilisez #RRGGBB.');return '#'+s.toUpperCase();}
+ function number(id){const s=get(id).value.trim();if(!s)throw Error('Valeur manquante : '+id);const n=Number(s);if(!Number.isFinite(n))throw Error('Nombre invalide : '+id);return n;}
+ function list(id){const text=get(id).value.trim();if(!text)return[];const items=text.split(',').map(s=>s.trim());if(items.some(s=>!/^\d+$/.test(s)))throw Error(id+' : liste d’entiers séparés par des virgules.');return items.map(Number);}
+ function readControls(){
+   const c=copy(world.config);c.target=normalizedHex(get('target').value);c.ticksPerSecond=number('rate');
+   c.seed=number('seed');c.initial.shape=get('initial-shape').value;c.display.condensateStyle=get('condensate-style').value;c.breakup.probability=number('breakup');c.emission.mode=get('emission-mode').value;
+   c.colors.addition=get('addition').value;c.gravity.tolerance=number('tolerance');c.gravity.minimumPositions=number('minimum');c.condensation.requiredPositions=number('condensation');
+   c.gravity.strength=number('strength');c.gravity.radius=number('radius');c.gravity.spectralTolerance=number('spectrum');c.collisions.subtraction=get('subtraction').value;c.collisions.probability=number('probability');
+   c.life.birth=list('birth');c.life.survival=list('survival');c.life.inheritance=get('inheritance').value;c.life.enabled=get('life').checked;c.gravity.enabled=get('gravity').checked;c.emission.probability=number('emission');
+   c.weights={point:number('point-weight'),'demi-corde':number('half-weight'),corde:number('string-weight'),boucle:number('loop-weight')};
+   c.gravity.trigger=get('trigger').value;c.condensation.minimumLoops=number('min-loops');c.structures.pointsPerHalf=number('half');c.structures.halvesPerString=number('string');c.structures.stringsPerLoop=number('loop');
+   c.emergence.mode=get('mode').value;c.condensation.persistent=get('persistent').checked;c.life.protectCondensates=get('protect').checked;c.radial={enabled:get('radial').checked,rate:number('radial-rate'),unitRadius:number('radial-scale')};
+   c.gravity.requiredPositions=[];
+   c.palette.forEach((p,i)=>{p.color=root.querySelector('[data-position-color="'+i+'"]').value.toUpperCase();if(root.querySelector('[data-position-required="'+i+'"]').checked)c.gravity.requiredPositions.push(i+1);});
+   return A.validate(c);
+ }
+ get('mode').addEventListener('change',()=>{get('condensation').disabled=get('mode').value!=='palette';});
+ root.addEventListener('input',e=>{if(e.target.closest('details')&&!['v-json','v-yaw','v-pitch'].includes(e.target.id))message('Réglages modifiés : cliquer sur Appliquer les réglages.');});
+ function refreshUi(){
+   const s=world.stats;
+   get('stats').textContent='Génération '+fmt(s.generation)+' · '+fmt(s.cells)+' cellules · '+fmt(s.sources)+' foyers actifs · '+fmt(s.configurations)+' configurations X · '+fmt(s.spheres)+' condensats';
+   get('events').textContent=fmt(s.points)+' points libres · '+fmt(s.halves)+' demi-cordes · '+fmt(s.strings)+' cordes · '+fmt(s.loops)+' boucles. Dernier pas : '+fmt(s.additions)+' collisions + / '+fmt(s.subtractions)+' collisions − · '+fmt(s.gravityMoves)+' pas gravitationnels. Apparitions de X : '+fmt(s.totalEmergences)+' cumulées (récidives incluses), +'+s.newConfigurations+' / −'+s.lostConfigurations+' au dernier pas. Constituant(s) : '+fmt(s.units);
+   get('balance').textContent='Bilan du dernier pas : +'+fmt(s.unitsBorn)+' créés · −'+fmt(s.unitsDied)+' disparus · −'+fmt(s.unitsCancelled)+' annulés · −'+fmt(s.unitsClipped)+' plafonnés. Écart inexpliqué : '+fmt(s.balanceError)+'. '+fmt(s.breakups)+' ruptures · '+fmt(s.emittedStructures)+' structures émises.';
+   get('lifetime').textContent='Plus long épisode X en cours : '+fmt(s.longestXAge)+' génération(s). Suivi par site ; une durée ne prouve pas la stabilité physique.';
+   root.dataset.configurations=s.configurations;root.dataset.eligible=s.eligible;root.dataset.gravityMoves=s.gravityMoves;root.dataset.generation=s.generation;root.dataset.sources=s.sources;root.dataset.spheres=s.spheres;root.dataset.halves=s.halves;root.dataset.strings=s.strings;root.dataset.loops=s.loops;
+   get('run').textContent=running?'Pause':'Démarrer';get('run').setAttribute('aria-pressed',String(running));inspect();
+ }
+ function inspect(){
+   const box=get('inspector');box.replaceChildren();
+   if(selectedKey===null){box.textContent='Cliquez sur une cellule : sa couleur, ses positions et sa gravité seront affichées ici.';return;}
+   const cell=world.cells.get(selectedKey),xyz=world.coordinates(selectedKey);
+   if(!cell){box.textContent='Cellule ('+xyz.join(', ')+') actuellement vide.';return;}
+   const summary=document.createElement('p');summary.textContent='('+xyz.join(', ')+') · '+cell.color+' · '+cell.coverage+'/'+world.config.positions+' positions, dont '+cell.loopCoverage+' dans des boucles · masse '+fmt(cell.mass)+' · '+(cell.configurationX?'configuration X présente':cell.condensed?'condensat mémorisé':'configuration X absente');box.append(summary);
+   const state=document.createElement('p');state.textContent='Boucles chez les voisins immédiats : '+cell.neighborLoops+' · source admissible : '+(cell.eligible?'oui':'non')+' · attraction activée : '+(cell.source?'oui':'non')+' · rayon d’enveloppe : '+cell.envelopeRadius.toFixed(3)+' → cible '+cell.targetRadius.toFixed(3)+' (cellules).';box.append(state);
+   const episode=world.activeEpisodes.get(selectedKey);if(episode){const age=document.createElement('p');age.textContent='Épisode X n° '+episode.id+' · suivi depuis la génération '+episode.start+' · durée observée '+(world.generation-episode.start)+'.';box.append(age);}
+   const shapes=document.createElement('p');shapes.textContent=cell.shapeCounts.map((n,i)=>n+' '+A.TYPES[i]+'(s)').join(' · ');box.append(shapes);
+   const recipe=document.createElement('p');recipe.textContent='Écart à la cible : '+A.distance(cell.rgb,world.target).toFixed(3)+' / tolérance '+world.config.gravity.tolerance+'. '+(cell.matches?'Recette de couleur satisfaite.':'Recette de couleur non satisfaite.')+' Déclencheur actif : '+({configuration:'configuration X actuelle',sphere:'condensat (mémoire incluse)',color:'couleur cible',both:'X ET couleur cible',either:'X OU couleur cible'})[world.config.gravity.trigger]+'.';box.append(recipe);
+   const inventory=document.createElement('div');inventory.className='v-inventory';
+   cell.counts.forEach((v,i)=>{if(!v)return;const span=document.createElement('span'),chip=document.createElement('span');chip.className='v-chip';chip.style.background=world.config.palette[i].color;span.append(chip,document.createTextNode(String(i+1).padStart(2,'0')+' : '+v+' point(s) constitutif(s)'));inventory.append(span);});box.append(inventory);
+ }
+ function applyRules(c,restart){
+   const valid=A.validate(c);clearError();
+   if(!restart&&(valid.seed!==world.config.seed||valid.initial.shape!==world.config.initial.shape))throw Error('La graine ou la forme initiale a changé : utilisez « Nouvelle population avec ces réglages ».');
+   if(restart){world=new A.World(valid);running=false;selectedKey=null;accumulator=0;}else{world.configure(valid);world.refresh();}
+   fillControls();refreshUi();dirty=true;message(restart?'Règles appliquées ; nouvelle population en pause.':'Règles appliquées à la population actuelle.');
+ }
+ get('apply').addEventListener('click',()=>{try{applyRules(readControls(),false);}catch(e){error(e);}});
+ get('new-population').addEventListener('click',()=>{try{applyRules(readControls(),true);}catch(e){error(e);}});
+ get('perturb').addEventListener('click',()=>{try{running=false;accumulator=0;const result=world.perturb(selectedKey);clearError();refreshUi();dirty=true;message('Structure rompue en '+result.counts.reduce((a,b)=>a+b,0)+' points libres, sans perte de constituants. Intervention enregistrée à la génération '+world.generation+'.');}catch(e){error(e);refreshUi();}});
+ get('positions').addEventListener('change',()=>{
+   try{const c=readControls(),n=Number(get('positions').value),old=c.positions;c.positions=n;c.palette=n<old?c.palette.slice(0,n):c.palette.concat(A.palette(n,c.target).slice(old));
+     c.gravity.minimumPositions=Math.min(c.gravity.minimumPositions,n);c.gravity.requiredPositions=c.gravity.requiredPositions.filter(p=>p<=n);c.condensation.requiredPositions=c.condensation.requiredPositions===old?n:Math.min(c.condensation.requiredPositions,n);applyRules(c,true);
+   }catch(e){get('positions').value=world.config.positions;error(e);}
+ });
+ get('rate').addEventListener('change',()=>{try{const c=copy(world.config);c.ticksPerSecond=number('rate');world.configure(c);get('json').value=JSON.stringify(world.config,null,2);clearError();}catch(e){error(e);}});
+ get('run').addEventListener('click',()=>{running=!running;accumulator=0;refreshUi();message(running?'Évolution par générations. Les règles peuvent être ajustées pendant le calcul.':'Simulation en pause.');});
+ function generation(){world.step();refreshUi();dirty=true;}
+ get('step').addEventListener('click',()=>{running=false;accumulator=0;generation();message('Une génération calculée.');});
+ get('reset').addEventListener('click',()=>{world.reset();running=false;selectedKey=null;accumulator=0;refreshUi();dirty=true;message('Population initiale restaurée avec la même graine.');});
+ function parseRules(text){if(text.length>200000)throw Error('Fichier de règles trop volumineux (200 Ko maximum).');return A.validate(JSON.parse(text));}
+ get('json-apply').addEventListener('click',()=>{try{applyRules(parseRules(get('json').value),true);}catch(e){error(e);}});
+ get('import').addEventListener('change',async()=>{try{const file=get('import').files[0];if(!file)return;if(file.size>200000)throw Error('Fichier de règles trop volumineux (200 Ko maximum).');applyRules(parseRules(await file.text()),true);}catch(e){error(e);}finally{get('import').value='';}});
+ get('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(world.config,null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='regles-automate-chromatique.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('Export des règles actuellement appliquées.');});
+ get('experiment').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(world.experiment(),null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='experience-cordes-generation-'+world.generation+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('Expérience exportée : historique, changements de règles et état courant.');});
+ function draw(){
+   const W=960,H=600,scale=canvas.width/W,n=world.n,unit=300/n,center=(n-1)/2;
+   const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
+   function project(v){const [x,y,z]=v.map(q=>(q-center)*unit),xx=cy*x+sy*z,zz=-sy*x+cy*z,yy=cp*y-sp*zz,depth=780-(sp*y+cp*zz),k=850/depth*zoom;return{x:W/2+xx*k,y:H/2+yy*k,k,depth};}
+   ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.setTransform(scale,0,0,scale,0,0);
+   const foreground=getComputedStyle(canvas).color;
+   ctx.strokeStyle=foreground;ctx.globalAlpha=.16;ctx.lineWidth=1;
+   for(let corner=0;corner<8;corner++)for(let axis=0;axis<3;axis++)if(!(corner&(1<<axis))){const a=[0,1,2].map(i=>(corner&(1<<i))?n-.5:-.5),b=[...a];b[axis]=n-.5;const p=project(a),q=project(b);ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}
+   ctx.globalAlpha=1;
+   projected=[...world.cells.values()].map(cell=>({cell,...project(world.coordinates(cell.key))})).sort((a,b)=>b.depth-a.depth);
+   const wave=visualTime*TAU*world.config.display.waveFrequency,amplitude=reduced.matches?0:world.config.display.waveAmplitude;
+   for(const q of projected){
+     const cell=q.cell,envelope=world.config.display.condensateStyle==='envelope',r=(envelope?(world.config.radial.enabled&&cell.envelopeRadius>0?Math.max(2,unit*cell.envelopeRadius):cell.condensed?9:5):unit*.4)*q.k,origin=world.coordinates(cell.key);
+     ctx.fillStyle=cell.color;ctx.strokeStyle=cell.color;ctx.lineWidth=Math.max(1,1.3*q.k);
+     if(envelope&&(cell.condensed||(world.config.radial.enabled&&cell.envelopeRadius>.005))){
+       const g=ctx.createRadialGradient(q.x-r*.3,q.y-r*.3,.3,q.x,q.y,r);g.addColorStop(0,cell.color);g.addColorStop(1,'rgba('+cell.rgb.join(',')+',0.28)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(q.x,q.y,r,0,TAU);ctx.fill();
+       const loops=cell.parts.filter(p=>p.stage===3);
+       for(let j=0;j<3;j++){ctx.strokeStyle=A.hex(world.partColor(loops[j%Math.max(1,loops.length)]||cell.parts[0]));ctx.beginPath();ctx.ellipse(q.x,q.y,r,r*.4,j*Math.PI/3,0,TAU);ctx.stroke();}
+     }else{
+       // All components remain in the model; up to eight representative strands are drawn per occupied cell.
+       const parts=cell.parts.slice(0,8);
+       for(let j=0;j<parts.length;j++){
+         const part=parts[j],theta=cell.key*.73+j*2.4,phi=cell.key*.37+j*.6;
+         const axis=[Math.cos(theta),Math.sin(theta),0],side=[-Math.sin(theta)*Math.cos(phi),Math.cos(theta)*Math.cos(phi),Math.sin(phi)];
+         const center=origin.map((v,i)=>v+(parts.length>1?axis[i]*.09*Math.sin(j*2.4):0));
+         const at=(u,v)=>project(center.map((x,i)=>x+axis[i]*u+side[i]*v));
+         const color=A.hex(world.partColor(part));ctx.strokeStyle=color;ctx.fillStyle=color;
+         if(part.stage===0){const p=at(0,0);ctx.beginPath();ctx.arc(p.x,p.y,Math.max(1.4,2*q.k),0,TAU);ctx.fill();continue;}
+         const length=part.stage===1?.19:part.stage===2?.34:.24;
+         const count=part.stage===3?36:16;let first=null,lastPoint=null;ctx.beginPath();
+         for(let t=0;t<=count;t++){
+           let u,v;if(part.stage===3){const a=t/count*TAU,k=1+amplitude*.2*Math.sin(a*3+wave);u=Math.cos(a)*length*k;v=Math.sin(a)*length*k;}
+           else{u=(t/count*2-1)*length;v=Math.sin(t/count*Math.PI*(part.stage===1?2:4)+wave)*length*amplitude;}
+           const p=at(u,v);if(!first){first=p;ctx.moveTo(p.x,p.y);}else ctx.lineTo(p.x,p.y);lastPoint=p;
+         }ctx.stroke();
+         if(part.stage===1){for(const p of [first,lastPoint]){ctx.beginPath();ctx.arc(p.x,p.y,1.4*q.k,0,TAU);ctx.fill();}}
+       }
+     }
+     if(cell.configurationX){ctx.strokeStyle=foreground;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(q.x-3,q.y-r-4);ctx.lineTo(q.x+3,q.y-r+2);ctx.moveTo(q.x+3,q.y-r-4);ctx.lineTo(q.x-3,q.y-r+2);ctx.stroke();}
+     if(cell.source){ctx.globalAlpha=.7;ctx.strokeStyle=foreground;ctx.lineWidth=.9;ctx.beginPath();ctx.arc(q.x,q.y,r+3,0,TAU);ctx.stroke();ctx.globalAlpha=1;}
+     if(cell.key===selectedKey){ctx.strokeStyle=foreground;ctx.lineWidth=2;ctx.strokeRect(q.x-r-6,q.y-r-6,2*r+12,2*r+12);}
+     q.hit=Math.max(9,r+4);
+   }
+   ctx.setTransform(1,0,0,1,0,0);
+ }
+ function resize(){canvas.width=Math.max(1,Math.round(canvas.clientWidth*Math.min(devicePixelRatio||1,2)));canvas.height=Math.round(canvas.width*600/960);dirty=true;}
+ function camera(){get('yaw').value=Math.round(yaw*180/Math.PI);get('pitch').value=Math.round(pitch*180/Math.PI);get('zoom').value=Math.round(zoom*100);dirty=true;}
+ canvas.addEventListener('pointerdown',e=>{if(!e.isPrimary)return;drag={x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};canvas.setPointerCapture(e.pointerId);});
+ canvas.addEventListener('pointermove',e=>{if(!drag||!e.isPrimary)return;if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>4)drag.moved=true;if(drag.moved){yaw=((yaw+(e.clientX-drag.x)*.008+Math.PI)%TAU+TAU)%TAU-Math.PI;pitch=clamp(pitch+(e.clientY-drag.y)*.008,-85*Math.PI/180,85*Math.PI/180);camera();}drag.x=e.clientX;drag.y=e.clientY;});
+ canvas.addEventListener('pointerup',e=>{if(!drag)return;if(!drag.moved){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*960,y=(e.clientY-r.top)/r.height*600;const hit=[...projected].reverse().find(q=>Math.hypot(q.x-x,q.y-y)<=q.hit);selectedKey=hit?hit.cell.key:null;inspect();dirty=true;}drag=null;});
+ canvas.addEventListener('pointercancel',()=>{drag=null;});
+ canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=clamp(zoom*Math.exp(-e.deltaY*(e.deltaMode===1?16:1)*.001),.5,2.3);camera();},{passive:false});
+ get('zoom').addEventListener('input',()=>{zoom=Number(get('zoom').value)/100;camera();});
+ get('yaw').addEventListener('input',()=>{yaw=Number(get('yaw').value)*Math.PI/180;camera();});
+ get('pitch').addEventListener('input',()=>{pitch=Number(get('pitch').value)*Math.PI/180;camera();});
+ new ResizeObserver(resize).observe(canvas);new MutationObserver(()=>{dirty=true;}).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
+ function frame(now){
+   if(!root.isConnected)return;const dt=Math.min((now-last)/1000,.15);last=now;
+   if(running&&!document.hidden){visualTime+=dt;accumulator+=dt;const interval=1/world.config.ticksPerSecond;if(accumulator>=interval){accumulator-=interval;try{generation();}catch(e){running=false;error(e);refreshUi();}}if(!reduced.matches&&now-lastDraw>66&&(world.stats.halves||world.stats.strings||world.stats.loops))dirty=true;}
+   if(dirty&&!document.hidden){draw();dirty=false;lastDraw=now;}requestAnimationFrame(frame);
+ }
+ fillControls();refreshUi();resize();draw();requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>

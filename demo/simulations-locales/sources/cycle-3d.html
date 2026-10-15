@@ -1,0 +1,340 @@
+<div id="cycle-matiere" data-phase="ready" data-dimensions="3">
+  <div class="viz-controls">
+    <label class="form-label" for="cy-palette">Palette<select class="form-select" id="cy-palette"><option value="26">26 couleurs</option><option value="32" selected>32 couleurs</option></select></label>
+    <label class="form-label" for="cy-hex">Couleur d’agrégation<input class="form-control" id="cy-hex" value="#8B5CF6" maxlength="7" spellcheck="false" aria-describedby="cy-error"></label>
+  </div>
+  <p id="cy-error" class="text-small text-destructive" role="alert" hidden>Couleur invalide : utilisez 3 ou 6 chiffres hexadécimaux, par exemple #8B5CF6.</p>
+  <div id="cy-swatches" class="cy-swatches" role="img" aria-label="Palette de 32 couleurs"></div>
+  <ol class="cy-stages" aria-label="Cycle"><li id="cy-stage-aggregate">1. Agréger</li><li id="cy-stage-transform">2. Transformer</li><li id="cy-stage-expand">3. Expanser</li></ol>
+  <canvas id="cy-canvas" role="img" aria-label="Nuage de particules en trois dimensions. Glissez pour tourner la vue ; utilisez la molette pour zoomer.">Simulation en trois dimensions d’agrégation, de condensation et d’expansion multicolore.</canvas>
+  <div class="text-small text-muted">Glisser : rotation · molette : zoom · attracteur réglable en X, Y et Z</div>
+  <div class="viz-controls">
+    <label class="form-label" for="cy-gravity">Gravitation · <output id="cy-gravity-value">45 %</output><input class="form-range" id="cy-gravity" type="range" min="0" max="100" step="1" value="45"></label>
+    <label class="form-label" for="cy-speed">Vitesse d’expansion · <output id="cy-speed-value">0,20×</output><input class="form-range" id="cy-speed" type="range" min="0" max="100" step="1" value="64"></label>
+  </div>
+  <div class="viz-row"><button class="btn btn-primary" id="cy-start" type="button">Lancer le cycle</button><button class="btn" id="cy-pause" type="button" aria-pressed="false">Pause</button><span id="cy-status" class="text-small" aria-live="polite">Bruit initial · 32 couleurs</span></div>
+  <div id="cy-detail" class="text-small text-muted">Zone sélectionnée : 0 particule</div>
+  <details><summary>Condensat et mouvement</summary><div class="viz-controls">
+    <label class="form-label" for="cy-retained">Part conservée au centre · <output id="cy-retained-value">25 %</output><input class="form-range" id="cy-retained" type="range" min="0" max="90" step="1" value="25"></label>
+    <label class="form-label" for="cy-area">Volume du condensat · <output id="cy-area-value">30 % de l’amas</output><input class="form-range" id="cy-area" type="range" min="5" max="80" step="1" value="30"></label>
+    <label class="form-label" for="cy-variation">Écart des vitesses individuelles · <output id="cy-variation-value">50 %</output><input class="form-range" id="cy-variation" type="range" min="0" max="100" step="1" value="50"></label>
+    <label class="form-label" for="cy-texture">Rendu<select class="form-select" id="cy-texture"><option value="noise">Points</option><option value="fog">Brouillard</option></select></label>
+  </div></details>
+  <details><summary>Vitesses par couleur</summary><div class="viz-controls">
+    <label class="form-label" for="cy-color-select">Couleur<select class="form-select" id="cy-color-select"></select></label>
+    <label class="form-label" for="cy-color-speed">Vitesse relative · <output id="cy-color-speed-value">1×</output><input class="form-range" id="cy-color-speed" type="range" min="0" max="200" step="1" value="100"></label>
+  </div></details>
+  <details><summary>Vue 3D</summary><div class="viz-controls">
+    <label class="form-label" for="cy-yaw">Rotation horizontale · <output id="cy-yaw-value">−25°</output><input class="form-range" id="cy-yaw" type="range" min="-180" max="180" value="-25"></label>
+    <label class="form-label" for="cy-pitch">Rotation verticale · <output id="cy-pitch-value">18°</output><input class="form-range" id="cy-pitch" type="range" min="-85" max="85" value="18"></label>
+    <label class="form-label" for="cy-zoom">Zoom · <output id="cy-zoom-value">100 %</output><input class="form-range" id="cy-zoom" type="range" min="50" max="250" value="100"></label>
+  </div></details>
+  <details><summary>Position de l’attracteur</summary><div class="viz-controls">
+    <label class="form-label" for="cy-x">X · <output id="cy-x-value">50 %</output><input class="form-range" id="cy-x" type="range" min="8" max="92" value="50"></label>
+    <label class="form-label" for="cy-y">Y · <output id="cy-y-value">50 %</output><input class="form-range" id="cy-y" type="range" min="12" max="88" value="50"></label>
+    <label class="form-label" for="cy-z">Z · <output id="cy-z-value">50 %</output><input class="form-range" id="cy-z" type="range" min="12" max="88" value="50"></label>
+  </div></details>
+</div>
+<style>
+  #cycle-matiere { display: grid; gap: 14px; }
+  #cycle-matiere canvas { width: 100%; aspect-ratio: 16/9; display: block; touch-action: none; cursor: grab; color: var(--foreground); }
+  #cycle-matiere canvas:active { cursor: grabbing; }
+  #cycle-matiere .cy-swatches { display: flex; height: 10px; gap: 2px; }
+  #cycle-matiere .cy-swatches span { flex: 1; min-width: 0; }
+  #cycle-matiere .cy-stages { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  #cycle-matiere .cy-stages li { color: var(--muted-foreground); }
+  #cycle-matiere .cy-stages [aria-current="step"] { color: var(--foreground); font-weight: 500; }
+  #cycle-matiere details > div { margin-top: 14px; }
+  #cycle-matiere p { margin: 0; }
+</style>
+<script>
+(() => {
+  const root = document.getElementById('cycle-matiere'), get = id => root.querySelector('#cy-' + id);
+  const canvas = get('canvas'), ctx = canvas.getContext('2d');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const W = 960, H = 540, D = 540, N = 6000, CELL = 4, TAU = Math.PI * 2;
+  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+  const smooth = x => x * x * (3 - 2 * x);
+  const fmt = (v, decimals = 0) => v.toLocaleString('fr-FR', {maximumFractionDigits: decimals});
+  let seed = 728931;
+  function random() { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return (seed >>> 0) / 4294967296; }
+  const particles = Array.from({length: N}, (_, id) => {
+    const cosine = random()*2-1, phi = random()*TAU, ring = Math.sqrt(1-cosine*cosine);
+    const r = 220*Math.cbrt(random());
+    const hx=W/2+Math.cos(phi)*ring*r, hy=H/2+cosine*r, hz=D/2+Math.sin(phi)*ring*r;
+    const outCosine=random()*2-1, outPhi=random()*TAU, outRing=Math.sqrt(1-outCosine*outCosine);
+    return {id, hx, hy, hz, x:hx, y:hy, z:hz, vx:0, vy:0, vz:0, phase:random()*TAU,
+      dirX:Math.cos(outPhi)*outRing, dirY:outCosine, dirZ:Math.sin(outPhi)*outRing,
+      resistance: random(), variation: random() * 2 - 1, colorSeed: Math.floor(random() * 1000000),
+      baseColor: 0, outColor: 0, color: 0, bound: false, captured: false, core: false,
+      ox:0, oy:0, oz:0, startRadius:0, radius:0, coreX:0, coreY:0, coreZ:0, rank:0};
+  });
+  let palette = [], paletteSize = 32, colorCode = '#8B5CF6';
+  const colorSpeeds = Array.from({length:32}, (_, i) => 0.4 + ((i * 11) % 32) / 31 * 1.2);
+  const target = {x:W/2, y:H/2, z:D/2};
+  const layer=document.createElement('canvas'), pen=layer.getContext('2d');
+  let yaw=-25*Math.PI/180, pitch=18*Math.PI/180, zoom=1, pointerX=0, pointerY=0;
+  let farthest=220;
+  let phase = 'ready', paused = reduced.matches, gravity = 45, selected = 0, captured = 0, coreCount = 0;
+  let retained = 25, area = 30, variation = 0.5, speed = 0.2;
+  let time = 0, phaseTime = 0, aggregateRadius = 0, compactRadius = 0, dirty = true, dragging = false;
+  let last = performance.now(), lastDraw = -Infinity, accumulator = 0, lastUi = -Infinity, view = 1;
+
+  function toHex(rgb) { return '#' + rgb.map(x => Math.round(x).toString(16).padStart(2, '0')).join('').toUpperCase(); }
+  function hsl(h, s, l) {
+    const a = s * Math.min(l, 1 - l);
+    return [0, 8, 4].map(n => { const k = (n + h / 30) % 12; return 255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))); });
+  }
+  function hue(hex) {
+    const [r,g,b] = [1,3,5].map(i => parseInt(hex.slice(i,i+2),16) / 255);
+    const max = Math.max(r,g,b), d = max - Math.min(r,g,b);
+    if (d === 0) return 270;
+    const h = max === r ? (g-b)/d : max === g ? (b-r)/d+2 : (r-g)/d+4;
+    return (h * 60 + 360) % 360;
+  }
+  function buildPalette() {
+    const h = hue(colorCode), used = new Set([colorCode]); palette = [colorCode];
+    for (let i = 1; i < paletteSize; i++) {
+      let value = toHex(hsl((h + 360 * i / paletteSize) % 360, 0.7, i % 2 ? 0.56 : 0.44));
+      while (used.has(value)) value = '#' + ((parseInt(value.slice(1),16) + 1) % 16777216).toString(16).padStart(6,'0').toUpperCase();
+      palette.push(value); used.add(value);
+    }
+    for (const p of particles) {
+      p.baseColor = p.colorSeed % paletteSize;
+      p.outColor = (p.baseColor + 1 + p.id % (paletteSize - 1)) % paletteSize;
+      if (phase === 'ready' || !p.bound) p.color = p.baseColor;
+      else if (phase === 'aggregate') p.color = p.captured ? 0 : p.baseColor;
+      else if (phase === 'expand') p.color = p.outColor;
+    }
+    get('swatches').replaceChildren(...palette.map(color => { const span = document.createElement('span'); span.style.backgroundColor = color; return span; }));
+    get('swatches').setAttribute('aria-label', 'Palette de ' + paletteSize + ' couleurs');
+    const selectedColor = Number(get('color-select').value) || 0;
+    get('color-select').replaceChildren(...palette.map((color,i) => new Option(String(i+1).padStart(2,'0') + ' · ' + color, String(i))));
+    get('color-select').value = String(Math.min(selectedColor, paletteSize - 1));
+    colorControl(); dirty = true;
+  }
+  function colorControl() {
+    const i = Number(get('color-select').value) || 0;
+    get('color-speed').value = Math.round(colorSpeeds[i] * 100);
+    get('color-speed-value').value = fmt(colorSpeeds[i],2) + '×';
+  }
+  function validate() {
+    let value = get('hex').value.trim().replace(/^#/, '');
+    const valid = /^([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value);
+    get('error').hidden = valid; get('start').disabled = !valid && phase === 'ready';
+    get('hex').setAttribute('aria-invalid', String(!valid));
+    if (!valid) return false;
+    if (value.length === 3) value = value.split('').map(c => c+c).join('');
+    colorCode = '#' + value.toUpperCase(); buildPalette(); return true;
+  }
+  function reach() {
+    return (farthest+CELL)*Math.sqrt(gravity/100);
+  }
+  function setPhase(next) {
+    phase = next; phaseTime = 0; root.dataset.phase = phase;
+    const frozen = phase === 'transform' || phase === 'expand';
+    for (const id of ['gravity','x','y','z','retained','area']) get(id).disabled = frozen;
+    get('palette').disabled = phase !== 'ready';
+    for (const name of ['aggregate','transform','expand']) {
+      if (name === phase) get('stage-' + name).setAttribute('aria-current','step');
+      else get('stage-' + name).removeAttribute('aria-current');
+    }
+    get('status').textContent = {ready:'Bruit initial · ' + paletteSize + ' couleurs',aggregate:'Agrégation en cours',transform:'Transformation en condensat',expand:'Expansion multicolore'}[phase];
+    canvas.setAttribute('aria-label', get('status').textContent+' en 3D. Glissez pour tourner la vue ; molette pour zoomer.');
+    dirty = true; ui();
+  }
+  function ui() {
+    get('start').textContent = phase === 'ready' ? 'Lancer le cycle' : 'Revenir au bruit';
+    get('pause').textContent = paused ? 'Reprendre' : 'Pause'; get('pause').setAttribute('aria-pressed', String(paused));
+    const detail = get('detail');
+    if (phase === 'ready') detail.textContent = 'Zone sélectionnée : ' + fmt(selected) + ' / ' + fmt(N) + ' particules';
+    if (phase === 'aggregate') detail.textContent = selected ? 'Captées : ' + fmt(captured) + ' / ' + fmt(selected) + ' · ' + fmt(captured / selected * 100) + ' % de la zone' : 'Gravitation à zéro ou zone vide · augmentez la jauge';
+    if (phase === 'transform') detail.textContent = 'Condensation : ' + fmt(Math.min(1,phaseTime / 2.4)*100) + ' % · zone figée pour ce cycle';
+    if (phase === 'expand') detail.textContent = 'Condensat : ' + fmt(coreCount) + ' · vers l’extérieur : ' + fmt(selected-coreCount) + ' · hors zone : ' + fmt(N-selected);
+  }
+  function pack(p, rank) {
+    const r=Math.cbrt((rank+0.5)/N)*58;
+    p.ox=p.dirX*r;p.oy=p.dirY*r;p.oz=p.dirZ*r;
+    p.x=target.x+p.ox;p.y=target.y+p.oy;p.z=target.z+p.oz;
+  }
+  function capture(p) { p.captured=true;p.color=0;p.vx=p.vy=p.vz=0;pack(p,captured++); }
+  function selectZone() {
+    if (phase === 'transform' || phase === 'expand') return;
+    farthest=0;
+    for(const p of particles)farthest=Math.max(farthest,Math.hypot(p.hx-target.x,p.hy-target.y,p.hz-target.z));
+    const radius = reach(), s = gravity / 100;
+    selected = 0;
+    for (const p of particles) {
+      p.bound=gravity>0&&Math.hypot(p.hx-target.x,p.hy-target.y,p.hz-target.z)<=radius*(1-(1-s)*0.2*p.resistance);
+      if (p.bound) selected++;
+      else { p.captured = false; p.color = p.baseColor; }
+    }
+    const held = particles.filter(p => p.captured); captured = 0;
+    for (const p of held) capture(p);
+    dirty = true; ui();
+  }
+  function reset() {
+    for(const p of particles){p.x=p.hx;p.y=p.hy;p.z=p.hz;p.vx=p.vy=p.vz=0;p.captured=p.core=false;p.color=p.baseColor;p.radius=0;}
+    captured=coreCount=0; view=1; accumulator=0;
+    setPhase('ready'); selectZone();
+    get('start').disabled = get('hex').getAttribute('aria-invalid') === 'true';
+  }
+  function beginTransform() {
+    const group = particles.filter(p => p.bound).sort((a,b) => a.resistance-b.resistance);
+    coreCount = Math.round(selected * retained / 100);
+    aggregateRadius=Math.max(2,58*Math.cbrt(selected/N));
+    compactRadius=aggregateRadius*Math.cbrt(area/100);
+    const emissionCount = selected-coreCount;
+    for (let i=0; i<group.length; i++) {
+      const p=group[i]; p.rank=i; p.core=i<coreCount;
+      const j=p.core?i:i-coreCount, denominator=p.core?coreCount:emissionCount;
+      p.startRadius=compactRadius*Math.cbrt((j+0.5)/Math.max(1,denominator));
+      p.coreX=p.dirX*p.startRadius;p.coreY=p.dirY*p.startRadius;p.coreZ=p.dirZ*p.startRadius;
+    }
+    setPhase('transform');
+  }
+  function beginExpansion() {
+    for (const p of particles) if(p.bound) {
+      p.color=p.outColor; p.radius=p.startRadius;
+      p.x=target.x+p.coreX;p.y=target.y+p.coreY;p.z=target.z+p.coreZ;
+    }
+    setPhase('expand');
+  }
+  function particleSpeed(p) { return 18 * speed * colorSpeeds[p.outColor] * Math.max(0.05,1+variation*p.variation*0.9); }
+  function step(dt) {
+    time+=dt; phaseTime+=dt;
+    for (const p of particles) {
+      if (phase==='aggregate' && p.bound) {
+        if(p.captured) continue;
+        const dx=target.x-p.x,dy=target.y-p.y,dz=target.z-p.z,d=Math.hypot(dx,dy,dz);
+        const radius=5+58*Math.cbrt(captured/N);
+        if(d<radius+3) { capture(p); continue; }
+        const a=Math.min(1100,22000000*(gravity/45)/(d*d+2500));
+        p.vx+=(dx+dz*0.08)/d*a*dt;p.vy+=dy/d*a*dt;p.vz+=(dz-dx*0.08)/d*a*dt;
+        const drag=Math.exp(-1.3*dt);p.vx*=drag;p.vy*=drag;p.vz*=drag;
+        p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;
+      } else if(phase==='transform' && p.bound) {
+        const t=clamp(phaseTime/2.4,0,1), s=smooth(t);
+        p.x=target.x+p.ox*(1-s)+p.coreX*s; p.y=target.y+p.oy*(1-s)+p.coreY*s;
+        p.z=target.z+p.oz*(1-s)+p.coreZ*s;
+        p.color=t>0.2+0.65*p.resistance?p.outColor:0;
+      } else if(phase==='expand' && p.bound) {
+        if(!p.core) p.radius+=particleSpeed(p)*dt;
+        p.x=target.x+p.dirX*p.radius;p.y=target.y+p.dirY*p.radius;p.z=target.z+p.dirZ*p.radius;
+      } else {
+        const dx=p.hx+Math.sin(time*0.7+p.phase)*1.1-p.x, dy=p.hy+Math.cos(time*0.6+p.phase)*1.1-p.y;
+        const dz=p.hz+Math.sin(time*0.5+p.phase)*1.1-p.z;
+        p.vx=(p.vx+dx*13*dt)*Math.exp(-5.6*dt); p.vy=(p.vy+dy*13*dt)*Math.exp(-5.6*dt);
+        p.vz=(p.vz+dz*13*dt)*Math.exp(-5.6*dt);
+        p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;
+      }
+    }
+    // A zero-size selection must never advance the cycle.
+    if(phase==='aggregate' && selected>0 && captured===selected) beginTransform();
+    else if(phase==='transform' && phaseTime>=2.4) beginExpansion();
+  }
+  function draw() {
+    let extent=220;
+    for(const p of particles)extent=Math.max(extent,Math.hypot(p.x-W/2,p.y-H/2,p.z-D/2));
+    const distance=Math.max(800,extent*3.6),focal=850*zoom,pixel=canvas.width/W;
+    const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
+    function rotate(x,y,z){const xx=cy*x+sy*z,zz=-sy*x+cy*z;return{x:xx,y:cp*y-sp*zz,z:sp*y+cp*zz};}
+    function project(x,y,z){const q=rotate(x-W/2,y-H/2,z-D/2),depth=distance-q.z,k=focal/depth;return{x:W/2+q.x*k,y:H/2+q.y*k,depth,k};}
+    pen.setTransform(1,0,0,1,0,0);pen.clearRect(0,0,layer.width,layer.height);
+    pen.setTransform(pixel,0,0,pixel,0,0);
+    const projected=particles.map(p=>({p,...project(p.x,p.y,p.z)})).sort((a,b)=>b.depth-a.depth);
+    for(const q of projected){
+      pen.globalAlpha=phase!=='ready'&&!q.p.bound?0.4:0.95;
+      pen.fillStyle=palette[q.p.color];pen.beginPath();
+      pen.arc(q.x,q.y,Math.max(0.45,(q.p.captured?2.4:1.6)*q.k),0,TAU);pen.fill();
+    }
+    pen.globalAlpha=1;
+    ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();
+    if(get('texture').value==='fog')ctx.filter='blur('+Math.max(0.7,1.6*pixel)+'px)';
+    ctx.drawImage(layer,0,0);ctx.restore();ctx.save();ctx.setTransform(pixel,0,0,pixel,0,0);
+    const style=getComputedStyle(canvas);ctx.strokeStyle=style.color;ctx.fillStyle=style.color;ctx.lineWidth=1;
+    if(phase==='ready'||phase==='aggregate'){
+      const center=project(target.x,target.y,target.z);ctx.beginPath();ctx.arc(center.x,center.y,5,0,TAU);ctx.stroke();
+      if(gravity>0){
+        const r=reach();ctx.globalAlpha=0.28;
+        for(let plane=0;plane<3;plane++){
+          ctx.beginPath();
+          for(let i=0;i<=96;i++){
+            const a=i/96*TAU,u=r*Math.cos(a),v=r*Math.sin(a);
+            const q=project(target.x+(plane===2?0:u),target.y+(plane===0?v:plane===2?u:0),target.z+(plane===0?0:v));
+            if(i===0)ctx.moveTo(q.x,q.y);else ctx.lineTo(q.x,q.y);
+          }
+          ctx.stroke();
+        }
+      }
+    }
+    ctx.globalAlpha=0.8;ctx.font='12px '+style.fontFamily;
+    for(const [label,v] of [['X',[1,0,0]],['Y',[0,1,0]],['Z',[0,0,1]]]){
+      const q=rotate(...v),x=45+q.x*28,y=H-43+q.y*28;
+      ctx.beginPath();ctx.moveTo(45,H-43);ctx.lineTo(x,y);ctx.stroke();ctx.fillText(label,x+4,y-3);
+    }
+    ctx.restore();
+  }
+  function resize(){canvas.width=Math.max(1,Math.round(canvas.clientWidth*Math.min(devicePixelRatio||1,2)));canvas.height=Math.round(canvas.width*H/W);layer.width=canvas.width;layer.height=canvas.height;dirty=true;}
+  function moveTarget(x,y,z) {
+    if(phase==='transform'||phase==='expand')return;
+    target.x=clamp(x,W*0.08,W*0.92);target.y=clamp(y,H*0.12,H*0.88);target.z=clamp(z,D*0.12,D*0.88);
+    get('x').value=Math.round(target.x/W*100);get('y').value=Math.round(target.y/H*100);get('z').value=Math.round(target.z/D*100);
+    for(const axis of ['x','y','z'])get(axis+'-value').value=get(axis).value+' %';
+    for(const p of particles)p.captured=false;
+    captured=0;selectZone();
+  }
+  function cameraControls(){
+    get('yaw').value=Math.round(yaw*180/Math.PI);get('pitch').value=Math.round(pitch*180/Math.PI);get('zoom').value=Math.round(zoom*100);
+    get('yaw-value').value=get('yaw').value+'°';get('pitch-value').value=get('pitch').value+'°';get('zoom-value').value=get('zoom').value+' %';dirty=true;
+  }
+  canvas.addEventListener('pointerdown',e=>{if(!e.isPrimary)return;dragging=true;pointerX=e.clientX;pointerY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+  canvas.addEventListener('pointermove',e=>{
+    if(!dragging||!e.isPrimary)return;
+    yaw=((yaw+(e.clientX-pointerX)*0.008+Math.PI)%TAU+TAU)%TAU-Math.PI;
+    pitch=clamp(pitch+(e.clientY-pointerY)*0.008,-85*Math.PI/180,85*Math.PI/180);
+    pointerX=e.clientX;pointerY=e.clientY;cameraControls();
+  });
+  canvas.addEventListener('pointerup',()=>{dragging=false;});canvas.addEventListener('pointercancel',()=>{dragging=false;});
+  canvas.addEventListener('wheel',e=>{e.preventDefault();const delta=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?H:1);zoom=clamp(zoom*Math.exp(-delta*0.001),0.5,2.5);cameraControls();},{passive:false});
+  get('yaw').addEventListener('input',()=>{yaw=Number(get('yaw').value)*Math.PI/180;cameraControls();});
+  get('pitch').addEventListener('input',()=>{pitch=Number(get('pitch').value)*Math.PI/180;cameraControls();});
+  get('zoom').addEventListener('input',()=>{zoom=Number(get('zoom').value)/100;cameraControls();});
+  get('x').addEventListener('input',()=>moveTarget(Number(get('x').value)/100*W,target.y,target.z));
+  get('y').addEventListener('input',()=>moveTarget(target.x,Number(get('y').value)/100*H,target.z));
+  get('z').addEventListener('input',()=>moveTarget(target.x,target.y,Number(get('z').value)/100*D));
+  get('hex').addEventListener('input',validate);get('hex').addEventListener('blur',()=>{if(validate())get('hex').value=colorCode;});
+  get('palette').addEventListener('change',()=>{paletteSize=Number(get('palette').value);buildPalette();setPhase('ready');});
+  get('gravity').addEventListener('input',()=>{gravity=Number(get('gravity').value);get('gravity-value').value=gravity+' %';selectZone();});
+  get('speed').addEventListener('input',()=>{speed=Math.pow(10,-3+3.6*Number(get('speed').value)/100);get('speed-value').value=fmt(speed,3)+'×';});
+  get('retained').addEventListener('input',()=>{retained=Number(get('retained').value);get('retained-value').value=retained+' %';});
+  get('area').addEventListener('input',()=>{area=Number(get('area').value);get('area-value').value=area+' % de l’amas';});
+  get('variation').addEventListener('input',()=>{variation=Number(get('variation').value)/100;get('variation-value').value=get('variation').value+' %';});
+  get('texture').addEventListener('change',()=>{dirty=true;});
+  get('color-select').addEventListener('change',colorControl);
+  get('color-speed').addEventListener('input',()=>{const i=Number(get('color-select').value);colorSpeeds[i]=Number(get('color-speed').value)/100;get('color-speed-value').value=fmt(colorSpeeds[i],2)+'×';});
+  get('start').addEventListener('click',()=>{
+    if(phase!=='ready'){reset();return;}
+    if(!validate())return;
+    selectZone();setPhase('aggregate');accumulator=0;
+    if(reduced.matches){
+      if(selected>0){for(const p of particles)if(p.bound)capture(p);beginTransform();beginExpansion();}
+      paused=true;
+    }else paused=false;
+    ui();dirty=true;
+  });
+  get('pause').addEventListener('click',()=>{paused=!paused;accumulator=0;ui();});
+  reduced.addEventListener('change',()=>{if(reduced.matches){paused=true;ui();}});
+  new ResizeObserver(resize).observe(canvas);
+  new MutationObserver(()=>{dirty=true;}).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
+  function tick(now){
+    if(!root.isConnected)return;
+    const dt=Math.min((now-last)/1000,0.06);last=now;
+    if(!paused&&!document.hidden){accumulator+=dt;while(accumulator>=1/60){step(1/60);accumulator-=1/60;}if(now-lastDraw>=33)dirty=true;}
+    if(dirty&&!document.hidden){draw();dirty=false;lastDraw=now;}
+    if(now-lastUi>200){ui();lastUi=now;}
+    requestAnimationFrame(tick);
+  }
+  buildPalette();selectZone();setPhase('ready');resize();draw();requestAnimationFrame(tick);
+})();
+</script>

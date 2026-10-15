@@ -1,0 +1,73 @@
+# Fichiers Python compilés et cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Fichiers de cache de différents outils
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Environnements virtuels
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Variables d'environnement et fichiers locaux
+.env
+.env.*
+!.env.example
+
+# Bases de données locales
+*.sqlite
+*.sqlite3
+*.db
+
+# Logs
+*.log
+logs/
+
+# Configuration d'IDE
+.vscode/
+.idea/
+*.iml
+
+# Système d'exploitation
+.DS_Store
+Thumbs.db
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Documentation générée
+docs/_build/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Celery
+celerybeat-schedule
+celerybeat.pid

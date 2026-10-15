@@ -1,0 +1,38 @@
+{
+  "consulted_on": "2026-10-07",
+  "scope": "Sources du choix de couplage et du programme de transport ; paramètres du simulateur exploratoires, sans ajustement expérimental.",
+  "sources": [
+    {
+      "id": "PH1",
+      "title": "Domain walls seeding the electroweak phase transition",
+      "authors": ["Simone Blasi", "Alberto Mariotti"],
+      "url": "https://arxiv.org/abs/2203.16450",
+      "consultation": "PDF, sections II–IV : potentiel, profils et instabilité ; distinction nucléation/instabilité.",
+      "usage": "Structure du modèle, normalisation du portail explicitement adaptée ; contrôle spectral. Les paramètres publiés ne sont pas importés."
+    },
+    {
+      "id": "PH2",
+      "title": "Wall speed and shape in singlet-assisted strong electroweak phase transitions",
+      "authors": ["Avi Friedlander", "Ian Banta", "James M. Cline", "David Tucker-Smith"],
+      "url": "https://arxiv.org/abs/2009.14295",
+      "consultation": "Résumé et passages du PDF sur dynamique, friction, collisions et équations de Boltzmann.",
+      "usage": "Programme de transport ; aucune valeur de vitesse ou de friction reprise comme résultat du projet."
+    },
+    {
+      "id": "PH3",
+      "title": "Effective Kinetic Theory for High Temperature Gauge Theories",
+      "authors": ["Peter Arnold", "Guy D. Moore", "Laurence G. Yaffe"],
+      "url": "https://arxiv.org/abs/hep-ph/0209353",
+      "consultation": "Résumé : cadre cinétique à haute température et couplage faible.",
+      "usage": "Référence de travail pour les futurs noyaux de collision ; ceux-ci ne sont pas implémentés."
+    },
+    {
+      "id": "PH4",
+      "title": "The order of the quantum chromodynamics transition predicted by the standard model of particle physics",
+      "authors": ["Y. Aoki", "G. Endrodi", "Z. Fodor", "S. D. Katz", "K. K. Szabo"],
+      "url": "https://arxiv.org/abs/hep-lat/0611014",
+      "consultation": "Résumé et résultat de crossover aux masses physiques.",
+      "usage": "Limite de l'identification automatique d'une paroi à une transition QCD de premier ordre."
+    }
+  ]
+}

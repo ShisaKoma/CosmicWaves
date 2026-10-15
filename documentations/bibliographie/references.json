@@ -1,0 +1,106 @@
+{
+  "consulted_on": "2026-10-07",
+  "timezone": "Europe/Paris",
+  "scope": "Lecture ciblée des passages indiqués ; aucune réévaluation complète des modèles ni actualisation des contraintes expérimentales.",
+  "analysis": "baryogenese_nucleation_cpt.md",
+  "sources": [
+    {
+      "id": "R1",
+      "title": "Leptogenesis in the Universe",
+      "authors": [
+        "Chee Sheng Fong",
+        "Enrico Nardi",
+        "Antonio Riotto"
+      ],
+      "publication": "Advances in High Energy Physics 2012, 158303 (2012)",
+      "arxiv": "1301.3062v1",
+      "doi": "10.1155/2012/158303",
+      "user_url": "https://arxiv.org/pdf/1301.3062",
+      "downloaded_url": "https://arxiv.org/pdf/1301.3062v1",
+      "sections": [
+        "1.1.2",
+        "1.2.1–1.2.4"
+      ],
+      "equations": [
+        "1.18–1.23",
+        "1.29–1.30"
+      ],
+      "visually_checked_pdf_pages": [
+        8
+      ],
+      "purpose": "Composition, sources et effacement des asymétries ; comparaison pour un futur module matériel.",
+      "local_file": "sources/leptogenesis-1301.3062v1.pdf",
+      "sha256": "9de30741ae0299142d6ed5b17350b19b29a71793c36e6b1ae002390bc31a7b3a",
+      "bytes": 863842,
+      "pdf_pages": 60,
+      "consulted_on": "2026-10-07"
+    },
+    {
+      "id": "R2",
+      "title": "Electroweak baryogenesis",
+      "authors": [
+        "David E. Morrissey",
+        "Michael J. Ramsey-Musolf"
+      ],
+      "publication": "New Journal of Physics 14, 125003 (2012)",
+      "arxiv": "1206.2942v1",
+      "doi": "10.1088/1367-2630/14/12/125003",
+      "user_url": "https://arxiv.org/pdf/1206.2942",
+      "downloaded_url": "https://arxiv.org/pdf/1206.2942v1",
+      "sections": [
+        "Introduction",
+        "2 (passages retenus)",
+        "3 (passages retenus)"
+      ],
+      "equations": [
+        "15–21",
+        "28–35"
+      ],
+      "figures": [
+        "2",
+        "3"
+      ],
+      "visually_checked_pdf_pages": [
+        8
+      ],
+      "purpose": "Comparaison pour phases, barrières, profils, histoire thermique et transport près des parois.",
+      "local_file": "sources/electroweak-baryogenesis-1206.2942v1.pdf",
+      "sha256": "5289b05460e95821e948c3dc177ef9a3fb65bb9816870139ef4ec7cff3ea1d72",
+      "bytes": 2655229,
+      "pdf_pages": 42,
+      "consulted_on": "2026-10-07"
+    },
+    {
+      "id": "R3",
+      "title": "CPT-Symmetric Universe",
+      "authors": [
+        "Latham Boyle",
+        "Kieran Finn",
+        "Neil Turok"
+      ],
+      "publication": "Physical Review Letters 121, 251301 (2018)",
+      "doi": "10.1103/PhysRevLett.121.251301",
+      "user_url": "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.121.251301",
+      "downloaded_url": "https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.121.251301",
+      "sections": [
+        "Spacetime (background and perturbations)",
+        "CPT invariant vacuum",
+        "Dark matter",
+        "Other predictions",
+        "Discussion"
+      ],
+      "equations": [
+        "1"
+      ],
+      "visually_checked_pdf_pages": [
+        4
+      ],
+      "purpose": "Comparaison pour symétries de la géométrie et de l’état ; compatibilité des espèces stables/instables.",
+      "local_file": "sources/cpt-symmetric-universe-prl-2018.pdf",
+      "sha256": "9157726df6c2b3a76c03ae09084fc82fe9a52fa3d138e247cd0f905c38d65141",
+      "bytes": 169621,
+      "pdf_pages": 5,
+      "consulted_on": "2026-10-07"
+    }
+  ]
+}

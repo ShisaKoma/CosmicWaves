@@ -1,0 +1,18 @@
+{
+  "paroi": {
+    "lambda4": 1.0,
+    "v_reduit": 1.0,
+    "aire_reduite": 1.0,
+    "demi_intervalle_en_epaisseurs": 8.0,
+    "intervalles": 800
+  },
+  "plasma": {
+    "regime": "sm_symetrique_ideal",
+    "temperatures_reduites": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "volume_reduit": 1.0
+  }
+}

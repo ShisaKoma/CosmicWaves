@@ -1,0 +1,224 @@
+{
+  "configuration": {
+    "potentiel": {
+      "lambda_phi": 0.5,
+      "v_phi_reduit": 1.0,
+      "lambda_h": 0.13,
+      "mu_h2_reduit": 0.22,
+      "kappa": 0.6,
+      "c_phi": 0.15,
+      "c_h": 0.4
+    },
+    "temperatures_reduites": [
+      0.2,
+      0.4,
+      0.6
+    ],
+    "grille": {
+      "demi_largeur_en_ell": 12.0,
+      "intervalles": 480,
+      "tolerance_residu": 1e-07,
+      "iterations_max": 20000
+    },
+    "sondes": {
+      "y_top": 1.0,
+      "g": 0.65,
+      "g_Y": 0.36
+    }
+  },
+  "statut": "Modèle effectif exploratoire Φ–Higgs ; relaxation statique à température imposée.",
+  "unites": {
+    "E0": null,
+    "phi_h_T_masse": "E0",
+    "z": "E0^-1",
+    "V": "E0^4",
+    "energie_libre_par_aire": "E0^3",
+    "omega2_courbure": "E0^2",
+    "E_Fz": "E0^3"
+  },
+  "hypotheses": [
+    "V= a_phi Φ²/2 + λ_phi Φ⁴/4 + a_h h²/2 + λ_h h⁴/4 + κ Φ²h²/4.",
+    "a_phi=−λ_phi v_phi²+c_phi T² ; a_h=−mu_h²+c_h T² ; T imposée.",
+    "Les coefficients thermiques et couplages sont des entrées exploratoires, non calibrées.",
+    "Deux champs canoniques plans ; conditions Φ(±L)=±v_phi(T), h(±L)=0.",
+    "La relaxation minimise une énergie libre : ses itérations ne sont pas un temps physique.",
+    "Les masses exportées sont les contributions du Higgs pour trois sondes, sans dispersion thermique."
+  ],
+  "non_calcules": [
+    "Origine microscopique du champ collectif et contraintes expérimentales sur ce jeu de paramètres.",
+    "Potentiel thermique complet, corrections de boucles et dépendance de jauge.",
+    "Stabilité complète des profils finaux ; minima multiples non exclus.",
+    "Friction, vitesse physique, chauffage, réactions QCD et populations hors équilibre.",
+    "Taux de nucléation, température de nucléation, bulles 3D et gravitation."
+  ],
+  "scenarios": [
+    {
+      "temperature_reduite": 0.2,
+      "phases_homogenes": [
+        {
+          "phase": "origine",
+          "phi_reduit": 0.0,
+          "h_reduit": 0.0,
+          "V_reduit": 0.0,
+          "courbure_minimale": -0.494,
+          "minimum_local": false
+        },
+        {
+          "phase": "phi",
+          "phi_reduit": 0.9939818911831342,
+          "h_reduit": 0.0,
+          "V_reduit": -0.122018,
+          "courbure_minimale": 0.09240000000000004,
+          "minimum_local": true
+        },
+        {
+          "phase": "higgs",
+          "phi_reduit": 0.0,
+          "h_reduit": 1.2526894145121403,
+          "V_reduit": -0.08003076923076921,
+          "courbure_minimale": -0.023230769230769333,
+          "minimum_local": false
+        }
+      ],
+      "phase_globale": "phi",
+      "puissance_transfert_vers_plasma": null,
+      "taux_reactions": null,
+      "temperature_nucleation": null,
+      "stabilite_profil_final": "non_calculee",
+      "v_phi_T": 0.9939818911831342,
+      "ell_reference": 2.0121090914638344,
+      "courbure_h_bulk": 0.09240000000000001,
+      "courbure_h_centre": -0.204,
+      "omega2_reference_analytique": -0.030072613903830314,
+      "omega2_reference_boite": -0.030082927571143607,
+      "erreur_spectre_absolue": 1.0313667313292807e-05,
+      "nu_mode": 0.7041594578792296,
+      "dz_reduit": 0.10060545457319137,
+      "stabilite_reference": "instable",
+      "statut": "profil_stationnaire",
+      "solution": {
+        "converge": true,
+        "iterations": 430,
+        "residu_max_reduit": 9.848226198427845e-08,
+        "energie_libre_par_aire": 0.625417456039983
+      },
+      "energie_libre_reference": 0.6546481934179288,
+      "h_centre": 0.8302008375431105,
+      "h_max": 0.8302008375431105,
+      "rapport_h_bord_sur_max": 0.004734763413446592,
+      "influence_bords_possible": false
+    },
+    {
+      "temperature_reduite": 0.4,
+      "phases_homogenes": [
+        {
+          "phase": "origine",
+          "phi_reduit": 0.0,
+          "h_reduit": 0.0,
+          "V_reduit": 0.0,
+          "courbure_minimale": -0.476,
+          "minimum_local": false
+        },
+        {
+          "phase": "phi",
+          "phi_reduit": 0.9757048734120374,
+          "h_reduit": 0.0,
+          "V_reduit": -0.11328799999999997,
+          "courbure_minimale": 0.12959999999999994,
+          "minimum_local": true
+        },
+        {
+          "phase": "higgs",
+          "phi_reduit": 0.0,
+          "h_reduit": 1.0954451150103321,
+          "V_reduit": -0.046799999999999974,
+          "courbure_minimale": -0.11600000000000005,
+          "minimum_local": false
+        }
+      ],
+      "phase_globale": "phi",
+      "puissance_transfert_vers_plasma": null,
+      "taux_reactions": null,
+      "temperature_nucleation": null,
+      "stabilite_profil_final": "non_calculee",
+      "v_phi_T": 0.9757048734120374,
+      "ell_reference": 2.0498001542269697,
+      "courbure_h_bulk": 0.1296,
+      "courbure_h_centre": -0.15599999999999997,
+      "omega2_reference_analytique": 0.011589950975256627,
+      "omega2_reference_boite": 0.011580013109593777,
+      "erreur_spectre_absolue": 9.937865662850223e-06,
+      "nu_mode": 0.7041594578792296,
+      "dz_reduit": 0.1024900077113493,
+      "stabilite_reference": "stable_lineairement",
+      "statut": "profil_stationnaire",
+      "solution": {
+        "converge": true,
+        "iterations": 709,
+        "residu_max_reduit": 9.968203398321977e-08,
+        "energie_libre_par_aire": 0.6191957388047267
+      },
+      "energie_libre_reference": 0.6191957679957837,
+      "h_centre": 7.712143500019964e-06,
+      "h_max": 7.712143500019964e-06,
+      "rapport_h_bord_sur_max": 0.0,
+      "influence_bords_possible": false
+    },
+    {
+      "temperature_reduite": 0.6,
+      "phases_homogenes": [
+        {
+          "phase": "origine",
+          "phi_reduit": 0.0,
+          "h_reduit": 0.0,
+          "V_reduit": 0.0,
+          "courbure_minimale": -0.446,
+          "minimum_local": false
+        },
+        {
+          "phase": "phi",
+          "phi_reduit": 0.9444575162494075,
+          "h_reduit": 0.0,
+          "V_reduit": -0.099458,
+          "courbure_minimale": 0.1916,
+          "minimum_local": true
+        },
+        {
+          "phase": "higgs",
+          "phi_reduit": 0.0,
+          "h_reduit": 0.7646014547562571,
+          "V_reduit": -0.011107692307692311,
+          "courbure_minimale": -0.2706153846153846,
+          "minimum_local": false
+        }
+      ],
+      "phase_globale": "phi",
+      "puissance_transfert_vers_plasma": null,
+      "taux_reactions": null,
+      "temperature_nucleation": null,
+      "stabilite_profil_final": "non_calculee",
+      "v_phi_T": 0.9444575162494075,
+      "ell_reference": 2.117617749438134,
+      "courbure_h_bulk": 0.19159999999999994,
+      "courbure_h_centre": -0.07600000000000001,
+      "omega2_reference_analytique": 0.08102755910706813,
+      "omega2_reference_boite": 0.08101824757748943,
+      "erreur_spectre_absolue": 9.311529578698297e-06,
+      "nu_mode": 0.7041594578792296,
+      "dz_reduit": 0.10588088747190483,
+      "stabilite_reference": "stable_lineairement",
+      "statut": "profil_stationnaire",
+      "solution": {
+        "converge": true,
+        "iterations": 126,
+        "residu_max_reduit": 9.55502461286341e-08,
+        "energie_libre_par_aire": 0.561590584543503
+      },
+      "energie_libre_reference": 0.5615906110202122,
+      "h_centre": 1.0593374092553542e-06,
+      "h_max": 1.0593374092553542e-06,
+      "rapport_h_bord_sur_max": 0.0,
+      "influence_bords_possible": false
+    }
+  ]
+}

@@ -1,0 +1,1057 @@
+{
+  "protocole": "Audit conditionnel des valeurs par défaut, graine 728931, 32 positions ; pas une reproduction du relevé utilisateur à 11060 générations.",
+  "source_sha256": {
+    "structures-engine.js": "6499dcdb286ba4191e36f568ffb9c4caa64d66070bae9169ad14e38b5d87cbf9",
+    "automate-app.js": "9da7cdc050f7e9a203059bca5812612adc215bab366a72ad7c58d51ba68cbca2",
+    "automate-3d.html": "d1c57644fa63be4d882d6598808196bf36eba0c3828581f40c7c64ed4ee321f1"
+  },
+  "controles": [
+    "Le HTML embarque exactement structures-engine.js",
+    "Le HTML embarque exactement automate-app.js",
+    "Même trajectoire à intensité zéro et gravité désactivée, hors étiquette source, sur 100 générations avec les autres défauts",
+    "À intensité zéro, foyers = sphères ; désactivation : foyers = 0",
+    "Les intensités 0 et 3 produisent le même état jusqu’à la première sphère incluse",
+    "Formation effective de sphères sans attraction",
+    "Augmentation des unités constitutives sans attraction",
+    "Le drapeau persistant conserve une sphère avec un point et aucune boucle",
+    "Sans persistance, le même contenu perd immédiatement son statut sphère"
+  ],
+  "premiere_sphere_identique_intensites_0_et_3": 51,
+  "experiences": {
+    "intensite_zero": {
+      "configuration": {
+        "version": 2,
+        "positions": 32,
+        "target": "#8B5CF6",
+        "seed": 728931,
+        "grid": {
+          "size": 18,
+          "boundary": "closed",
+          "neighborhood": 26
+        },
+        "initial": {
+          "density": 0.14,
+          "shape": "sphere",
+          "pairedPoints": true
+        },
+        "ticksPerSecond": 3,
+        "palette": [
+          {
+            "color": "#8B5CF6"
+          },
+          {
+            "color": "#E05130"
+          },
+          {
+            "color": "#E07230"
+          },
+          {
+            "color": "#E09330"
+          },
+          {
+            "color": "#E0B430"
+          },
+          {
+            "color": "#E0D530"
+          },
+          {
+            "color": "#CAE030"
+          },
+          {
+            "color": "#A9E030"
+          },
+          {
+            "color": "#88E030"
+          },
+          {
+            "color": "#67E030"
+          },
+          {
+            "color": "#46E030"
+          },
+          {
+            "color": "#30E03B"
+          },
+          {
+            "color": "#30E05C"
+          },
+          {
+            "color": "#30E07D"
+          },
+          {
+            "color": "#30E09E"
+          },
+          {
+            "color": "#30E0BF"
+          },
+          {
+            "color": "#30E0E0"
+          },
+          {
+            "color": "#30BFE0"
+          },
+          {
+            "color": "#309EE0"
+          },
+          {
+            "color": "#307DE0"
+          },
+          {
+            "color": "#305CE0"
+          },
+          {
+            "color": "#303BE0"
+          },
+          {
+            "color": "#4630E0"
+          },
+          {
+            "color": "#6730E0"
+          },
+          {
+            "color": "#8830E0"
+          },
+          {
+            "color": "#A930E0"
+          },
+          {
+            "color": "#CA30E0"
+          },
+          {
+            "color": "#E030D5"
+          },
+          {
+            "color": "#E030B4"
+          },
+          {
+            "color": "#E03093"
+          },
+          {
+            "color": "#E03072"
+          },
+          {
+            "color": "#E03051"
+          }
+        ],
+        "weights": {
+          "point": 0.25,
+          "demi-corde": 0.5,
+          "corde": 1,
+          "boucle": 2
+        },
+        "life": {
+          "enabled": true,
+          "birth": [
+            3,
+            4
+          ],
+          "survival": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "inheritance": "point",
+          "protectCondensates": true
+        },
+        "structures": {
+          "pointsPerHalf": 2,
+          "halvesPerString": 2,
+          "stringsPerLoop": 2,
+          "halfProbability": 1,
+          "stringProbability": 1,
+          "loopProbability": 0.8,
+          "bondProbability": 0.75
+        },
+        "colors": {
+          "addition": "average",
+          "amplitudeLimit": 64
+        },
+        "collisions": {
+          "subtraction": "opposed",
+          "probability": 0.25
+        },
+        "gravity": {
+          "enabled": true,
+          "trigger": "sphere",
+          "tolerance": 0.09,
+          "minimumPositions": 1,
+          "requiredPositions": [],
+          "strength": 0,
+          "radius": 6,
+          "softening": 1,
+          "spectralTolerance": 0.45
+        },
+        "motion": {
+          "diffusion": 0.12
+        },
+        "condensation": {
+          "requiredPositions": 32,
+          "minimumLoops": 4,
+          "persistent": true,
+          "gravityMultiplier": 2
+        },
+        "emission": {
+          "probability": 0,
+          "reserveEachPosition": true,
+          "freeSteps": 5
+        },
+        "display": {
+          "waveAmplitude": 0.2,
+          "waveFrequency": 1.2
+        }
+      },
+      "premiere_sphere": 51,
+      "naissances_cumulees": 62447,
+      "snapshots": [
+        {
+          "generation": 0,
+          "cells": 596,
+          "sources": 0,
+          "spheres": 0,
+          "units": 596,
+          "points": 596,
+          "halves": 0,
+          "strings": 0,
+          "loops": 0,
+          "births": 0,
+          "deaths": 0,
+          "additions": 0,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 0,
+          "newStrings": 0,
+          "newLoops": 0
+        },
+        {
+          "generation": 1,
+          "cells": 739,
+          "sources": 0,
+          "spheres": 0,
+          "units": 1275,
+          "points": 215,
+          "halves": 530,
+          "strings": 0,
+          "loops": 0,
+          "births": 679,
+          "deaths": 0,
+          "additions": 536,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 530,
+          "newStrings": 0,
+          "newLoops": 0
+        },
+        {
+          "generation": 10,
+          "cells": 1593,
+          "sources": 0,
+          "spheres": 0,
+          "units": 8445,
+          "points": 735,
+          "halves": 657,
+          "strings": 459,
+          "loops": 570,
+          "births": 746,
+          "deaths": 0,
+          "additions": 722,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 369,
+          "newStrings": 187,
+          "newLoops": 82
+        },
+        {
+          "generation": 25,
+          "cells": 1654,
+          "sources": 0,
+          "spheres": 0,
+          "units": 18235,
+          "points": 965,
+          "halves": 575,
+          "strings": 436,
+          "loops": 1797,
+          "births": 626,
+          "deaths": 0,
+          "additions": 613,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 307,
+          "newStrings": 165,
+          "newLoops": 63
+        },
+        {
+          "generation": 50,
+          "cells": 1654,
+          "sources": 0,
+          "spheres": 0,
+          "units": 33012,
+          "points": 1046,
+          "halves": 675,
+          "strings": 366,
+          "loops": 3644,
+          "births": 659,
+          "deaths": 0,
+          "additions": 615,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 386,
+          "newStrings": 137,
+          "newLoops": 90
+        },
+        {
+          "generation": 100,
+          "cells": 1652,
+          "sources": 8,
+          "spheres": 8,
+          "units": 55325,
+          "points": 1085,
+          "halves": 604,
+          "strings": 476,
+          "loops": 6391,
+          "births": 654,
+          "deaths": 0,
+          "additions": 622,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 362,
+          "newStrings": 211,
+          "newLoops": 128
+        }
+      ]
+    },
+    "gravite_desactivee": {
+      "configuration": {
+        "version": 2,
+        "positions": 32,
+        "target": "#8B5CF6",
+        "seed": 728931,
+        "grid": {
+          "size": 18,
+          "boundary": "closed",
+          "neighborhood": 26
+        },
+        "initial": {
+          "density": 0.14,
+          "shape": "sphere",
+          "pairedPoints": true
+        },
+        "ticksPerSecond": 3,
+        "palette": [
+          {
+            "color": "#8B5CF6"
+          },
+          {
+            "color": "#E05130"
+          },
+          {
+            "color": "#E07230"
+          },
+          {
+            "color": "#E09330"
+          },
+          {
+            "color": "#E0B430"
+          },
+          {
+            "color": "#E0D530"
+          },
+          {
+            "color": "#CAE030"
+          },
+          {
+            "color": "#A9E030"
+          },
+          {
+            "color": "#88E030"
+          },
+          {
+            "color": "#67E030"
+          },
+          {
+            "color": "#46E030"
+          },
+          {
+            "color": "#30E03B"
+          },
+          {
+            "color": "#30E05C"
+          },
+          {
+            "color": "#30E07D"
+          },
+          {
+            "color": "#30E09E"
+          },
+          {
+            "color": "#30E0BF"
+          },
+          {
+            "color": "#30E0E0"
+          },
+          {
+            "color": "#30BFE0"
+          },
+          {
+            "color": "#309EE0"
+          },
+          {
+            "color": "#307DE0"
+          },
+          {
+            "color": "#305CE0"
+          },
+          {
+            "color": "#303BE0"
+          },
+          {
+            "color": "#4630E0"
+          },
+          {
+            "color": "#6730E0"
+          },
+          {
+            "color": "#8830E0"
+          },
+          {
+            "color": "#A930E0"
+          },
+          {
+            "color": "#CA30E0"
+          },
+          {
+            "color": "#E030D5"
+          },
+          {
+            "color": "#E030B4"
+          },
+          {
+            "color": "#E03093"
+          },
+          {
+            "color": "#E03072"
+          },
+          {
+            "color": "#E03051"
+          }
+        ],
+        "weights": {
+          "point": 0.25,
+          "demi-corde": 0.5,
+          "corde": 1,
+          "boucle": 2
+        },
+        "life": {
+          "enabled": true,
+          "birth": [
+            3,
+            4
+          ],
+          "survival": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "inheritance": "point",
+          "protectCondensates": true
+        },
+        "structures": {
+          "pointsPerHalf": 2,
+          "halvesPerString": 2,
+          "stringsPerLoop": 2,
+          "halfProbability": 1,
+          "stringProbability": 1,
+          "loopProbability": 0.8,
+          "bondProbability": 0.75
+        },
+        "colors": {
+          "addition": "average",
+          "amplitudeLimit": 64
+        },
+        "collisions": {
+          "subtraction": "opposed",
+          "probability": 0.25
+        },
+        "gravity": {
+          "enabled": false,
+          "trigger": "sphere",
+          "tolerance": 0.09,
+          "minimumPositions": 1,
+          "requiredPositions": [],
+          "strength": 0,
+          "radius": 6,
+          "softening": 1,
+          "spectralTolerance": 0.45
+        },
+        "motion": {
+          "diffusion": 0.12
+        },
+        "condensation": {
+          "requiredPositions": 32,
+          "minimumLoops": 4,
+          "persistent": true,
+          "gravityMultiplier": 2
+        },
+        "emission": {
+          "probability": 0,
+          "reserveEachPosition": true,
+          "freeSteps": 5
+        },
+        "display": {
+          "waveAmplitude": 0.2,
+          "waveFrequency": 1.2
+        }
+      },
+      "premiere_sphere": 51,
+      "naissances_cumulees": 62447,
+      "snapshots": [
+        {
+          "generation": 0,
+          "cells": 596,
+          "sources": 0,
+          "spheres": 0,
+          "units": 596,
+          "points": 596,
+          "halves": 0,
+          "strings": 0,
+          "loops": 0,
+          "births": 0,
+          "deaths": 0,
+          "additions": 0,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 0,
+          "newStrings": 0,
+          "newLoops": 0
+        },
+        {
+          "generation": 1,
+          "cells": 739,
+          "sources": 0,
+          "spheres": 0,
+          "units": 1275,
+          "points": 215,
+          "halves": 530,
+          "strings": 0,
+          "loops": 0,
+          "births": 679,
+          "deaths": 0,
+          "additions": 536,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 530,
+          "newStrings": 0,
+          "newLoops": 0
+        },
+        {
+          "generation": 10,
+          "cells": 1593,
+          "sources": 0,
+          "spheres": 0,
+          "units": 8445,
+          "points": 735,
+          "halves": 657,
+          "strings": 459,
+          "loops": 570,
+          "births": 746,
+          "deaths": 0,
+          "additions": 722,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 369,
+          "newStrings": 187,
+          "newLoops": 82
+        },
+        {
+          "generation": 25,
+          "cells": 1654,
+          "sources": 0,
+          "spheres": 0,
+          "units": 18235,
+          "points": 965,
+          "halves": 575,
+          "strings": 436,
+          "loops": 1797,
+          "births": 626,
+          "deaths": 0,
+          "additions": 613,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 307,
+          "newStrings": 165,
+          "newLoops": 63
+        },
+        {
+          "generation": 50,
+          "cells": 1654,
+          "sources": 0,
+          "spheres": 0,
+          "units": 33012,
+          "points": 1046,
+          "halves": 675,
+          "strings": 366,
+          "loops": 3644,
+          "births": 659,
+          "deaths": 0,
+          "additions": 615,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 386,
+          "newStrings": 137,
+          "newLoops": 90
+        },
+        {
+          "generation": 100,
+          "cells": 1652,
+          "sources": 0,
+          "spheres": 8,
+          "units": 55325,
+          "points": 1085,
+          "halves": 604,
+          "strings": 476,
+          "loops": 6391,
+          "births": 654,
+          "deaths": 0,
+          "additions": 622,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 362,
+          "newStrings": 211,
+          "newLoops": 128
+        }
+      ]
+    },
+    "intensite_trois": {
+      "configuration": {
+        "version": 2,
+        "positions": 32,
+        "target": "#8B5CF6",
+        "seed": 728931,
+        "grid": {
+          "size": 18,
+          "boundary": "closed",
+          "neighborhood": 26
+        },
+        "initial": {
+          "density": 0.14,
+          "shape": "sphere",
+          "pairedPoints": true
+        },
+        "ticksPerSecond": 3,
+        "palette": [
+          {
+            "color": "#8B5CF6"
+          },
+          {
+            "color": "#E05130"
+          },
+          {
+            "color": "#E07230"
+          },
+          {
+            "color": "#E09330"
+          },
+          {
+            "color": "#E0B430"
+          },
+          {
+            "color": "#E0D530"
+          },
+          {
+            "color": "#CAE030"
+          },
+          {
+            "color": "#A9E030"
+          },
+          {
+            "color": "#88E030"
+          },
+          {
+            "color": "#67E030"
+          },
+          {
+            "color": "#46E030"
+          },
+          {
+            "color": "#30E03B"
+          },
+          {
+            "color": "#30E05C"
+          },
+          {
+            "color": "#30E07D"
+          },
+          {
+            "color": "#30E09E"
+          },
+          {
+            "color": "#30E0BF"
+          },
+          {
+            "color": "#30E0E0"
+          },
+          {
+            "color": "#30BFE0"
+          },
+          {
+            "color": "#309EE0"
+          },
+          {
+            "color": "#307DE0"
+          },
+          {
+            "color": "#305CE0"
+          },
+          {
+            "color": "#303BE0"
+          },
+          {
+            "color": "#4630E0"
+          },
+          {
+            "color": "#6730E0"
+          },
+          {
+            "color": "#8830E0"
+          },
+          {
+            "color": "#A930E0"
+          },
+          {
+            "color": "#CA30E0"
+          },
+          {
+            "color": "#E030D5"
+          },
+          {
+            "color": "#E030B4"
+          },
+          {
+            "color": "#E03093"
+          },
+          {
+            "color": "#E03072"
+          },
+          {
+            "color": "#E03051"
+          }
+        ],
+        "weights": {
+          "point": 0.25,
+          "demi-corde": 0.5,
+          "corde": 1,
+          "boucle": 2
+        },
+        "life": {
+          "enabled": true,
+          "birth": [
+            3,
+            4
+          ],
+          "survival": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "inheritance": "point",
+          "protectCondensates": true
+        },
+        "structures": {
+          "pointsPerHalf": 2,
+          "halvesPerString": 2,
+          "stringsPerLoop": 2,
+          "halfProbability": 1,
+          "stringProbability": 1,
+          "loopProbability": 0.8,
+          "bondProbability": 0.75
+        },
+        "colors": {
+          "addition": "average",
+          "amplitudeLimit": 64
+        },
+        "collisions": {
+          "subtraction": "opposed",
+          "probability": 0.25
+        },
+        "gravity": {
+          "enabled": true,
+          "trigger": "sphere",
+          "tolerance": 0.09,
+          "minimumPositions": 1,
+          "requiredPositions": [],
+          "strength": 3,
+          "radius": 6,
+          "softening": 1,
+          "spectralTolerance": 0.45
+        },
+        "motion": {
+          "diffusion": 0.12
+        },
+        "condensation": {
+          "requiredPositions": 32,
+          "minimumLoops": 4,
+          "persistent": true,
+          "gravityMultiplier": 2
+        },
+        "emission": {
+          "probability": 0,
+          "reserveEachPosition": true,
+          "freeSteps": 5
+        },
+        "display": {
+          "waveAmplitude": 0.2,
+          "waveFrequency": 1.2
+        }
+      },
+      "premiere_sphere": 51,
+      "naissances_cumulees": 70387,
+      "snapshots": [
+        {
+          "generation": 0,
+          "cells": 596,
+          "sources": 0,
+          "spheres": 0,
+          "units": 596,
+          "points": 596,
+          "halves": 0,
+          "strings": 0,
+          "loops": 0,
+          "births": 0,
+          "deaths": 0,
+          "additions": 0,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 0,
+          "newStrings": 0,
+          "newLoops": 0
+        },
+        {
+          "generation": 1,
+          "cells": 739,
+          "sources": 0,
+          "spheres": 0,
+          "units": 1275,
+          "points": 215,
+          "halves": 530,
+          "strings": 0,
+          "loops": 0,
+          "births": 679,
+          "deaths": 0,
+          "additions": 536,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 530,
+          "newStrings": 0,
+          "newLoops": 0
+        },
+        {
+          "generation": 10,
+          "cells": 1593,
+          "sources": 0,
+          "spheres": 0,
+          "units": 8445,
+          "points": 735,
+          "halves": 657,
+          "strings": 459,
+          "loops": 570,
+          "births": 746,
+          "deaths": 0,
+          "additions": 722,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 369,
+          "newStrings": 187,
+          "newLoops": 82
+        },
+        {
+          "generation": 25,
+          "cells": 1654,
+          "sources": 0,
+          "spheres": 0,
+          "units": 18235,
+          "points": 965,
+          "halves": 575,
+          "strings": 436,
+          "loops": 1797,
+          "births": 626,
+          "deaths": 0,
+          "additions": 613,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 307,
+          "newStrings": 165,
+          "newLoops": 63
+        },
+        {
+          "generation": 50,
+          "cells": 1654,
+          "sources": 0,
+          "spheres": 0,
+          "units": 33012,
+          "points": 1046,
+          "halves": 675,
+          "strings": 366,
+          "loops": 3644,
+          "births": 659,
+          "deaths": 0,
+          "additions": 615,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 386,
+          "newStrings": 137,
+          "newLoops": 90
+        },
+        {
+          "generation": 100,
+          "cells": 1595,
+          "sources": 9,
+          "spheres": 9,
+          "units": 54564,
+          "points": 1278,
+          "halves": 819,
+          "strings": 616,
+          "loops": 6148,
+          "births": 802,
+          "deaths": 0,
+          "additions": 785,
+          "subtractions": 0,
+          "annihilations": 0,
+          "emissions": 0,
+          "newHalves": 524,
+          "newStrings": 331,
+          "newLoops": 121
+        }
+      ]
+    }
+  },
+  "contre_epreuve_persistance": {
+    "avec": {
+      "generation": 1,
+      "cells": 1,
+      "sources": 1,
+      "spheres": 1,
+      "units": 1,
+      "points": 1,
+      "halves": 0,
+      "strings": 0,
+      "loops": 0,
+      "births": 0,
+      "deaths": 0,
+      "additions": 0,
+      "subtractions": 0,
+      "annihilations": 0,
+      "emissions": 0,
+      "newHalves": 0,
+      "newStrings": 0,
+      "newLoops": 0
+    },
+    "sans": {
+      "generation": 1,
+      "cells": 1,
+      "sources": 0,
+      "spheres": 0,
+      "units": 1,
+      "points": 1,
+      "halves": 0,
+      "strings": 0,
+      "loops": 0,
+      "births": 0,
+      "deaths": 0,
+      "additions": 0,
+      "subtractions": 0,
+      "annihilations": 0,
+      "emissions": 0,
+      "newHalves": 0,
+      "newStrings": 0,
+      "newLoops": 0
+    }
+  }
+}

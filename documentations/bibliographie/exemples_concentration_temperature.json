@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-07",
+  "statut": "Conséquences algébriques sous hypothèses explicites ; aucune calibration aux branes ou au plasma du projet.",
+  "cas": [
+    {
+      "cas": "Gaz idéal : N et énergie thermique doublés",
+      "modele": "gaz ideal monoatomique non relativiste",
+      "N_ratio": 2,
+      "E_ratio": 2,
+      "T_ratio": 1.0
+    },
+    {
+      "cas": "Gaz idéal : N doublé, énergie thermique triplée",
+      "modele": "gaz ideal monoatomique non relativiste",
+      "N_ratio": 2,
+      "E_ratio": 3,
+      "T_ratio": 1.5
+    },
+    {
+      "cas": "Gaz idéal : N doublé, énergie thermique constante",
+      "modele": "gaz ideal monoatomique non relativiste",
+      "N_ratio": 2,
+      "E_ratio": 1,
+      "T_ratio": 0.5
+    },
+    {
+      "cas": "Plasma relativiste : énergie doublée à volume fixé",
+      "modele": "plasma ideal relativiste en equilibre, g_star constant",
+      "E_ratio": 2,
+      "V_ratio": 1,
+      "T_ratio": 1.189207115002721
+    },
+    {
+      "cas": "Plasma relativiste : énergie doublée, volume divisé par deux",
+      "modele": "plasma ideal relativiste en equilibre, g_star constant",
+      "E_ratio": 2,
+      "V_ratio": 0.5,
+      "T_ratio": 1.4142135623730951
+    },
+    {
+      "cas": "Plasma relativiste : compression adiabatique, volume divisé par deux",
+      "modele": "plasma ideal relativiste en equilibre, g_star constant, sans apport ni perte",
+      "E_ratio": 1.2599210498948732,
+      "V_ratio": 0.5,
+      "T_ratio": 1.2599210498948732
+    }
+  ]
+}

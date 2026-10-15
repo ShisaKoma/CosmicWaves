@@ -1,0 +1,166 @@
+{
+  "statut": "Modèle exploratoire sans calibration physique ; germes indépendants, dérive sans bruit.",
+  "unites": "q,n sans dimension ; énergies et temps en unités arbitraires ; k_B=1.",
+  "parametres_base": {
+    "k": 1.0,
+    "g": 1.0,
+    "b": 1.0,
+    "c0": 1.0,
+    "modes": 10,
+    "temperature": 0.1,
+    "alpha": 0.0,
+    "mobility": 1.0
+  },
+  "parametres_simulation": {
+    "duree": 120.0,
+    "pas": 0.01,
+    "q0": 0.05,
+    "n0": 0.0,
+    "perte": 0.2,
+    "repere_amplitude": 0.1
+  },
+  "verifications": {
+    "trajectoires_pas_divise_par_deux": {
+      "erreur_max": 4.74457972909903e-11,
+      "tolerance": 1e-07
+    },
+    "temps_repere_pas_divise_par_deux": {
+      "erreur_max": 4.607254915356407e-06,
+      "tolerance": 0.0001
+    },
+    "temps_critique_solution_analytique": {
+      "erreur_max": 0.0,
+      "tolerance": 1e-12
+    },
+    "plafond_inferieur_ou_egal_au_seuil": {
+      "statut": "OK"
+    },
+    "etat_exactement_nul_reste_nul_sans_bruit": {
+      "erreur_max": 0.0,
+      "tolerance": 0.0
+    },
+    "symetrie_des_perturbations_initiales": {
+      "erreur_max": 0.0,
+      "tolerance": 1e-12
+    }
+  },
+  "cas": [
+    {
+      "id": "alpha_-0.4_J_0.1",
+      "alpha": -0.4,
+      "J": 0.1,
+      "n_infini": 0.5,
+      "n_critique": 0.6,
+      "temps_critique": null,
+      "seuil_franchi_avant_fin": false,
+      "temps_repere_amplitude": null,
+      "delai_apres_seuil": null,
+      "q_final": 2.5154996733358457e-08,
+      "A_final": 0.10000000001887566
+    },
+    {
+      "id": "alpha_-0.4_J_0.2",
+      "alpha": -0.4,
+      "J": 0.2,
+      "n_infini": 1.0,
+      "n_critique": 0.6,
+      "temps_critique": 4.5814536593707755,
+      "seuil_franchi_avant_fin": true,
+      "temps_repere_amplitude": 13.430739225904711,
+      "delai_apres_seuil": 8.849285566533936,
+      "q_final": 0.632455531993882,
+      "A_final": -0.39999999996224866
+    },
+    {
+      "id": "alpha_-0.4_J_0.3",
+      "alpha": -0.4,
+      "J": 0.3,
+      "n_infini": 1.4999999999999998,
+      "n_critique": 0.6,
+      "temps_critique": 2.5541281188299534,
+      "seuil_franchi_avant_fin": true,
+      "temps_repere_amplitude": 7.107582492414235,
+      "delai_apres_seuil": 4.553454373584281,
+      "q_final": 0.9486832980169378,
+      "A_final": -0.8999999999433729
+    },
+    {
+      "id": "alpha_+0.0_J_0.1",
+      "alpha": 0.0,
+      "J": 0.1,
+      "n_infini": 0.5,
+      "n_critique": 1.0,
+      "temps_critique": null,
+      "seuil_franchi_avant_fin": false,
+      "temps_repere_amplitude": null,
+      "delai_apres_seuil": null,
+      "q_final": 3.5891729425668547e-29,
+      "A_final": 0.5000000000188757
+    },
+    {
+      "id": "alpha_+0.0_J_0.2",
+      "alpha": 0.0,
+      "J": 0.2,
+      "n_infini": 1.0,
+      "n_critique": 1.0,
+      "temps_critique": null,
+      "seuil_franchi_avant_fin": false,
+      "temps_repere_amplitude": null,
+      "delai_apres_seuil": null,
+      "q_final": 0.00033641785109274607,
+      "A_final": 3.775135759553905e-11
+    },
+    {
+      "id": "alpha_+0.0_J_0.3",
+      "alpha": 0.0,
+      "J": 0.3,
+      "n_infini": 1.4999999999999998,
+      "n_critique": 1.0,
+      "temps_critique": 5.49306144334055,
+      "seuil_franchi_avant_fin": true,
+      "temps_repere_amplitude": 15.77422168374332,
+      "delai_apres_seuil": 10.28116024040277,
+      "q_final": 0.7071067811364957,
+      "A_final": -0.49999999994337285
+    },
+    {
+      "id": "alpha_+0.4_J_0.1",
+      "alpha": 0.4,
+      "J": 0.1,
+      "n_infini": 0.5,
+      "n_critique": 1.4,
+      "temps_critique": null,
+      "seuil_franchi_avant_fin": false,
+      "temps_repere_amplitude": null,
+      "delai_apres_seuil": null,
+      "q_final": 5.117200701683989e-50,
+      "A_final": 0.9000000000188757
+    },
+    {
+      "id": "alpha_+0.4_J_0.2",
+      "alpha": 0.4,
+      "J": 0.2,
+      "n_infini": 1.0,
+      "n_critique": 1.4,
+      "temps_critique": null,
+      "seuil_franchi_avant_fin": false,
+      "temps_repere_amplitude": null,
+      "delai_apres_seuil": null,
+      "q_final": 4.796821154998468e-25,
+      "A_final": 0.4000000000377514
+    },
+    {
+      "id": "alpha_+0.4_J_0.3",
+      "alpha": 0.4,
+      "J": 0.3,
+      "n_infini": 1.4999999999999998,
+      "n_critique": 1.4,
+      "temps_critique": 13.540251005511056,
+      "seuil_franchi_avant_fin": true,
+      "temps_repere_amplitude": 82.46802960444074,
+      "delai_apres_seuil": 68.92777859892969,
+      "q_final": 0.3154486171090451,
+      "A_final": -0.09999999994337283
+    }
+  ]
+}

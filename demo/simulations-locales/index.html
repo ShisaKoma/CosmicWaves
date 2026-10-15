@@ -1,0 +1,1670 @@
+<!doctype html>
+<html lang="fr" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Agréger · transformer · expanser</title>
+<style>:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --icon-size: 16px;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --corner-shape: round;
+  --radius: var(--border-radius-lg, 10px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: var(--visualize-paint-gutter, 0px);
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: var(--corner-shape);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget > :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin-block: 6px;
+  border: 0;
+  background: var(--border);
+}
+
+.nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 8px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar:only-child {
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.nav-link,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn,
+.nav-link {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover,
+.nav-link:not(:disabled):not([aria-disabled="true"]):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.nav-pills .nav-link {
+  min-width: 0;
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.nav-justified .nav-link {
+  flex: 1 1 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+.btn:disabled,
+.nav-link:disabled,
+.nav-link[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type="file"]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: var(--corner-shape);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed="true"],
+  [aria-selected="true"],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .nav-link,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Keep small-screen WebKit from zooming when a text field receives focus. */
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type="file"]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type="color"] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="time"],
+    [type="week"]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html>body{padding:0}</style>
+<style>html>body{max-width:960px;margin:0 auto!important;padding:24px!important;box-sizing:border-box}header{margin-bottom:24px}header p{max-width:76ch}header nav{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:18px}@media(max-width:480px){html>body{padding:16px!important}}</style></head>
+<body><header><nav><a href="automate-3d.html">Automate à règles locales</a><a href="cycle-3d.html">Version 3D</a><a href="gravitation-simple.html">Gravitation simple</a><a href="convergence-chromatique.html">Convergence chromatique</a></nav><h1>Agréger · transformer · expanser</h1><p>Choisissez 26 ou 32 couleurs et une zone d’attraction. Quand toute la zone est agrégée, l’amas se condense puis libère des éléments multicolores vers l’extérieur. Le mouvement peut être extrêmement lent.</p></header>
+<div id="cycle-matiere" data-phase="ready">
+  <div class="viz-controls">
+    <label class="form-label" for="cy-palette">Palette<select class="form-select" id="cy-palette"><option value="26">26 couleurs</option><option value="32" selected>32 couleurs</option></select></label>
+    <label class="form-label" for="cy-hex">Couleur d’agrégation<input class="form-control" id="cy-hex" value="#8B5CF6" maxlength="7" spellcheck="false" aria-describedby="cy-error"></label>
+  </div>
+  <p id="cy-error" class="text-small text-destructive" role="alert" hidden>Couleur invalide : utilisez 3 ou 6 chiffres hexadécimaux, par exemple #8B5CF6.</p>
+  <div id="cy-swatches" class="cy-swatches" role="img" aria-label="Palette de 32 couleurs"></div>
+  <ol class="cy-stages" aria-label="Cycle"><li id="cy-stage-aggregate">1. Agréger</li><li id="cy-stage-transform">2. Transformer</li><li id="cy-stage-expand">3. Expanser</li></ol>
+  <canvas id="cy-canvas" role="img" aria-label="Bruit multicolore, attracteur et zone d’influence. Cliquez pour déplacer l’attracteur.">Simulation d’agrégation, de condensation et d’expansion multicolore.</canvas>
+  <div class="viz-controls">
+    <label class="form-label" for="cy-gravity">Gravitation · <output id="cy-gravity-value">45 %</output><input class="form-range" id="cy-gravity" type="range" min="0" max="100" step="1" value="45"></label>
+    <label class="form-label" for="cy-speed">Vitesse d’expansion · <output id="cy-speed-value">0,20×</output><input class="form-range" id="cy-speed" type="range" min="0" max="100" step="1" value="64"></label>
+  </div>
+  <div class="viz-row"><button class="btn btn-primary" id="cy-start" type="button">Lancer le cycle</button><button class="btn" id="cy-pause" type="button" aria-pressed="false">Pause</button><span id="cy-status" class="text-small" aria-live="polite">Bruit initial · 32 couleurs</span></div>
+  <div id="cy-detail" class="text-small text-muted">Zone sélectionnée : 0 particule</div>
+  <details><summary>Condensat et mouvement</summary><div class="viz-controls">
+    <label class="form-label" for="cy-retained">Part conservée au centre · <output id="cy-retained-value">25 %</output><input class="form-range" id="cy-retained" type="range" min="0" max="90" step="1" value="25"></label>
+    <label class="form-label" for="cy-area">Surface du condensat · <output id="cy-area-value">30 % de l’amas</output><input class="form-range" id="cy-area" type="range" min="5" max="80" step="1" value="30"></label>
+    <label class="form-label" for="cy-variation">Écart des vitesses individuelles · <output id="cy-variation-value">50 %</output><input class="form-range" id="cy-variation" type="range" min="0" max="100" step="1" value="50"></label>
+    <label class="form-label" for="cy-texture">Rendu<select class="form-select" id="cy-texture"><option value="noise">Points</option><option value="fog">Brouillard</option></select></label>
+  </div></details>
+  <details><summary>Vitesses par couleur</summary><div class="viz-controls">
+    <label class="form-label" for="cy-color-select">Couleur<select class="form-select" id="cy-color-select"></select></label>
+    <label class="form-label" for="cy-color-speed">Vitesse relative · <output id="cy-color-speed-value">1×</output><input class="form-range" id="cy-color-speed" type="range" min="0" max="200" step="1" value="100"></label>
+  </div></details>
+  <details><summary>Position de l’attracteur</summary><div class="viz-controls">
+    <label class="form-label" for="cy-x">Horizontal · <output id="cy-x-value">50 %</output><input class="form-range" id="cy-x" type="range" min="8" max="92" value="50"></label>
+    <label class="form-label" for="cy-y">Vertical · <output id="cy-y-value">50 %</output><input class="form-range" id="cy-y" type="range" min="12" max="88" value="50"></label>
+  </div></details>
+</div>
+<style>
+  #cycle-matiere { display: grid; gap: 14px; }
+  #cycle-matiere canvas { width: 100%; aspect-ratio: 16/9; display: block; touch-action: none; cursor: crosshair; color: var(--foreground); }
+  #cycle-matiere[data-phase="transform"] canvas, #cycle-matiere[data-phase="expand"] canvas { cursor: default; }
+  #cycle-matiere .cy-swatches { display: flex; height: 10px; gap: 2px; }
+  #cycle-matiere .cy-swatches span { flex: 1; min-width: 0; }
+  #cycle-matiere .cy-stages { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  #cycle-matiere .cy-stages li { color: var(--muted-foreground); }
+  #cycle-matiere .cy-stages [aria-current="step"] { color: var(--foreground); font-weight: 500; }
+  #cycle-matiere details > div { margin-top: 14px; }
+  #cycle-matiere p { margin: 0; }
+</style>
+<script>
+(() => {
+  const root = document.getElementById('cycle-matiere'), get = id => root.querySelector('#cy-' + id);
+  const canvas = get('canvas'), ctx = canvas.getContext('2d');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const W = 960, H = 540, COLS = 128, N = COLS * 72, CELL = W / COLS, TAU = Math.PI * 2;
+  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+  const smooth = x => x * x * (3 - 2 * x);
+  const fmt = (v, decimals = 0) => v.toLocaleString('fr-FR', {maximumFractionDigits: decimals});
+  let seed = 728931;
+  function random() { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return (seed >>> 0) / 4294967296; }
+  const particles = Array.from({length: N}, (_, id) => {
+    const hx = (id % COLS + 0.5) * CELL, hy = (Math.floor(id / COLS) + 0.5) * CELL;
+    return {id, hx, hy, x: hx, y: hy, vx: 0, vy: 0, phase: random() * TAU,
+      resistance: random(), variation: random() * 2 - 1, colorSeed: Math.floor(random() * 1000000),
+      baseColor: 0, outColor: 0, color: 0, bound: false, captured: false, core: false,
+      ox: 0, oy: 0, startRadius: 0, radius: 0, angle: 0, coreX: 0, coreY: 0, rank: 0};
+  });
+  let palette = [], paletteSize = 32, colorCode = '#8B5CF6';
+  const colorSpeeds = Array.from({length:32}, (_, i) => 0.4 + ((i * 11) % 32) / 31 * 1.2);
+  const target = {x: W / 2, y: H / 2};
+  let phase = 'ready', paused = reduced.matches, gravity = 45, selected = 0, captured = 0, coreCount = 0;
+  let retained = 25, area = 30, variation = 0.5, speed = 0.2;
+  let time = 0, phaseTime = 0, aggregateRadius = 0, compactRadius = 0, dirty = true, dragging = false;
+  let last = performance.now(), lastDraw = -Infinity, accumulator = 0, lastUi = -Infinity, view = 1;
+
+  function toHex(rgb) { return '#' + rgb.map(x => Math.round(x).toString(16).padStart(2, '0')).join('').toUpperCase(); }
+  function hsl(h, s, l) {
+    const a = s * Math.min(l, 1 - l);
+    return [0, 8, 4].map(n => { const k = (n + h / 30) % 12; return 255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))); });
+  }
+  function hue(hex) {
+    const [r,g,b] = [1,3,5].map(i => parseInt(hex.slice(i,i+2),16) / 255);
+    const max = Math.max(r,g,b), d = max - Math.min(r,g,b);
+    if (d === 0) return 270;
+    const h = max === r ? (g-b)/d : max === g ? (b-r)/d+2 : (r-g)/d+4;
+    return (h * 60 + 360) % 360;
+  }
+  function buildPalette() {
+    const h = hue(colorCode), used = new Set([colorCode]); palette = [colorCode];
+    for (let i = 1; i < paletteSize; i++) {
+      let value = toHex(hsl((h + 360 * i / paletteSize) % 360, 0.7, i % 2 ? 0.56 : 0.44));
+      while (used.has(value)) value = '#' + ((parseInt(value.slice(1),16) + 1) % 16777216).toString(16).padStart(6,'0').toUpperCase();
+      palette.push(value); used.add(value);
+    }
+    for (const p of particles) {
+      p.baseColor = p.colorSeed % paletteSize;
+      p.outColor = (p.baseColor + 1 + p.id % (paletteSize - 1)) % paletteSize;
+      if (phase === 'ready' || !p.bound) p.color = p.baseColor;
+      else if (phase === 'aggregate') p.color = p.captured ? 0 : p.baseColor;
+      else if (phase === 'expand') p.color = p.outColor;
+    }
+    get('swatches').replaceChildren(...palette.map(color => { const span = document.createElement('span'); span.style.backgroundColor = color; return span; }));
+    get('swatches').setAttribute('aria-label', 'Palette de ' + paletteSize + ' couleurs');
+    const selectedColor = Number(get('color-select').value) || 0;
+    get('color-select').replaceChildren(...palette.map((color,i) => new Option(String(i+1).padStart(2,'0') + ' · ' + color, String(i))));
+    get('color-select').value = String(Math.min(selectedColor, paletteSize - 1));
+    colorControl(); dirty = true;
+  }
+  function colorControl() {
+    const i = Number(get('color-select').value) || 0;
+    get('color-speed').value = Math.round(colorSpeeds[i] * 100);
+    get('color-speed-value').value = fmt(colorSpeeds[i],2) + '×';
+  }
+  function validate() {
+    let value = get('hex').value.trim().replace(/^#/, '');
+    const valid = /^([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value);
+    get('error').hidden = valid; get('start').disabled = !valid && phase === 'ready';
+    get('hex').setAttribute('aria-invalid', String(!valid));
+    if (!valid) return false;
+    if (value.length === 3) value = value.split('').map(c => c+c).join('');
+    colorCode = '#' + value.toUpperCase(); buildPalette(); return true;
+  }
+  function reach() {
+    return (Math.hypot(Math.max(target.x,W-target.x), Math.max(target.y,H-target.y)) + CELL) * Math.pow(gravity / 100, 1.15);
+  }
+  function setPhase(next) {
+    phase = next; phaseTime = 0; root.dataset.phase = phase;
+    const frozen = phase === 'transform' || phase === 'expand';
+    for (const id of ['gravity','x','y','retained','area']) get(id).disabled = frozen;
+    get('palette').disabled = phase !== 'ready';
+    for (const name of ['aggregate','transform','expand']) {
+      if (name === phase) get('stage-' + name).setAttribute('aria-current','step');
+      else get('stage-' + name).removeAttribute('aria-current');
+    }
+    get('status').textContent = {ready:'Bruit initial · ' + paletteSize + ' couleurs',aggregate:'Agrégation en cours',transform:'Transformation en condensat',expand:'Expansion multicolore'}[phase];
+    canvas.setAttribute('aria-label', get('status').textContent);
+    dirty = true; ui();
+  }
+  function ui() {
+    get('start').textContent = phase === 'ready' ? 'Lancer le cycle' : 'Revenir au bruit';
+    get('pause').textContent = paused ? 'Reprendre' : 'Pause'; get('pause').setAttribute('aria-pressed', String(paused));
+    const detail = get('detail');
+    if (phase === 'ready') detail.textContent = 'Zone sélectionnée : ' + fmt(selected) + ' / ' + fmt(N) + ' particules';
+    if (phase === 'aggregate') detail.textContent = selected ? 'Captées : ' + fmt(captured) + ' / ' + fmt(selected) + ' · ' + fmt(captured / selected * 100) + ' % de la zone' : 'Gravitation à zéro ou zone vide · augmentez la jauge';
+    if (phase === 'transform') detail.textContent = 'Condensation : ' + fmt(Math.min(1,phaseTime / 2.4)*100) + ' % · zone figée pour ce cycle';
+    if (phase === 'expand') detail.textContent = 'Condensat : ' + fmt(coreCount) + ' · vers l’extérieur : ' + fmt(selected-coreCount) + ' · hors zone : ' + fmt(N-selected);
+  }
+  function pack(p, rank) {
+    const r = Math.sqrt(rank / N) * 64, angle = rank * 2.399963229728653;
+    p.ox = Math.cos(angle) * r; p.oy = Math.sin(angle) * r;
+    p.x = target.x + p.ox; p.y = target.y + p.oy;
+  }
+  function capture(p) { p.captured = true; p.color = 0; p.vx = p.vy = 0; pack(p, captured++); }
+  function selectZone() {
+    if (phase === 'transform' || phase === 'expand') return;
+    const radius = reach(), s = gravity / 100;
+    selected = 0;
+    for (const p of particles) {
+      p.bound = gravity > 0 && Math.hypot(p.hx-target.x,p.hy-target.y) <= radius * (1-(1-s)*0.2*p.resistance);
+      if (p.bound) selected++;
+      else { p.captured = false; p.color = p.baseColor; }
+    }
+    const held = particles.filter(p => p.captured); captured = 0;
+    for (const p of held) capture(p);
+    dirty = true; ui();
+  }
+  function reset() {
+    for (const p of particles) { p.x=p.hx; p.y=p.hy; p.vx=p.vy=0; p.captured=p.core=false; p.color=p.baseColor; p.radius=0; }
+    captured=coreCount=0; view=1; accumulator=0;
+    setPhase('ready'); selectZone();
+    get('start').disabled = get('hex').getAttribute('aria-invalid') === 'true';
+  }
+  function beginTransform() {
+    const group = particles.filter(p => p.bound).sort((a,b) => a.resistance-b.resistance);
+    coreCount = Math.round(selected * retained / 100);
+    aggregateRadius = Math.max(2, 64 * Math.sqrt(selected / N));
+    compactRadius = aggregateRadius * Math.sqrt(area / 100);
+    const emissionCount = selected-coreCount;
+    for (let i=0; i<group.length; i++) {
+      const p=group[i]; p.rank=i; p.core=i<coreCount;
+      // Interleaving directions prevents color bands from imposing a common velocity.
+      p.angle=i*2.399963229728653;
+      const j=p.core?i:i-coreCount, denominator=p.core?coreCount:emissionCount;
+      p.startRadius=compactRadius*Math.sqrt((j+0.5)/Math.max(1,denominator));
+      p.coreX=Math.cos(p.angle)*p.startRadius; p.coreY=Math.sin(p.angle)*p.startRadius;
+    }
+    setPhase('transform');
+  }
+  function beginExpansion() {
+    for (const p of particles) if(p.bound) {
+      p.color=p.outColor; p.radius=p.startRadius;
+      p.x=target.x+p.coreX; p.y=target.y+p.coreY;
+    }
+    setPhase('expand');
+  }
+  function particleSpeed(p) { return 18 * speed * colorSpeeds[p.outColor] * Math.max(0.05,1+variation*p.variation*0.9); }
+  function step(dt) {
+    time+=dt; phaseTime+=dt;
+    for (const p of particles) {
+      if (phase==='aggregate' && p.bound) {
+        if(p.captured) continue;
+        const dx=target.x-p.x, dy=target.y-p.y, d=Math.hypot(dx,dy);
+        const radius=5+64*Math.sqrt(captured/N);
+        if(d<radius+3) { capture(p); continue; }
+        const a=Math.min(1100,22000000*(gravity/45)/(d*d+2500));
+        p.vx+=(dx-dy*0.08)/d*a*dt; p.vy+=(dy+dx*0.08)/d*a*dt;
+        p.vx*=Math.exp(-1.3*dt); p.vy*=Math.exp(-1.3*dt);
+        p.x+=p.vx*dt; p.y+=p.vy*dt;
+      } else if(phase==='transform' && p.bound) {
+        const t=clamp(phaseTime/2.4,0,1), s=smooth(t);
+        p.x=target.x+p.ox*(1-s)+p.coreX*s; p.y=target.y+p.oy*(1-s)+p.coreY*s;
+        p.color=t>0.2+0.65*p.resistance?p.outColor:0;
+      } else if(phase==='expand' && p.bound) {
+        if(!p.core) p.radius+=particleSpeed(p)*dt;
+        p.x=target.x+Math.cos(p.angle)*p.radius; p.y=target.y+Math.sin(p.angle)*p.radius;
+      } else {
+        const dx=p.hx+Math.sin(time*0.7+p.phase)*1.1-p.x, dy=p.hy+Math.cos(time*0.6+p.phase)*1.1-p.y;
+        p.vx=(p.vx+dx*13*dt)*Math.exp(-5.6*dt); p.vy=(p.vy+dy*13*dt)*Math.exp(-5.6*dt);
+        p.x+=p.vx*dt; p.y+=p.vy*dt;
+      }
+    }
+    // A zero-size selection must never advance the cycle.
+    if(phase==='aggregate' && selected>0 && captured===selected) beginTransform();
+    else if(phase==='transform' && phaseTime>=2.4) beginExpansion();
+  }
+  function draw() {
+    let maxX=W/2, maxY=H/2;
+    if(phase==='expand') for(const p of particles) if(p.bound) {maxX=Math.max(maxX,Math.abs(p.x-W/2)+8);maxY=Math.max(maxY,Math.abs(p.y-H/2)+8);}
+    view=Math.min(1,W/(maxX*2),H/(maxY*2));
+    ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,canvas.width,canvas.height);
+    const scale=canvas.width/W*view, tx=canvas.width/2-W/2*scale, ty=canvas.height/2-H/2*scale;
+    ctx.save(); ctx.setTransform(scale,0,0,scale,tx,ty);
+    if(get('texture').value==='fog') ctx.filter='blur('+Math.max(0.6,2.5*scale)+'px)';
+    const buckets=Array.from({length:paletteSize},()=>[]);
+    for(const p of particles) buckets[p.color].push(p);
+    for(let i=0;i<paletteSize;i++) {
+      ctx.fillStyle=palette[i];ctx.beginPath();
+      for(const p of buckets[i]) { const s=p.captured?2.2:CELL+0.25;ctx.rect(p.x-s/2,p.y-s/2,s,s); }
+      ctx.fill();
+    }
+    ctx.restore(); ctx.save();ctx.setTransform(scale,0,0,scale,tx,ty);
+    ctx.strokeStyle=getComputedStyle(canvas).color;ctx.lineWidth=1/scale;
+    if(phase==='ready'||phase==='aggregate') {
+      ctx.beginPath();ctx.arc(target.x,target.y,7,0,TAU);ctx.stroke();
+      if(gravity>0){ctx.setLineDash([5/scale,5/scale]);ctx.globalAlpha=0.65;ctx.beginPath();ctx.arc(target.x,target.y,reach(),0,TAU);ctx.stroke();}
+    }
+    ctx.restore();
+  }
+  function resize() { canvas.width=Math.max(1,Math.round(canvas.clientWidth*Math.min(devicePixelRatio||1,2)));canvas.height=Math.round(canvas.width*H/W);dirty=true; }
+  function moveTarget(x,y) {
+    if(phase==='transform'||phase==='expand')return;
+    target.x=clamp(x,W*0.08,W*0.92);target.y=clamp(y,H*0.12,H*0.88);
+    get('x').value=Math.round(target.x/W*100);get('y').value=Math.round(target.y/H*100);
+    get('x-value').value=get('x').value+' %';get('y-value').value=get('y').value+' %';
+    for(const p of particles)p.captured=false;
+    captured=0;selectZone();
+  }
+  function point(e){const r=canvas.getBoundingClientRect();moveTarget((e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H);}
+  canvas.addEventListener('pointerdown',e=>{dragging=true;canvas.setPointerCapture(e.pointerId);point(e);});
+  canvas.addEventListener('pointermove',e=>{if(dragging)point(e);});
+  canvas.addEventListener('pointerup',()=>{dragging=false;});canvas.addEventListener('pointercancel',()=>{dragging=false;});
+  get('x').addEventListener('input',()=>moveTarget(Number(get('x').value)/100*W,target.y));
+  get('y').addEventListener('input',()=>moveTarget(target.x,Number(get('y').value)/100*H));
+  get('hex').addEventListener('input',validate);get('hex').addEventListener('blur',()=>{if(validate())get('hex').value=colorCode;});
+  get('palette').addEventListener('change',()=>{paletteSize=Number(get('palette').value);buildPalette();setPhase('ready');});
+  get('gravity').addEventListener('input',()=>{gravity=Number(get('gravity').value);get('gravity-value').value=gravity+' %';selectZone();});
+  get('speed').addEventListener('input',()=>{speed=Math.pow(10,-3+3.6*Number(get('speed').value)/100);get('speed-value').value=fmt(speed,3)+'×';});
+  get('retained').addEventListener('input',()=>{retained=Number(get('retained').value);get('retained-value').value=retained+' %';});
+  get('area').addEventListener('input',()=>{area=Number(get('area').value);get('area-value').value=area+' % de l’amas';});
+  get('variation').addEventListener('input',()=>{variation=Number(get('variation').value)/100;get('variation-value').value=get('variation').value+' %';});
+  get('texture').addEventListener('change',()=>{dirty=true;});
+  get('color-select').addEventListener('change',colorControl);
+  get('color-speed').addEventListener('input',()=>{const i=Number(get('color-select').value);colorSpeeds[i]=Number(get('color-speed').value)/100;get('color-speed-value').value=fmt(colorSpeeds[i],2)+'×';});
+  get('start').addEventListener('click',()=>{
+    if(phase!=='ready'){reset();return;}
+    if(!validate())return;
+    selectZone();setPhase('aggregate');accumulator=0;
+    if(reduced.matches){
+      if(selected>0){for(const p of particles)if(p.bound)capture(p);beginTransform();beginExpansion();}
+      paused=true;
+    }else paused=false;
+    ui();dirty=true;
+  });
+  get('pause').addEventListener('click',()=>{paused=!paused;accumulator=0;ui();});
+  reduced.addEventListener('change',()=>{if(reduced.matches){paused=true;ui();}});
+  new ResizeObserver(resize).observe(canvas);
+  new MutationObserver(()=>{dirty=true;}).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
+  function tick(now){
+    if(!root.isConnected)return;
+    const dt=Math.min((now-last)/1000,0.06);last=now;
+    if(!paused&&!document.hidden){accumulator+=dt;while(accumulator>=1/60){step(1/60);accumulator-=1/60;}if(now-lastDraw>=33)dirty=true;}
+    if(dirty&&!document.hidden){draw();dirty=false;lastDraw=now;}
+    if(now-lastUi>200){ui();lastUi=now;}
+    requestAnimationFrame(tick);
+  }
+  buildPalette();selectZone();setPhase('ready');resize();draw();requestAnimationFrame(tick);
+})();
+</script>
+
+
+
+<script>
+(() => {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set(["top", "right", "bottom", "left"]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+  let lastPointerWasTouch = false;
+  let pinnedByTouch = false;
+
+  const getTrigger = (target) =>
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest("[data-tooltip]")
+      : null;
+  const containsTarget = (trigger, target) =>
+    target?.nodeType != null && trigger.contains(target);
+  const getContent = (trigger) =>
+    trigger.getAttribute("data-tooltip")?.trim() ?? "";
+  const getPlacement = (trigger) => {
+    const placement = trigger.getAttribute("data-tooltip-placement");
+    return tooltipPlacements.has(placement) ? placement : "top";
+  };
+  const getTooltip = () => {
+    if (tooltip == null) {
+      tooltip = document.createElement("div");
+      tooltip.id = tooltipId;
+      tooltip.className = "tooltip";
+      tooltip.setAttribute("role", "tooltip");
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) => {
+    const ids = new Set(
+      (trigger.getAttribute("aria-describedby") ?? "")
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute("aria-describedby");
+    } else {
+      trigger.setAttribute("aria-describedby", [...ids].join(" "));
+    }
+  };
+  const clearOpenTimeout = () => {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) => {
+    clearOpenTimeout();
+    pinnedByTouch = false;
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) => {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              "--tooltip-available-width",
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              "--tooltip-available-height",
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: "fixed",
+    })
+      .then(({ x, y }) => {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = "visible";
+      })
+      .catch(() => {
+        if (activeTrigger === trigger && request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) => {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = "hidden";
+    floating.style.transform = "translate(0, 0)";
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () => {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) => {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() < skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() => {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) => {
+    if (event.pointerType === "touch") {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handlePointer = (event) => {
+    lastPointerWasTouch =
+      event.type === "pointerdown" && event.pointerType === "touch";
+  };
+  const handleTouchClick = (event) => {
+    const isTouch = event.pointerType === "touch" || lastPointerWasTouch;
+    lastPointerWasTouch = false;
+    if (!isTouch || event.detail === 0) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (
+      trigger == null ||
+      !trigger.isConnected ||
+      getContent(trigger).length === 0 ||
+      (pinnedByTouch && activeTrigger === trigger)
+    ) {
+      if (pinnedByTouch) {
+        closeTooltip();
+      }
+      return;
+    }
+    openTooltip(trigger);
+    pinnedByTouch = activeTrigger === trigger;
+    window.setTimeout(() => {
+      if (activeTrigger === trigger && !trigger.isConnected) {
+        closeTooltip(false);
+      }
+    }, 0);
+  };
+  const handleLeave = (event) => {
+    if (pinnedByTouch) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) => {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(":focus-visible")) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) => {
+    if (event.key === "Escape") {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) => {
+    lastPointerWasTouch = false;
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () => {
+    closeTooltip(false);
+    lastPointerWasTouch = false;
+    document.removeEventListener("pointerover", handlePointerOpen);
+    document.removeEventListener("pointerdown", handlePointer);
+    document.removeEventListener("pointercancel", handlePointer);
+    document.removeEventListener("click", handleTouchClick);
+    document.removeEventListener("pointerout", handleLeave);
+    document.removeEventListener("focusin", handleFocusIn);
+    document.removeEventListener("focusout", handleLeave);
+    document.removeEventListener("keydown", handleKeyDown);
+    document.removeEventListener("contextmenu", handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener("pointerover", handlePointerOpen);
+  document.addEventListener("pointerdown", handlePointer);
+  document.addEventListener("pointercancel", handlePointer);
+  document.addEventListener("click", handleTouchClick);
+  document.addEventListener("pointerout", handleLeave);
+  document.addEventListener("focusin", handleFocusIn);
+  document.addEventListener("focusout", handleLeave);
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("contextmenu", handleContextMenu);
+  window.addEventListener("pagehide", destroy, { once: true });
+})();
+</script>
+<script id="codex-visualization-tabs">
+(() => {
+  const selector = '.nav[role="tablist"] [role="tab"]';
+  const disabled = ':disabled,[aria-disabled="true"]';
+  const selectTab = (selected) => {
+    const panelId = selected.getAttribute("aria-controls");
+    for (const tab of selected.closest('[role="tablist"]').querySelectorAll('[role="tab"]')) {
+      const active = tab === selected;
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-selected", String(active));
+      const id = tab.getAttribute("aria-controls");
+      const panel = id && document.getElementById(id);
+      if (panel != null) {
+        panel.hidden = id !== panelId;
+        if (!panel.hidden && selected.id) {
+          panel.setAttribute("aria-labelledby", selected.id);
+        }
+      }
+    }
+  };
+  const interact = (event) => {
+    const tab = event.target?.closest?.(selector);
+    if (event.defaultPrevented || tab == null || tab.matches(disabled)) {
+      return;
+    }
+    if (event.type === "click") {
+      selectTab(tab);
+      return;
+    }
+    const tabs = Array.from(
+      tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]'),
+    ).filter((candidate) => !candidate.matches(disabled));
+    const current = tabs.indexOf(tab);
+    let next;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      next = (current + 1) % tabs.length;
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      next = (current + tabs.length - 1) % tabs.length;
+    } else if (event.key === "Home") {
+      next = 0;
+    } else if (event.key === "End") {
+      next = tabs.length - 1;
+    } else {
+      return;
+    }
+    event.preventDefault();
+    tabs[next].focus();
+    selectTab(tabs[next]);
+  };
+
+  for (const list of document.querySelectorAll('.nav[role="tablist"]')) {
+    const selected =
+      list.querySelector('[role="tab"][aria-selected="true"]') ??
+      list.querySelector('[role="tab"].active') ??
+      list.querySelector('[role="tab"]');
+    if (selected != null) {
+      selectTab(selected);
+    }
+  }
+  document.addEventListener("click", interact);
+  document.addEventListener("keydown", interact);
+  window.addEventListener("pagehide", () => {
+    document.removeEventListener("click", interact);
+    document.removeEventListener("keydown", interact);
+  }, { once: true });
+})();
+</script>
+
+<script>
+(() => {
+  const initialize = () => {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById("codex-visualization-lucide")
+    ?.addEventListener("load", initialize, { once: true });
+})();
+</script>
+
+</body>
+</html>

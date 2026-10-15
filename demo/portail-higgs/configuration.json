@@ -1,0 +1,19 @@
+{
+  "potentiel": {
+    "lambda_phi": 0.5,
+    "v_phi_reduit": 1.0,
+    "lambda_h": 0.13,
+    "mu_h2_reduit": 0.22,
+    "kappa": 0.6,
+    "c_phi": 0.15,
+    "c_h": 0.4
+  },
+  "temperatures_reduites": [0.2, 0.4, 0.6],
+  "grille": {
+    "demi_largeur_en_ell": 12.0,
+    "intervalles": 480,
+    "tolerance_residu": 1e-7,
+    "iterations_max": 20000
+  },
+  "sondes": {"y_top": 1.0, "g": 0.65, "g_Y": 0.36}
+}

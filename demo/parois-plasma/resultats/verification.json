@@ -1,0 +1,26 @@
+{
+  "paroi/integrale_tension": {
+    "erreur": 7.616129948928574e-14,
+    "tolerance": 1e-08
+  },
+  "paroi/equation_statique": {
+    "erreur": 3.162685499775997e-16,
+    "tolerance": 1e-12
+  },
+  "plasma/reference_SM_106_75": {
+    "erreur": 0.0,
+    "tolerance": 0
+  },
+  "plasma/reference_QCD_uds_47_5": {
+    "erreur": 0.0,
+    "tolerance": 0
+  },
+  "plasma/neutralite_moyenne_mu_nul": {
+    "erreur": 0.0,
+    "tolerance": 1e-14
+  },
+  "charges/Q_T3_Y": {
+    "erreur": 0.0,
+    "tolerance": 0
+  }
+}
